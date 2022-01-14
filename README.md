@@ -31,7 +31,7 @@
 
 #### 2. API Document
 
-- [https://mentoring-me.labatelab.com /swagger-ui.html#/](https://mentoring-me.labatelab.com/swagger-ui.html#/)
+- [https://mentoring-me.labatelab.com/swagger-ui.html#/](https://mentoring-me.labatelab.com/swagger-ui.html#/)
 
 #### 3. Structure project
 
@@ -59,7 +59,7 @@ More details can be found [here](docs/architecture.md).
 | LAB         | https://mentoring-me.labatelab.com |
 | PRODUCTION  | https://mentoring-me.labate.com    |
 
-## Techstack
+## Tech stack
 
 ### Dependent services
 
@@ -73,7 +73,7 @@ More details can be found [here](docs/architecture.md).
 |--------------|----------|------------------------|
 | Backends     | Java     | Spring Framework 2.5.8 |
 
-### Thirdparty services
+### Third-party services
 
 | Name | Purpose | Type | Desc |
 |------|---------|------|------|

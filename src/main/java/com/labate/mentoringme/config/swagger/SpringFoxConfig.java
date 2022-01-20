@@ -48,4 +48,15 @@ public class SpringFoxConfig {
         .build();
   }
 
+  /**
+   * Swagger UI: Change default /swagger-ui.html to /swagger
+   *
+   * @return RouterFunction
+   */
+  @Bean
+  RouterFunction<ServerResponse> swaggerRouter() {
+    return route(
+        GET("/swagger"),
+        req -> ServerResponse.temporaryRedirect(URI.create("swagger-ui.html")).build());
+  }
 }

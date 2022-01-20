@@ -31,7 +31,7 @@
 
 #### 2. API Document
 
-- [https://mentoring-me.labatelab.com/swagger-ui.html#/](https://mentoring-me.labatelab.com/swagger-ui.html#/)
+- [https://mentoring-me.labatelab.com/swagger](https://mentoring-me.labatelab.com/swagger)
 
 #### 3. Structure project
 

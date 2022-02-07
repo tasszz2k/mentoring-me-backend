@@ -24,7 +24,7 @@ Style Code
 
 Build Docker Image
 ```docker
-$ docker run --name mentoring-me-be -p 8080:8080 mentoring-me-be:1
+$ sudo docker build -t mentoring-me-be:1 .
 $ sudo docker run --name mentoring-me-be -p 8080:8080 mentoring-me-be:1
 ```
 

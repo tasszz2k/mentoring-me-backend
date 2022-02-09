@@ -1,28 +1,28 @@
 apiVersion: apps/v1
   kind: Deployment
   metadata:
-    name: example-app-deployment
+    name: labate
   spec:
     selector:
       matchLabels:
-        app:  example-app
+        app:  labate
     #number of replicas
     replicas: 2
     template:
       metadata:
         labels:
-          app: example-app
+          app: labate
           version: "1.0"
       spec:
-        #additional
-        # ConfigMaps and Secrets can be mounted as environment variables or as files within a container.
+       # additional
+       # ConfigMaps and Secrets can be mounted as environment variables or as files within a container.
         volumes:
           - name: sql-volume
             secret:
               secretName: example-secret
         containers:
-          - name: example-app
-            image: gcr.io/$PROJECT_ID/<preffered_image_name>:latest
+          - name: labate
+            image: gcr.io/$PROJECT_ID/labate:latest
             imagePullPolicy: "Always"
             volumeMounts:
               - name: sql-volume
@@ -59,9 +59,9 @@ apiVersion: apps/v1
   kind: Service
   apiVersion: v1
   metadata:
-    name: mentoring-me-be
+    name: labate-service
     labels:
-      name: mentoring-me-be
+      name: labate-service
   spec:
     ports:
       - port: 8080
@@ -69,5 +69,5 @@ apiVersion: apps/v1
         protocol: TCP
     type: LoadBalancer
     selector:
-      app: example-app
+      app: labate
       version: "1.0"

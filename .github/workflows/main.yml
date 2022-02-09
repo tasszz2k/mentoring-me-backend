@@ -6,8 +6,8 @@ on:
       - main
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  APP_ID: continous-deployment
-  RUN_REGION: us-east1
+  APP_ID: labate
+  RUN_REGION: asia-southeast1
   SA_KEY_JSON: ${{ secrets.GCP_SA_KEY_JSON }}
 jobs:
   deploy:

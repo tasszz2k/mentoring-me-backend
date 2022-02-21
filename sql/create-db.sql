@@ -68,7 +68,7 @@ CREATE TABLE user_profiles
 (
     id         INT AUTO_INCREMENT
         PRIMARY KEY,
-    full_name  VARCHAR(255)                         NULL,
+#     full_name  VARCHAR(255)                         NULL,
     gender     TINYINT                              NULL,
     dob        DATE                                 NULL,
     rating     FLOAT                                NULL,
@@ -93,7 +93,7 @@ CREATE TABLE users
     id               INT AUTO_INCREMENT
         PRIMARY KEY,
     profile_id       INT                                  NOT NULL,
-    username         VARCHAR(50)                          NOT NULL,
+    full_name        VARCHAR(255)                         NOT NULL,
     password         VARCHAR(100)                         NULL,
     hash             VARCHAR(255)                         NULL,
     email            VARCHAR(100)                         NULL,

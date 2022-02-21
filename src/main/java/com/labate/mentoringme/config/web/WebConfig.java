@@ -1,4 +1,4 @@
-package com.labate.mentoringme.config;
+package com.labate.mentoringme.config.web;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;

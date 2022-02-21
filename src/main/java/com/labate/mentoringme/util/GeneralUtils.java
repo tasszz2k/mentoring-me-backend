@@ -38,6 +38,7 @@ public class GeneralUtils {
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.toList());
     User user = localUser.getUser();
-    return new UserInfo(user.getId().toString(), user.getFullName(), user.getEmail(), roles);
+    return new UserInfo(
+        user.getId().toString(), user.getFullName(), user.getEmail(), user.getImageUrl(), roles);
   }
 }

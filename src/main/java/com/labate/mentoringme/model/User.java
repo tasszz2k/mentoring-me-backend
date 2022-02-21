@@ -23,10 +23,8 @@ public class User implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id")
   private Long id;
 
-  @Column(name = "provider_user_id")
   private String providerUserId;
 
   private String email;
@@ -34,8 +32,9 @@ public class User implements Serializable {
   @Column(name = "enabled", columnDefinition = "BIT", length = 1)
   private boolean enabled;
 
-  @Column(name = "full_name")
   private String fullName;
+
+  private String imageUrl;
 
   @Column(name = "created", nullable = false, updatable = false)
   @Temporal(TemporalType.TIMESTAMP)

@@ -1,5 +1,6 @@
-package com.labate.mentoringme.config;
+package com.labate.mentoringme.config.web;
 
+import com.labate.mentoringme.config.RestAuthenticationEntryPoint;
 import com.labate.mentoringme.security.jwt.TokenAuthenticationFilter;
 import com.labate.mentoringme.security.oauth2.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Autowired private CustomOAuth2UserService customOAuth2UserService;
 
-  @Autowired CustomOidcUserService customOidcUserService;
+  @Autowired private CustomOidcUserService customOidcUserService;
 
   @Autowired private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 

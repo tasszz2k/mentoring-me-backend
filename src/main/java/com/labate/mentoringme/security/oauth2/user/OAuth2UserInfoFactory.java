@@ -12,7 +12,7 @@ public class OAuth2UserInfoFactory {
       return new GoogleOAuth2UserInfo(attributes);
     } else if (registrationId.equalsIgnoreCase(SocialProvider.FACEBOOK.getProviderType())) {
       return new FacebookOAuth2UserInfo(attributes);
-    }else {
+    } else {
       throw new OAuth2AuthenticationProcessingException(
           "Sorry! Login with " + registrationId + " is not supported yet.");
     }

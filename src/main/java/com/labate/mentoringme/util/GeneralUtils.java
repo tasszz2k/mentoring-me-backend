@@ -1,5 +1,3 @@
 package com.labate.mentoringme.util;
 
-public class GeneralUtils {
-
-}
+public class GeneralUtils {}

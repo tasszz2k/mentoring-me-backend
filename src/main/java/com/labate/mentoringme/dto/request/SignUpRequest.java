@@ -21,7 +21,6 @@ public class SignUpRequest {
 
   @NotEmpty private String email;
 
-
   @Size(min = 6, message = "{user_dto.password.size}")
   private String password;
 

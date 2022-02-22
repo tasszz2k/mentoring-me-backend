@@ -4,7 +4,6 @@ import com.labate.mentoringme.dto.mapper.RoleMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.exception.ResourceNotFoundException;
 import com.labate.mentoringme.model.User;
-import com.labate.mentoringme.util.GeneralUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

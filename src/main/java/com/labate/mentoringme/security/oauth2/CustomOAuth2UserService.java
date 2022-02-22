@@ -35,5 +35,4 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
       throw new OAuth2AuthenticationProcessingException(ex.getMessage(), ex.getCause());
     }
   }
-
 }

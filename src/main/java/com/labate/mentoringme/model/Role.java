@@ -57,16 +57,11 @@ public class Role implements Serializable {
       return false;
     }
     final Role role = (Role) obj;
-	  return role.equals(role.name);
+    return role.equals(role.name);
   }
 
   @Override
   public String toString() {
-    return "Role [name=" +
-            name +
-            "]" +
-            "[id=" +
-            id +
-            "]";
+    return "Role [name=" + name + "]" + "[id=" + id + "]";
   }
 }

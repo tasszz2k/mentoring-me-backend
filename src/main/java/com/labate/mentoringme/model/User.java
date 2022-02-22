@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,6 +14,7 @@ import java.util.Date;
 import java.util.Set;
 
 /** The persistent class for the user database table. */
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @NoArgsConstructor
 @Getter
@@ -39,10 +43,12 @@ public class User implements Serializable {
   @Column(name = "enabled", columnDefinition = "BIT", length = 1)
   private boolean enabled;
 
+  @CreatedDate
   @Column(name = "created", nullable = false, updatable = false)
   @Temporal(TemporalType.TIMESTAMP)
   protected Date createdDate;
 
+  @LastModifiedDate
   @Column(name = "modified")
   @Temporal(TemporalType.TIMESTAMP)
   protected Date modifiedDate;

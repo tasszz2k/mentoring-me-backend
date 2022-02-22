@@ -4,6 +4,7 @@ import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.SignUpRequest;
+import com.labate.mentoringme.exception.InvalidPasswordException;
 import com.labate.mentoringme.exception.OAuth2AuthenticationProcessingException;
 import com.labate.mentoringme.exception.UserAlreadyExistAuthenticationException;
 import com.labate.mentoringme.exception.UserNotFoundException;
@@ -44,28 +45,30 @@ public class UserServiceImpl implements UserService {
           "User with email id " + signUpRequest.getEmail() + " already exist");
     }
     User user = buildUser(signUpRequest);
-    Date now = Calendar.getInstance().getTime();
-    user.setCreatedDate(now);
-    user.setModifiedDate(now);
+    // Date now = Calendar.getInstance().getTime();
+    // user.setCreatedDate(now);
+    // user.setModifiedDate(now);
     user = userRepository.save(user);
     userRepository.flush();
     return user;
   }
 
   private User buildUser(final SignUpRequest formDTO) {
-    User user = new User();
+    var user = new User();
     user.setFullName(formDTO.getFullName());
     user.setEmail(formDTO.getEmail());
     user.setPassword(passwordEncoder.encode(formDTO.getPassword()));
 
-    final HashSet<Role> roles = new HashSet<Role>();
+    final var roles = new HashSet<Role>();
     roles.add(roleRepository.findByName(Role.ROLE_USER));
     user.setRoles(roles);
     user.setProvider(formDTO.getSocialProvider().getProviderType());
     user.setEnabled(true);
     user.setProviderUserId(formDTO.getProviderUserId());
 
-    user.setUserProfile(new UserProfile());
+    var userProfile = new UserProfile();
+    userProfile.setIsDeleted(false);
+    user.setUserProfile(userProfile);
 
     return user;
   }
@@ -109,6 +112,22 @@ public class UserServiceImpl implements UserService {
     return LocalUser.create(user, attributes, idToken, userInfo);
   }
 
+  @Override
+  public boolean changePassword(Long userId, String oldPassword, String newPassword) {
+    var user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new UserNotFoundException("User with id " + userId + " not found"));
+
+    if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+      throw new InvalidPasswordException("Old password is incorrect");
+    }
+
+    user.setPassword(passwordEncoder.encode(newPassword));
+    userRepository.save(user);
+    return true;
+  }
+
   private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {
     existingUser.setFullName(oAuth2UserInfo.getName());
     existingUser.setImageUrl(oAuth2UserInfo.getImageUrl());
@@ -122,7 +141,7 @@ public class UserServiceImpl implements UserService {
         .addFullName(oAuth2UserInfo.getName())
         .addEmail(oAuth2UserInfo.getEmail())
         .addSocialProvider(UserMapper.toSocialProvider(registrationId))
-        .addPassword("IMPORTANCE...CHANGE IT !!!") // FIXME: change it to a random password
+        .addPassword("IMPORTANCE...CHANGEIT!!!") // FIXME: change it to a random password
         .build();
   }
 

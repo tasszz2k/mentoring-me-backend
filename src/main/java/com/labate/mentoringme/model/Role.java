@@ -3,12 +3,14 @@ package com.labate.mentoringme.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
 
 /** The persistent class for the role database table. */
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Getter
 @Setter

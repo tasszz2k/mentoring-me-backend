@@ -1,14 +1,15 @@
 package com.labate.mentoringme.controller;
 
+import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.LoginRequest;
 import com.labate.mentoringme.dto.request.SignUpRequest;
 import com.labate.mentoringme.dto.response.ApiResponse;
+import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.JwtAuthenticationResponse;
 import com.labate.mentoringme.exception.UserAlreadyExistAuthenticationException;
 import com.labate.mentoringme.security.jwt.TokenProvider;
 import com.labate.mentoringme.service.UserService;
-import com.labate.mentoringme.util.GeneralUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,8 +45,8 @@ public class AuthController {
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String jwt = tokenProvider.createToken(authentication);
     LocalUser localUser = (LocalUser) authentication.getPrincipal();
-    return ResponseEntity.ok(
-        new JwtAuthenticationResponse(jwt, GeneralUtils.buildUserInfo(localUser)));
+    return BaseResponseEntity.ok(
+        new JwtAuthenticationResponse(jwt, UserMapper.buildUserInfo(localUser)));
   }
 
   @PostMapping("/signup")
@@ -55,8 +56,8 @@ public class AuthController {
     } catch (UserAlreadyExistAuthenticationException e) {
       log.error("Exception Occurred", e);
       return new ResponseEntity<>(
-          new ApiResponse(false, "Email Address already in use!"), HttpStatus.BAD_REQUEST);
+          ApiResponse.error(null, "Email Address already in use!"), HttpStatus.BAD_REQUEST);
     }
-    return ResponseEntity.ok().body(new ApiResponse(true, "User registered successfully"));
+    return BaseResponseEntity.ok(null, "User registered successfully");
   }
 }

@@ -1,10 +1,12 @@
 package com.labate.mentoringme.service;
 
+import com.labate.mentoringme.constant.SocialProvider;
+import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.SignUpRequest;
-import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.exception.OAuth2AuthenticationProcessingException;
 import com.labate.mentoringme.exception.UserAlreadyExistAuthenticationException;
+import com.labate.mentoringme.exception.UserNotFoundException;
 import com.labate.mentoringme.model.Role;
 import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.repository.RoleRepository;
@@ -115,7 +117,7 @@ public class UserServiceImpl implements UserService {
         .addProviderUserID(oAuth2UserInfo.getId())
         .addFullName(oAuth2UserInfo.getName())
         .addEmail(oAuth2UserInfo.getEmail())
-        .addSocialProvider(GeneralUtils.toSocialProvider(registrationId))
+        .addSocialProvider(UserMapper.toSocialProvider(registrationId))
         .addPassword("IMPORTANCE...CHANGE IT !!!") // FIXME: change it to a random password
         .build();
   }
@@ -123,5 +125,14 @@ public class UserServiceImpl implements UserService {
   @Override
   public Optional<User> findUserById(Long id) {
     return userRepository.findById(id);
+  }
+
+  @Override
+  public LocalUser findLocalUserById(Long id) {
+    var user = userRepository.findById(id).orElse(null);
+    if (user == null) {
+      throw new UserNotFoundException("User with id " + id + " not found");
+    }
+    return LocalUser.create(user, null, null, null);
   }
 }

@@ -1,6 +1,6 @@
 package com.labate.mentoringme.dto.model;
 
-import com.labate.mentoringme.util.GeneralUtils;
+import com.labate.mentoringme.dto.mapper.RoleMapper;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
@@ -80,7 +80,7 @@ public class LocalUser extends User implements OAuth2User, OidcUser {
             true,
             true,
             true,
-            GeneralUtils.buildSimpleGrantedAuthorities(user.getRoles()),
+            RoleMapper.buildSimpleGrantedAuthorities(user.getRoles()),
             user,
             idToken,
             userInfo);

@@ -1,5 +1,6 @@
 package com.labate.mentoringme.service;
 
+import com.labate.mentoringme.dto.mapper.RoleMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.exception.ResourceNotFoundException;
 import com.labate.mentoringme.model.User;
@@ -46,7 +47,7 @@ public class LocalUserDetailService implements UserDetailsService {
         true,
         true,
         true,
-        GeneralUtils.buildSimpleGrantedAuthorities(user.getRoles()),
+        RoleMapper.buildSimpleGrantedAuthorities(user.getRoles()),
         user);
   }
 }

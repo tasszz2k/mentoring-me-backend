@@ -18,6 +18,8 @@ public interface UserService {
 
   Optional<User> findUserById(Long id);
 
+  LocalUser findLocalUserById(Long id);
+
   LocalUser processUserRegistration(
       String registrationId,
       Map<String, Object> attributes,

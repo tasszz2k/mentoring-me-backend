@@ -1,6 +1,6 @@
 package com.labate.mentoringme.security.oauth2.user;
 
-import com.labate.mentoringme.dto.SocialProvider;
+import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.exception.OAuth2AuthenticationProcessingException;
 
 import java.util.Map;

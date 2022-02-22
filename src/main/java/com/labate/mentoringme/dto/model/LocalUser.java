@@ -1,4 +1,4 @@
-package com.labate.mentoringme.dto;
+package com.labate.mentoringme.dto.model;
 
 import com.labate.mentoringme.util.GeneralUtils;
 import org.springframework.security.core.GrantedAuthority;

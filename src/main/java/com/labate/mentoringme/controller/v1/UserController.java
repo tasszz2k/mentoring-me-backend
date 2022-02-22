@@ -1,7 +1,7 @@
 package com.labate.mentoringme.controller.v1;
 
 import com.labate.mentoringme.config.CurrentUser;
-import com.labate.mentoringme.dto.LocalUser;
+import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.util.GeneralUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1/user")
 public class UserController {
 
-  @GetMapping("/user/me")
-  @PreAuthorize("hasRole('USER')")
+  @GetMapping("/me")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   public ResponseEntity<?> getCurrentUser(@CurrentUser LocalUser user) {
     return ResponseEntity.ok(GeneralUtils.buildUserInfo(user));
   }

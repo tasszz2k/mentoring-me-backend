@@ -1,8 +1,8 @@
 package com.labate.mentoringme.util;
 
-import com.labate.mentoringme.dto.LocalUser;
-import com.labate.mentoringme.dto.SocialProvider;
-import com.labate.mentoringme.dto.UserInfo;
+import com.labate.mentoringme.dto.model.LocalUser;
+import com.labate.mentoringme.constant.SocialProvider;
+import com.labate.mentoringme.dto.model.UserInfo;
 import com.labate.mentoringme.model.Role;
 import com.labate.mentoringme.model.User;
 import org.springframework.security.core.GrantedAuthority;

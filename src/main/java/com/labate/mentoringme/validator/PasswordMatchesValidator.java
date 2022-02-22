@@ -1,6 +1,6 @@
 package com.labate.mentoringme.validator;
 
-import com.labate.mentoringme.dto.SignUpRequest;
+import com.labate.mentoringme.dto.request.SignUpRequest;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

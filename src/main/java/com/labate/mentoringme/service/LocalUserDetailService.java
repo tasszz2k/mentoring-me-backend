@@ -1,6 +1,6 @@
 package com.labate.mentoringme.service;
 
-import com.labate.mentoringme.dto.LocalUser;
+import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.exception.ResourceNotFoundException;
 import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.util.GeneralUtils;

@@ -1,5 +1,6 @@
-package com.labate.mentoringme.dto;
+package com.labate.mentoringme.dto.response;
 
+import com.labate.mentoringme.dto.model.UserInfo;
 import lombok.Value;
 
 @Value

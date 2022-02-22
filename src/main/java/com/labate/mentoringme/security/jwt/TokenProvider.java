@@ -1,7 +1,7 @@
 package com.labate.mentoringme.security.jwt;
 
 import com.labate.mentoringme.config.AppProperties;
-import com.labate.mentoringme.dto.LocalUser;
+import com.labate.mentoringme.dto.model.LocalUser;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

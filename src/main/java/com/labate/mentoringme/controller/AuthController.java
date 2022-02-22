@@ -1,6 +1,10 @@
 package com.labate.mentoringme.controller;
 
-import com.labate.mentoringme.dto.*;
+import com.labate.mentoringme.dto.model.LocalUser;
+import com.labate.mentoringme.dto.request.LoginRequest;
+import com.labate.mentoringme.dto.request.SignUpRequest;
+import com.labate.mentoringme.dto.response.ApiResponse;
+import com.labate.mentoringme.dto.response.JwtAuthenticationResponse;
 import com.labate.mentoringme.exception.UserAlreadyExistAuthenticationException;
 import com.labate.mentoringme.security.jwt.TokenProvider;
 import com.labate.mentoringme.service.UserService;

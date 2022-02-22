@@ -1,5 +1,6 @@
-package com.labate.mentoringme.dto;
+package com.labate.mentoringme.dto.request;
 
+import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.validator.PasswordMatches;
 import lombok.Data;
 

@@ -1,8 +1,8 @@
 package com.labate.mentoringme.service;
 
-import com.labate.mentoringme.dto.LocalUser;
-import com.labate.mentoringme.dto.SignUpRequest;
-import com.labate.mentoringme.dto.SocialProvider;
+import com.labate.mentoringme.dto.model.LocalUser;
+import com.labate.mentoringme.dto.request.SignUpRequest;
+import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.exception.OAuth2AuthenticationProcessingException;
 import com.labate.mentoringme.exception.UserAlreadyExistAuthenticationException;
 import com.labate.mentoringme.model.Role;

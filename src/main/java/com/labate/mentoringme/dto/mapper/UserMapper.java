@@ -3,10 +3,8 @@ package com.labate.mentoringme.dto.mapper;
 import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.model.UserInfo;
-import com.labate.mentoringme.model.User;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserMapper {
@@ -21,12 +19,24 @@ public class UserMapper {
   }
 
   public static UserInfo buildUserInfo(LocalUser localUser) {
-    List<String> roles =
+    var roles =
         localUser.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.toList());
-    User user = localUser.getUser();
-    return new UserInfo(
-        user.getId().toString(), user.getFullName(), user.getEmail(), user.getImageUrl(), roles);
+
+    var user = localUser.getUser();
+
+    return UserInfo.builder()
+        .id(user.getId())
+        .fullName(user.getFullName())
+        .email(user.getEmail())
+        .phoneNumber(user.getPhoneNumber())
+        .imageUrl(user.getImageUrl())
+        .roles(roles)
+        .gender(user.getUserProfile().getGender())
+        .dob(user.getUserProfile().getDob())
+        .rating(user.getUserProfile().getRating())
+        .detailAddress(user.getUserProfile().getDetailAddress())
+        .build();
   }
 }

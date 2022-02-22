@@ -10,8 +10,8 @@ import com.labate.mentoringme.dto.response.JwtAuthenticationResponse;
 import com.labate.mentoringme.exception.UserAlreadyExistAuthenticationException;
 import com.labate.mentoringme.security.jwt.TokenProvider;
 import com.labate.mentoringme.service.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,15 +26,14 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-  @Autowired AuthenticationManager authenticationManager;
-
-  @Autowired UserService userService;
-
-  @Autowired TokenProvider tokenProvider;
+  private final AuthenticationManager authenticationManager;
+  private final UserService userService;
+  private final TokenProvider tokenProvider;
 
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {

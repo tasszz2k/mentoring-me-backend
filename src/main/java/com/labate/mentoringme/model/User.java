@@ -25,16 +25,19 @@ public class User implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  private String email;
+  private String phoneNumber;
+  private String password;
+  private String hash;
+  private String fullName;
+  private String imageUrl;
+  private String provider;
   private String providerUserId;
 
-  private String email;
+  private Integer status;
 
   @Column(name = "enabled", columnDefinition = "BIT", length = 1)
   private boolean enabled;
-
-  private String fullName;
-
-  private String imageUrl;
 
   @Column(name = "created", nullable = false, updatable = false)
   @Temporal(TemporalType.TIMESTAMP)
@@ -44,10 +47,6 @@ public class User implements Serializable {
   @Temporal(TemporalType.TIMESTAMP)
   protected Date modifiedDate;
 
-  private String password;
-
-  private String provider;
-
   // bidirectional many-to-many association to Role
   @JsonIgnore
   @ManyToMany
@@ -56,4 +55,10 @@ public class User implements Serializable {
       joinColumns = {@JoinColumn(name = "user_id")},
       inverseJoinColumns = {@JoinColumn(name = "role_id")})
   private Set<Role> roles;
+
+  @JsonIgnore
+  @OneToOne
+  @MapsId
+  @JoinColumn(name = "profile_id")
+  private UserProfile userProfile;
 }

@@ -9,6 +9,7 @@ import com.labate.mentoringme.exception.UserAlreadyExistAuthenticationException;
 import com.labate.mentoringme.exception.UserNotFoundException;
 import com.labate.mentoringme.model.Role;
 import com.labate.mentoringme.model.User;
+import com.labate.mentoringme.model.UserProfile;
 import com.labate.mentoringme.repository.RoleRepository;
 import com.labate.mentoringme.repository.UserRepository;
 import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfo;
@@ -57,12 +58,16 @@ public class UserServiceImpl implements UserService {
     user.setFullName(formDTO.getFullName());
     user.setEmail(formDTO.getEmail());
     user.setPassword(passwordEncoder.encode(formDTO.getPassword()));
+
     final HashSet<Role> roles = new HashSet<Role>();
     roles.add(roleRepository.findByName(Role.ROLE_USER));
     user.setRoles(roles);
     user.setProvider(formDTO.getSocialProvider().getProviderType());
     user.setEnabled(true);
     user.setProviderUserId(formDTO.getProviderUserId());
+
+    user.setUserProfile(new UserProfile());
+
     return user;
   }
 

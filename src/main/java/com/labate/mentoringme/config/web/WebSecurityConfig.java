@@ -68,8 +68,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .authenticationEntryPoint(new RestAuthenticationEntryPoint())
         .and()
         .authorizeRequests()
+
+        // White list endpoints
         .antMatchers("/", "/error", "/api/all", "/api/auth/**", "/oauth2/**")
         .permitAll()
+        .antMatchers(HttpMethod.GET)
+        .permitAll()
+        //
         .anyRequest()
         .authenticated()
         .and()

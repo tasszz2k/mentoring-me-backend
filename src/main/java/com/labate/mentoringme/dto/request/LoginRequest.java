@@ -2,11 +2,12 @@ package com.labate.mentoringme.dto.request;
 
 import lombok.Data;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Data
 public class LoginRequest {
-  @NotBlank private String email;
+  @NotBlank @Email private String email;
 
   @NotBlank private String password;
 }

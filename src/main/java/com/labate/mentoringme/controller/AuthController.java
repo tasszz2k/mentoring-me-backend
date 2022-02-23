@@ -57,6 +57,6 @@ public class AuthController {
       return new ResponseEntity<>(
           ApiResponse.error(null, "Email Address already in use!"), HttpStatus.BAD_REQUEST);
     }
-    return BaseResponseEntity.ok(null, "User registered successfully");
+    return BaseResponseEntity.ok(true, "User registered successfully");
   }
 }

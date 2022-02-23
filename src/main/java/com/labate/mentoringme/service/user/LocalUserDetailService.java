@@ -1,4 +1,4 @@
-package com.labate.mentoringme.service;
+package com.labate.mentoringme.service.user;
 
 import com.labate.mentoringme.dto.mapper.RoleMapper;
 import com.labate.mentoringme.dto.model.LocalUser;

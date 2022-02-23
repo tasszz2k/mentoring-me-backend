@@ -1,7 +1,7 @@
 package com.labate.mentoringme.security.oauth2;
 
 import com.labate.mentoringme.exception.OAuth2AuthenticationProcessingException;
-import com.labate.mentoringme.service.UserService;
+import com.labate.mentoringme.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;

@@ -1,6 +1,6 @@
 package com.labate.mentoringme.security.jwt;
 
-import com.labate.mentoringme.service.LocalUserDetailService;
+import com.labate.mentoringme.service.user.LocalUserDetailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

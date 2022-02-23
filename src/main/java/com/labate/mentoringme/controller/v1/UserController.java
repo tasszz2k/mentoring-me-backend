@@ -6,6 +6,7 @@ import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.ChangePasswordRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.service.UserService;
+import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,6 +21,13 @@ public class UserController {
 
   private final UserService userService;
 
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
   @GetMapping("/me")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   public ResponseEntity<?> getCurrentUser(@CurrentUser LocalUser user) {
@@ -27,7 +35,7 @@ public class UserController {
   }
 
   @GetMapping("/{userId}")
-  public ResponseEntity<?> getUser(@PathVariable Long userId) {
+  public ResponseEntity<?> findUserById(@PathVariable Long userId) {
     return BaseResponseEntity.ok(UserMapper.buildUserInfo(userService.findLocalUserById(userId)));
   }
 
@@ -36,6 +44,13 @@ public class UserController {
     return ResponseEntity.ok("Public content goes here");
   }
 
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   @PostMapping("/{userId}/pwd-change")
   public ResponseEntity<?> changePassword(

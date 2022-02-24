@@ -75,7 +75,8 @@ public class PasswordServiceImpl implements PasswordService {
 
     user.setPassword(passwordEncoder.encode(newPassword));
     userRepository.save(user);
-
+    // Remove token
+    secureTokenService.removeToken(secureToken);
     return true;
   }
 

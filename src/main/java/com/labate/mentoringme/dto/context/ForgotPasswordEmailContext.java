@@ -14,7 +14,7 @@ public class ForgotPasswordEmailContext extends AbstractEmailContext {
     User customer = (User) context; // we pass the customer information to the context
     put("firstName", customer.getFullName());
     setTemplateLocation("emails/forgot-password");
-    setSubject("Forgotten Password");
+    setSubject("[LABATE] Forgotten Password");
     setFrom("no-reply@labate.com");
     setTo(customer.getEmail());
   }
@@ -31,5 +31,6 @@ public class ForgotPasswordEmailContext extends AbstractEmailContext {
             .queryParam("token", token)
             .toUriString();
     put("verificationURL", url);
+    put("token", token);
   }
 }

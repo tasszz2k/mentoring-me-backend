@@ -1,20 +1,12 @@
 package com.labate.mentoringme.dto.request;
 
 import com.labate.mentoringme.constant.SocialProvider;
-import com.labate.mentoringme.validator.PasswordValueMatch;
 import com.labate.mentoringme.validator.ValidPassword;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
-@PasswordValueMatch.List({
-  @PasswordValueMatch(
-      field = "password",
-      fieldMatch = "confirmPassword",
-      message = "passwords do not match!")
-})
 @Data
 public class SignUpRequest {
 
@@ -28,11 +20,10 @@ public class SignUpRequest {
 
   @NotEmpty @Email private String email;
 
-  @ValidPassword
-  private String password;
+  @ValidPassword private String password;
 
-  @NotBlank(message = "confirm Password is mandatory")
-  private String confirmPassword;
+  // @NotBlank(message = "confirm Password is mandatory")
+  // private String confirmPassword;
 
   public SignUpRequest(
       String providerUserId,

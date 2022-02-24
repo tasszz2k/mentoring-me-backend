@@ -20,6 +20,8 @@ public class UserInfo {
   String detailAddress;
   String provider;
   Integer status;
+  Boolean verifiedEmail;
+  Boolean verifiedPhoneNumber;
 
   List<String> roles;
 }

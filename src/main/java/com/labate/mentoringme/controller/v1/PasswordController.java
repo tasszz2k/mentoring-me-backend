@@ -50,13 +50,6 @@ public class PasswordController {
     return BaseResponseEntity.ok(isSuccess);
   }
 
-  @ApiImplicitParam(
-      name = "Authorization",
-      value = "Access Token",
-      required = true,
-      paramType = "header",
-      dataTypeClass = String.class,
-      example = "Bearer access_token")
   @PostMapping("/reset")
   public ResponseEntity<?> resetPassword(
       @Valid @RequestBody ChangePasswordRequest request,
@@ -83,13 +76,18 @@ public class PasswordController {
   }
 
   @PostMapping("/forgot")
-  public String resetPassword(@Valid @RequestBody final ResetPasswordRequest resetPasswordRequest) {
+  public ResponseEntity<?> forgotPassword(
+      @Valid @RequestBody final ResetPasswordRequest resetPasswordRequest) {
     try {
       passwordService.forgottenPassword(resetPasswordRequest);
     } catch (UserNotFoundException e) {
       log.info("User not found: {}", resetPasswordRequest.getEmail());
+      return ResponseEntity.badRequest().body(ApiResponse.fail(false, e.getMessage()));
     }
     // TODO: Change response details
-    return messageSource.getMessage("user.forgotpwd.msg", null, LocaleContextHolder.getLocale());
+    return ResponseEntity.ok(
+        ApiResponse.success(
+            true,
+            messageSource.getMessage("user.forgotpwd.msg", null, LocaleContextHolder.getLocale())));
   }
 }

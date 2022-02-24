@@ -18,7 +18,7 @@ public class AccountVerificationEmailContext extends AbstractEmailContext {
     User customer = (User) context; // we pass the customer information to the context
     put("firstName", customer.getFullName());
     setTemplateLocation("emails/email-verification");
-    setSubject("Complete your registration");
+    setSubject("[LABATE] Email Verification");
     setFrom("no-reply@labate.com");
     setTo(customer.getEmail());
   }
@@ -31,9 +31,10 @@ public class AccountVerificationEmailContext extends AbstractEmailContext {
   public void buildVerificationUrl(final String baseURL, final String token) {
     final String url =
         UriComponentsBuilder.fromHttpUrl(baseURL)
-            .path("/api/auth/verification/email")
+            .path("/api/v1/verification/email")
             .queryParam("token", token)
             .toUriString();
     put("verificationURL", url);
+    put("token", token);
   }
 }

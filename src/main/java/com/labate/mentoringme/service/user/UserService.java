@@ -2,7 +2,6 @@ package com.labate.mentoringme.service.user;
 
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.SignUpRequest;
-import com.labate.mentoringme.exception.InvalidTokenException;
 import com.labate.mentoringme.exception.UserAlreadyExistAuthenticationException;
 import com.labate.mentoringme.model.User;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
@@ -26,6 +25,4 @@ public interface UserService {
       Map<String, Object> attributes,
       OidcIdToken idToken,
       OidcUserInfo userInfo);
-
-  boolean changePassword(Long userId, String oldPassword, String newPassword);
 }

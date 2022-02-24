@@ -1,24 +1,20 @@
 package com.labate.mentoringme.service.user;
 
 import com.labate.mentoringme.constant.SocialProvider;
-import com.labate.mentoringme.dto.context.AccountVerificationEmailContext;
 import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.SignUpRequest;
-import com.labate.mentoringme.exception.*;
+import com.labate.mentoringme.exception.OAuth2AuthenticationProcessingException;
+import com.labate.mentoringme.exception.UserAlreadyExistAuthenticationException;
+import com.labate.mentoringme.exception.UserNotFoundException;
 import com.labate.mentoringme.model.Role;
-import com.labate.mentoringme.model.SecureToken;
 import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.model.UserProfile;
 import com.labate.mentoringme.repository.RoleRepository;
-import com.labate.mentoringme.repository.SecureTokenRepository;
 import com.labate.mentoringme.repository.UserRepository;
 import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfo;
 import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfoFactory;
-import com.labate.mentoringme.security.token.SecureTokenService;
-import com.labate.mentoringme.service.mail.EmailService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
@@ -26,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.mail.MessagingException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
@@ -38,7 +33,6 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
   private final PasswordEncoder passwordEncoder;
-
 
   @Override
   @Transactional(value = "transactionManager")
@@ -118,24 +112,6 @@ public class UserServiceImpl implements UserService {
 
     return LocalUser.create(user, attributes, idToken, userInfo);
   }
-
-  @Override
-  public boolean changePassword(Long userId, String oldPassword, String newPassword) {
-    var user =
-        userRepository
-            .findById(userId)
-            .orElseThrow(() -> new UserNotFoundException("User with id " + userId + " not found"));
-
-    if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
-      throw new InvalidPasswordException("Old password is incorrect");
-    }
-
-    user.setPassword(passwordEncoder.encode(newPassword));
-    userRepository.save(user);
-    return true;
-  }
-
-
 
   private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {
     existingUser.setFullName(oAuth2UserInfo.getName());

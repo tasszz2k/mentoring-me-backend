@@ -1,18 +1,21 @@
 package com.labate.mentoringme.security.token;
 
+import com.labate.mentoringme.exception.InvalidTokenException;
 import com.labate.mentoringme.model.SecureToken;
 import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.repository.SecureTokenRepository;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.keygen.BytesKeyGenerator;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.util.StringUtils;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Random;
 
 @Service
 public class DefaultSecureTokenService implements SecureTokenService {
@@ -28,15 +31,22 @@ public class DefaultSecureTokenService implements SecureTokenService {
   @Override
   public SecureToken createSecureToken(User user) {
     String tokenValue =
-        new String(
-            Base64.encodeBase64URLSafe(DEFAULT_TOKEN_GENERATOR.generateKey()),
-            US_ASCII); // this is a sample, you can adapt as per your security need
+        generateToken(); // this is a sample, you can adapt as per your security need
     SecureToken secureToken = new SecureToken();
     secureToken.setToken(tokenValue);
     secureToken.setExpireAt(LocalDateTime.now().plusSeconds(getTokenValidityInSeconds()));
     secureToken.setUser(user);
     this.saveSecureToken(secureToken);
     return secureToken;
+  }
+
+  private String generateToken() {
+    return new String(String.valueOf(generateOTP()));
+  }
+
+  public int generateOTP() {
+    Random random = new Random();
+    return 100000 + random.nextInt(900000);
   }
 
   @Override
@@ -61,5 +71,15 @@ public class DefaultSecureTokenService implements SecureTokenService {
 
   public int getTokenValidityInSeconds() {
     return tokenValidityInSeconds;
+  }
+
+  public SecureToken getValidSecureToken(String token) throws InvalidTokenException {
+    SecureToken secureToken = findByToken(token);
+    if (Objects.isNull(secureToken)
+        || !StringUtils.equals(token, secureToken.getToken())
+        || secureToken.isExpired()) {
+      throw new InvalidTokenException("Token is not valid");
+    }
+    return secureToken;
   }
 }

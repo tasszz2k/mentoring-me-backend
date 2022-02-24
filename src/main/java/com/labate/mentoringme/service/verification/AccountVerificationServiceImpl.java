@@ -11,7 +11,6 @@ import com.labate.mentoringme.service.mail.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.util.StringUtils;
 
 import javax.mail.MessagingException;
 import java.util.Objects;
@@ -29,7 +28,11 @@ public class AccountVerificationServiceImpl implements AccountVerificationServic
   private String baseURL;
 
   @Override
-  public void sendRegistrationConfirmationEmail(User user) {
+  public boolean sendRegistrationConfirmationEmail(User user) {
+    if (user.isVerifiedEmail()) {
+      return false;
+    }
+
     SecureToken secureToken = secureTokenService.createSecureToken(user);
     AccountVerificationEmailContext emailContext = new AccountVerificationEmailContext();
     emailContext.init(user);
@@ -40,18 +43,14 @@ public class AccountVerificationServiceImpl implements AccountVerificationServic
     } catch (MessagingException e) {
       e.printStackTrace();
     }
+    return true;
   }
 
   @Override
   public boolean verifyUser(String token) throws InvalidTokenException {
-    SecureToken secureToken = secureTokenService.findByToken(token);
-    if (Objects.isNull(secureToken)
-        || !StringUtils.equals(token, secureToken.getToken())
-        || secureToken.isExpired()) {
-      throw new InvalidTokenException("Token is not valid");
-    }
+    SecureToken secureToken = secureTokenService.getValidSecureToken(token);
     var user = userRepository.findById(secureToken.getUser().getId()).orElse(null);
-    if (Objects.isNull(user)) {
+    if (Objects.isNull(user) || user.isVerifiedEmail()) {
       return false;
     }
     user.setVerifiedEmail(true);

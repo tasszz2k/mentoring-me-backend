@@ -1,4 +1,4 @@
-package com.labate.mentoringme.config.web;
+package com.labate.mentoringme.config.security;
 
 import com.labate.mentoringme.config.RestAuthenticationEntryPoint;
 import com.labate.mentoringme.security.jwt.TokenAuthenticationFilter;
@@ -76,7 +76,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .permitAll()
         //
         .anyRequest()
-        .authenticated()
+        // .authenticated() // TODO: uncomment this line to enable authentication
+        .permitAll()
         .and()
         .oauth2Login()
         .authorizationEndpoint()

@@ -26,6 +26,4 @@ public interface UserService {
       Map<String, Object> attributes,
       OidcIdToken idToken,
       OidcUserInfo userInfo);
-
-  boolean changePassword(Long userId, String oldPassword, String newPassword);
 }

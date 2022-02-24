@@ -12,10 +12,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,40 +26,27 @@ public class VerificationController {
   private final AccountVerificationService accountVerificationService;
 
   @GetMapping("/email")
-  public String verifyEmail(
-      @RequestParam(required = false) String token,
-      final Model model,
-      RedirectAttributes redirectAttributes) {
+  public String verifyEmail(@RequestParam(required = false) String token) {
     if (!StringUtils.hasText(token)) {
-      // Attr.addFlashAttribute(
-      //     "tokenError",
-      //     messageSource.getMessage(
-      //         "user.registration.verification.missing.token",
-      //         null,
-      //         LocaleContextHolder.getLocale()));
-      // return REDIRECT_LOGIN;
       return messageSource.getMessage(
           "user.registration.verification.missing.token", null, LocaleContextHolder.getLocale());
     }
+
+    boolean isSuccess;
     try {
-      var isSuccess = accountVerificationService.verifyUser(token);
+      isSuccess = accountVerificationService.verifyUser(token);
     } catch (InvalidTokenException e) {
-      // Attr.addFlashAttribute(
-      //     "tokenError",
-      //     messageSource.getMessage(
-      //         "user.registration.verification.invalid.token",
-      //         null,
-      //         LocaleContextHolder.getLocale()));
-      // return REDIRECT_LOGIN;
       return messageSource.getMessage(
           "user.registration.verification.invalid.token", null, LocaleContextHolder.getLocale());
     }
 
-    // Attr.addFlashAttribute(
-    //     "verifiedAccountMsg",
-    //     messageSource.getMessage(
-    //         "user.registration.verification.success", null, LocaleContextHolder.getLocale()));
-    // return REDIRECT_LOGIN;
+    if (!isSuccess) {
+      return messageSource.getMessage(
+          "user.registration.verification.email.fail.verified",
+          null,
+          LocaleContextHolder.getLocale());
+    }
+    // TODO: Change response details
     return messageSource.getMessage(
         "user.registration.verification.success", null, LocaleContextHolder.getLocale());
   }
@@ -76,7 +61,16 @@ public class VerificationController {
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   @PostMapping("/email")
   public ResponseEntity<?> resendVerificationEmail(@CurrentUser LocalUser localUser) {
-    accountVerificationService.sendRegistrationConfirmationEmail(localUser.getUser());
+    var isSuccess =
+        accountVerificationService.sendRegistrationConfirmationEmail(localUser.getUser());
+    if (!isSuccess) {
+      return BaseResponseEntity.fail(
+          false,
+          messageSource.getMessage(
+              "user.registration.verification.email.fail.verified",
+              null,
+              LocaleContextHolder.getLocale()));
+    }
     return BaseResponseEntity.ok(true, "Verification email sent");
   }
 }

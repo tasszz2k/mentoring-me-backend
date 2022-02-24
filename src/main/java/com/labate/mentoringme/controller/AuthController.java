@@ -55,7 +55,7 @@ public class AuthController {
     } catch (UserAlreadyExistAuthenticationException e) {
       log.error("Exception Occurred", e);
       return new ResponseEntity<>(
-          ApiResponse.error(null, "Email Address already in use!"), HttpStatus.BAD_REQUEST);
+          ApiResponse.fail(null, "Email Address already in use!"), HttpStatus.BAD_REQUEST);
     }
     return BaseResponseEntity.ok(true, "User registered successfully");
   }

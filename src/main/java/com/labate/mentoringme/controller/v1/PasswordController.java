@@ -47,7 +47,7 @@ public class PasswordController {
     boolean isSuccess =
         passwordService.changePassword(userId, request.getOldPassword(), request.getNewPassword());
 
-    return BaseResponseEntity.ok(isSuccess);
+    return BaseResponseEntity.ok(isSuccess, "Password changed successfully");
   }
 
   @PostMapping("/reset")

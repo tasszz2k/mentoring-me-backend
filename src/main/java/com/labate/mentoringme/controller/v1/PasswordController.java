@@ -72,7 +72,7 @@ public class PasswordController {
       e.printStackTrace();
       return ResponseEntity.badRequest().body(ApiResponse.fail(false, e.getMessage()));
     }
-    return BaseResponseEntity.ok(true);
+    return BaseResponseEntity.ok(true, "Password reset successfully");
   }
 
   @PostMapping("/forgot")

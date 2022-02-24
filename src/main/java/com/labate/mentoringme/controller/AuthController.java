@@ -87,7 +87,7 @@ public class AuthController {
       return REDIRECT_LOGIN;
     }
     try {
-      accountVerificationService.verifyUser(token);
+      var isSuccess = accountVerificationService.verifyUser(token);
     } catch (InvalidTokenException e) {
       redirAttr.addFlashAttribute(
           "tokenError",
@@ -113,11 +113,25 @@ public class AuthController {
       dataTypeClass = String.class,
       example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  @PostMapping("/verification/email")
+  public ResponseEntity<?> resendVerificationEmail(@CurrentUser LocalUser localUser) {
+    accountVerificationService.sendRegistrationConfirmationEmail(localUser.getUser());
+    return BaseResponseEntity.ok(true, "Verification email sent");
+  }
+
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   @PostMapping("/pwd-change")
   public ResponseEntity<?> changePassword(
-      @Valid @RequestBody ChangePasswordRequest request, @CurrentUser LocalUser user) {
+      @Valid @RequestBody ChangePasswordRequest request, @CurrentUser LocalUser localUser) {
 
-    var userId = user.getUser().getId();
+    var userId = localUser.getUser().getId();
     boolean isSuccess =
         userService.changePassword(userId, request.getOldPassword(), request.getNewPassword());
 

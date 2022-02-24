@@ -29,8 +29,12 @@ public class User implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Column(unique = true)
   private String email;
+
+  @Column(unique = true)
   private String phoneNumber;
+
   private String password;
   private String hash;
   private String fullName;
@@ -39,6 +43,12 @@ public class User implements Serializable {
   private String providerUserId;
 
   private Integer status;
+
+  @Column(name = "verified_email", columnDefinition = "BIT", length = 1)
+  private boolean verifiedEmail;
+
+  @Column(name = "verified_phone_number", columnDefinition = "BIT", length = 1)
+  private boolean verifiedPhoneNumber;
 
   @Column(name = "enabled", columnDefinition = "BIT", length = 1)
   private boolean enabled;
@@ -67,4 +77,8 @@ public class User implements Serializable {
   @MapsId
   @JoinColumn(name = "profile_id")
   private UserProfile userProfile;
+
+  @JsonIgnore
+  @OneToMany(mappedBy = "user")
+  private Set<SecureToken> tokens;
 }

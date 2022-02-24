@@ -31,8 +31,6 @@ public class AccountVerificationServiceImpl implements AccountVerificationServic
   @Override
   public void sendRegistrationConfirmationEmail(User user) {
     SecureToken secureToken = secureTokenService.createSecureToken(user);
-    // secureToken.setUser(user);
-    // secureTokenRepository.save(secureToken);
     AccountVerificationEmailContext emailContext = new AccountVerificationEmailContext();
     emailContext.init(user);
     emailContext.setToken(secureToken.getToken());

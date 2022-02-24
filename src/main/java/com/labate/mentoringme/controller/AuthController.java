@@ -39,7 +39,7 @@ import javax.validation.Valid;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-  private static final String REDIRECT_LOGIN = "redirect:/login";
+  private static final String REDIRECT_LOGIN = "redirect:/signin";
 
   private final AuthenticationManager authenticationManager;
   private final UserService userService;
@@ -78,31 +78,37 @@ public class AuthController {
       final Model model,
       RedirectAttributes redirAttr) {
     if (!StringUtils.hasText(token)) {
-      redirAttr.addFlashAttribute(
-          "tokenError",
-          messageSource.getMessage(
-              "user.registration.verification.missing.token",
-              null,
-              LocaleContextHolder.getLocale()));
-      return REDIRECT_LOGIN;
+      // redirAttr.addFlashAttribute(
+      //     "tokenError",
+      //     messageSource.getMessage(
+      //         "user.registration.verification.missing.token",
+      //         null,
+      //         LocaleContextHolder.getLocale()));
+      // return REDIRECT_LOGIN;
+      return messageSource.getMessage(
+          "user.registration.verification.missing.token", null, LocaleContextHolder.getLocale());
     }
     try {
       var isSuccess = accountVerificationService.verifyUser(token);
     } catch (InvalidTokenException e) {
-      redirAttr.addFlashAttribute(
-          "tokenError",
-          messageSource.getMessage(
-              "user.registration.verification.invalid.token",
-              null,
-              LocaleContextHolder.getLocale()));
-      return REDIRECT_LOGIN;
+      // redirAttr.addFlashAttribute(
+      //     "tokenError",
+      //     messageSource.getMessage(
+      //         "user.registration.verification.invalid.token",
+      //         null,
+      //         LocaleContextHolder.getLocale()));
+      // return REDIRECT_LOGIN;
+      return messageSource.getMessage(
+          "user.registration.verification.invalid.token", null, LocaleContextHolder.getLocale());
     }
 
-    redirAttr.addFlashAttribute(
-        "verifiedAccountMsg",
-        messageSource.getMessage(
-            "user.registration.verification.success", null, LocaleContextHolder.getLocale()));
-    return REDIRECT_LOGIN;
+    // redirAttr.addFlashAttribute(
+    //     "verifiedAccountMsg",
+    //     messageSource.getMessage(
+    //         "user.registration.verification.success", null, LocaleContextHolder.getLocale()));
+    // return REDIRECT_LOGIN;
+    return messageSource.getMessage(
+        "user.registration.verification.success", null, LocaleContextHolder.getLocale());
   }
 
   @ApiImplicitParam(

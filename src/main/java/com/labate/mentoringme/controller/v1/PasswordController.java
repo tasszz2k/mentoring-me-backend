@@ -25,7 +25,7 @@ import javax.validation.Valid;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/password")
+@RequestMapping("/api/v1/passwords")
 public class PasswordController {
 
   private final PasswordService passwordService;

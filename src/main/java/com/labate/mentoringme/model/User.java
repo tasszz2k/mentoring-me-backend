@@ -56,12 +56,12 @@ public class User implements Serializable {
   @CreatedDate
   @Column(name = "created", nullable = false, updatable = false)
   @Temporal(TemporalType.TIMESTAMP)
-  protected Date createdDate;
+  private Date createdDate;
 
   @LastModifiedDate
   @Column(name = "modified")
   @Temporal(TemporalType.TIMESTAMP)
-  protected Date modifiedDate;
+  private Date modifiedDate;
 
   // bidirectional many-to-many association to Role
   @JsonIgnore

@@ -48,12 +48,12 @@ public class Address {
   @CreatedDate
   @Column(name = "created", updatable = false)
   @Temporal(TemporalType.TIMESTAMP)
-  protected Date createdDate;
+  private Date createdDate;
 
   @LastModifiedDate
   @Column(name = "modified")
   @Temporal(TemporalType.TIMESTAMP)
-  protected Date modifiedDate;
+  private Date modifiedDate;
 
   @PostLoad
   void fillTransient() {

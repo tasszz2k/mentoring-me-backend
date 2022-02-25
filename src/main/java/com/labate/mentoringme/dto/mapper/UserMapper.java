@@ -2,9 +2,12 @@ package com.labate.mentoringme.dto.mapper;
 
 import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.dto.model.LocalUser;
+import com.labate.mentoringme.dto.model.UserDetails;
 import com.labate.mentoringme.dto.model.UserInfo;
+import com.labate.mentoringme.util.ObjectMapperUtils;
 import org.springframework.security.core.GrantedAuthority;
 
+import javax.transaction.Transactional;
 import java.util.stream.Collectors;
 
 public class UserMapper {
@@ -39,12 +42,23 @@ public class UserMapper {
         .status(user.getStatus())
         .gender(profile.getGender())
         .dob(profile.getDob())
-        .rating(profile.getRating())
-        .detailAddress(profile.getDetailAddress())
-        .bio(profile.getBio())
-        .school(profile.getSchool())
-        .isOfflineStudy(profile.getIsOfflineStudy())
-        .isOnlineStudy(profile.getIsOnlineStudy())
         .build();
+  }
+
+  public static UserDetails buildUserDetails(LocalUser localUser) {
+    var userInfo = buildUserInfo(localUser);
+    var userDetails = new UserDetails(userInfo);
+    var profile = localUser.getUser().getUserProfile();
+    var categories = CategoryMapper.toDtos(profile.getCategories());
+
+    userDetails.setSchool(profile.getSchool());
+    userDetails.setDetailAddress(profile.getDetailAddress());
+    userDetails.setRating(profile.getRating());
+    userDetails.setBio(profile.getBio());
+    userDetails.setIsOfflineStudy(profile.getIsOfflineStudy());
+    userDetails.setIsOnlineStudy(profile.getIsOnlineStudy());
+    userDetails.setCategories(categories);
+
+    return userDetails;
   }
 }

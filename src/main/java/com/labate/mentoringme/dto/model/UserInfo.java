@@ -1,36 +1,28 @@
 package com.labate.mentoringme.dto.model;
 
-import lombok.Builder;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Date;
 import java.util.List;
 
-@Builder
-@Value
+/** Use @AllArgsConstructor and private final to mimic the behaviour of @Value */
+@SuperBuilder
+@Getter
+@AllArgsConstructor
 public class UserInfo {
-  Long id;
-  String fullName;
-  String email;
-  String phoneNumber;
-  String imageUrl;
-  Boolean gender;
-  Date dob;
-  String bio;
-  String school;
+  private final Long id;
+  private final String fullName;
+  private final String email;
+  private final String phoneNumber;
+  private final String imageUrl;
+  private final Boolean gender;
+  private final Date dob;
+  private final String provider;
+  private final Integer status;
+  private final Boolean verifiedEmail;
+  private final Boolean verifiedPhoneNumber;
 
-  String detailAddress;
-  // TODO: Detail address level (Ward, District, Province)
-  Float rating;
-
-  Boolean isOnlineStudy;
-  Boolean isOfflineStudy;
-
-  String provider;
-
-  Integer status;
-  Boolean verifiedEmail;
-  Boolean verifiedPhoneNumber;
-
-  List<String> roles;
+  private final List<String> roles;
 }

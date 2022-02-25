@@ -27,6 +27,10 @@ public class UserProfile {
   private Float rating;
   private String detailAddress;
   private Long addressId;
+
+  private String bio;
+  private String school;
+
   private Integer status;
 
   @Column(columnDefinition = "BIT", length = 1, nullable = false)

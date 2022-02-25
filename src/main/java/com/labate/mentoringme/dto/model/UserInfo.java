@@ -16,8 +16,11 @@ public class UserInfo {
   String imageUrl;
   Boolean gender;
   Date dob;
-  Float rating;
+  String bio;
+  String school;
   String detailAddress;
+  // TODO: Detail address level (Ward, District, Province)
+  Float rating;
   String provider;
   Integer status;
   Boolean verifiedEmail;

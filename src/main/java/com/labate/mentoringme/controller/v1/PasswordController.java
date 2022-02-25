@@ -3,7 +3,7 @@ package com.labate.mentoringme.controller.v1;
 import com.labate.mentoringme.config.CurrentUser;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.ChangePasswordRequest;
-import com.labate.mentoringme.dto.request.ResetPasswordRequest;
+import com.labate.mentoringme.dto.request.ForgotPasswordRequest;
 import com.labate.mentoringme.dto.response.ApiResponse;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.exception.InvalidTokenException;
@@ -77,11 +77,11 @@ public class PasswordController {
 
   @PostMapping("/forgot")
   public ResponseEntity<?> forgotPassword(
-      @Valid @RequestBody final ResetPasswordRequest resetPasswordRequest) {
+      @Valid @RequestBody final ForgotPasswordRequest forgotPasswordRequest) {
     try {
-      passwordService.forgottenPassword(resetPasswordRequest);
+      passwordService.forgottenPassword(forgotPasswordRequest);
     } catch (UserNotFoundException e) {
-      log.info("User not found: {}", resetPasswordRequest.getEmail());
+      log.info("User not found: {}", forgotPasswordRequest.getEmail());
       return ResponseEntity.badRequest().body(ApiResponse.fail(false, e.getMessage()));
     }
     // TODO: Change response details

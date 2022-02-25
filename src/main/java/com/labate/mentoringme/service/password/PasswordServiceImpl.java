@@ -1,7 +1,7 @@
 package com.labate.mentoringme.service.password;
 
 import com.labate.mentoringme.dto.context.ForgotPasswordEmailContext;
-import com.labate.mentoringme.dto.request.ResetPasswordRequest;
+import com.labate.mentoringme.dto.request.ForgotPasswordRequest;
 import com.labate.mentoringme.exception.InvalidPasswordException;
 import com.labate.mentoringme.exception.InvalidTokenException;
 import com.labate.mentoringme.exception.UserNotFoundException;
@@ -49,7 +49,7 @@ public class PasswordServiceImpl implements PasswordService {
   }
 
   @Override
-  public void forgottenPassword(ResetPasswordRequest userName) throws UserNotFoundException {
+  public void forgottenPassword(ForgotPasswordRequest userName) throws UserNotFoundException {
     String email = userName.getEmail();
     String phoneNumber = userName.getPhoneNumber();
     User user = null;

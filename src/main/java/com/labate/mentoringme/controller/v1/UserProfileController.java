@@ -9,15 +9,21 @@ import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.transaction.Transactional;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/users")
-public class UserController {
+@RequestMapping("/api/v1/user-profiles")
+public class UserProfileController {
 
   private final UserService userService;
 
+  @Transactional
   @ApiImplicitParam(
       name = "Authorization",
       value = "Access Token",
@@ -27,18 +33,13 @@ public class UserController {
       example = "Bearer access_token")
   @GetMapping("/me")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
-  public ResponseEntity<?> getCurrentUser(@CurrentUser LocalUser user) {
-    return BaseResponseEntity.ok(UserMapper.buildUserInfo(user));
+  public ResponseEntity<?> getCurrentUserProfile(@CurrentUser LocalUser user) {
+    return BaseResponseEntity.ok(UserMapper.buildUserDetails(user));
   }
 
   @GetMapping("/{userId}")
-  public ResponseEntity<?> findUserById(@PathVariable Long userId) {
-    return BaseResponseEntity.ok(UserMapper.buildUserInfo(userService.findLocalUserById(userId)));
+  public ResponseEntity<?> findUserProfileById(@PathVariable Long userId) {
+    return BaseResponseEntity.ok(
+        UserMapper.buildUserDetails(userService.findLocalUserById(userId)));
   }
-
-  @GetMapping("")
-  public ResponseEntity<?> getUsers() {
-    return ResponseEntity.ok("Public content goes here");
-  }
-
 }

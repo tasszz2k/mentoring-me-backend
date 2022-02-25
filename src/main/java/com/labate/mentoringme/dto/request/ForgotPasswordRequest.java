@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.AssertTrue;
 
 @Data
-public class ResetPasswordRequest {
+public class ForgotPasswordRequest {
   private String email;
   private String phoneNumber;
   // private String token;

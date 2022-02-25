@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/verification")
+@RequestMapping("/api/v1/verifications")
 public class VerificationController {
   private static final String REDIRECT_LOGIN = "redirect:/signin";
 

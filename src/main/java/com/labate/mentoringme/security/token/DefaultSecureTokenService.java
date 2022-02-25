@@ -23,7 +23,7 @@ public class DefaultSecureTokenService implements SecureTokenService {
   private static final BytesKeyGenerator DEFAULT_TOKEN_GENERATOR = KeyGenerators.secureRandom(15);
   private static final Charset US_ASCII = StandardCharsets.US_ASCII;
 
-  @Value("${jdj.secure.token.validity}")
+  @Value("${labate.secure.token.validity}")
   private int tokenValidityInSeconds;
 
   @Autowired SecureTokenRepository secureTokenRepository;

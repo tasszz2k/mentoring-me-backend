@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
 @EntityListeners(AuditingEntityListener.class)
 @Entity
@@ -27,7 +28,17 @@ public class UserProfile {
   private Float rating;
   private String detailAddress;
   private Long addressId;
+
+  private String bio;
+  private String school;
+
   private Integer status;
+
+  @Column(columnDefinition = "BIT", length = 1, nullable = false)
+  private Boolean isOnlineStudy;
+
+  @Column(columnDefinition = "BIT", length = 1, nullable = false)
+  private Boolean isOfflineStudy;
 
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
   private Boolean isDeleted;
@@ -35,15 +46,23 @@ public class UserProfile {
   @CreatedDate
   @Column(name = "created", updatable = false)
   @Temporal(TemporalType.TIMESTAMP)
-  protected Date createdDate;
+  private Date createdDate;
 
   @LastModifiedDate
   @Column(name = "modified")
   @Temporal(TemporalType.TIMESTAMP)
-  protected Date modifiedDate;
+  private Date modifiedDate;
 
   @JsonIgnore
   @OneToOne(mappedBy = "userProfile", cascade = CascadeType.ALL)
   @PrimaryKeyJoinColumn
   private User user;
+
+  @JsonIgnore
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(
+          name = "profiles_categories",
+          joinColumns = {@JoinColumn(name = "profile_id")},
+          inverseJoinColumns = {@JoinColumn(name = "category_id")})
+  private Set<Category> categories;
 }

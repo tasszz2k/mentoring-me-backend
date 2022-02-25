@@ -34,6 +34,12 @@ public class UserProfile {
   private Integer status;
 
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
+  private Boolean isOnlineStudy;
+
+  @Column(columnDefinition = "BIT", length = 1, nullable = false)
+  private Boolean isOfflineStudy;
+
+  @Column(columnDefinition = "BIT", length = 1, nullable = false)
   private Boolean isDeleted;
 
   @CreatedDate

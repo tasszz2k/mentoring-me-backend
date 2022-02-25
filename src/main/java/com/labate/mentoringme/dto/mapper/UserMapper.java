@@ -25,6 +25,7 @@ public class UserMapper {
             .collect(Collectors.toList());
 
     var user = localUser.getUser();
+    var profile = user.getUserProfile();
 
     return UserInfo.builder()
         .id(user.getId())
@@ -36,10 +37,14 @@ public class UserMapper {
         .verifiedEmail(user.isVerifiedEmail())
         .verifiedPhoneNumber(user.isVerifiedPhoneNumber())
         .status(user.getStatus())
-        .gender(user.getUserProfile().getGender())
-        .dob(user.getUserProfile().getDob())
-        .rating(user.getUserProfile().getRating())
-        .detailAddress(user.getUserProfile().getDetailAddress())
+        .gender(profile.getGender())
+        .dob(profile.getDob())
+        .rating(profile.getRating())
+        .detailAddress(profile.getDetailAddress())
+        .bio(profile.getBio())
+        .school(profile.getSchool())
+        .isOfflineStudy(profile.getIsOfflineStudy())
+        .isOnlineStudy(profile.getIsOnlineStudy())
         .build();
   }
 }

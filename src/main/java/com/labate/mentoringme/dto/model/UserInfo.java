@@ -18,10 +18,16 @@ public class UserInfo {
   Date dob;
   String bio;
   String school;
+
   String detailAddress;
   // TODO: Detail address level (Ward, District, Province)
   Float rating;
+
+  Boolean isOnlineStudy;
+  Boolean isOfflineStudy;
+
   String provider;
+
   Integer status;
   Boolean verifiedEmail;
   Boolean verifiedPhoneNumber;

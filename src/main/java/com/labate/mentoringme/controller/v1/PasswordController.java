@@ -4,6 +4,7 @@ import com.labate.mentoringme.config.CurrentUser;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.ChangePasswordRequest;
 import com.labate.mentoringme.dto.request.ForgotPasswordRequest;
+import com.labate.mentoringme.dto.request.ResetPasswordRequest;
 import com.labate.mentoringme.dto.response.ApiResponse;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.exception.InvalidTokenException;
@@ -52,7 +53,7 @@ public class PasswordController {
 
   @PostMapping("/reset")
   public ResponseEntity<?> resetPassword(
-      @Valid @RequestBody ChangePasswordRequest request,
+      @Valid @RequestBody ResetPasswordRequest request,
       @RequestParam(required = false) String token) {
 
     if (!StringUtils.hasText(token)) {

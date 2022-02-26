@@ -71,6 +71,6 @@ public class VerificationController {
               null,
               LocaleContextHolder.getLocale()));
     }
-    return BaseResponseEntity.ok(true, "Verification email sent");
+    return BaseResponseEntity.ok(null, "Verification email sent");
   }
 }

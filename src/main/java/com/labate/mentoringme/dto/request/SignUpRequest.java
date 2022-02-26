@@ -10,7 +10,7 @@ import javax.validation.constraints.NotEmpty;
 @Data
 public class SignUpRequest {
 
-  private Long userID;
+  // private Long userID;
 
   private String providerUserId;
 

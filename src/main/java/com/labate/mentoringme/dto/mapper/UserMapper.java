@@ -4,10 +4,8 @@ import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.model.UserDetails;
 import com.labate.mentoringme.dto.model.UserInfo;
-import com.labate.mentoringme.util.ObjectMapperUtils;
 import org.springframework.security.core.GrantedAuthority;
 
-import javax.transaction.Transactional;
 import java.util.stream.Collectors;
 
 public class UserMapper {
@@ -39,6 +37,7 @@ public class UserMapper {
         .roles(roles)
         .verifiedEmail(user.isVerifiedEmail())
         .verifiedPhoneNumber(user.isVerifiedPhoneNumber())
+        .provider(user.getProvider())
         .status(user.getStatus())
         .gender(profile.getGender())
         .dob(profile.getDob())

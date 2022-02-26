@@ -38,10 +38,7 @@ public class UserServiceImpl implements UserService {
   @Transactional(value = "transactionManager")
   public User registerNewUser(final SignUpRequest signUpRequest)
       throws UserAlreadyExistAuthenticationException {
-    if (signUpRequest.getUserID() != null && userRepository.existsById(signUpRequest.getUserID())) {
-      throw new UserAlreadyExistAuthenticationException(
-          "User with User id " + signUpRequest.getUserID() + " already exist");
-    } else if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+    if (userRepository.existsByEmail(signUpRequest.getEmail())) {
       throw new UserAlreadyExistAuthenticationException(
           "User with email id " + signUpRequest.getEmail() + " already exist");
     }
@@ -60,6 +57,7 @@ public class UserServiceImpl implements UserService {
     user.setEmail(formDTO.getEmail());
     user.setPassword(passwordEncoder.encode(formDTO.getPassword()));
 
+    // user roles
     final var roles = new HashSet<Role>();
     roles.add(roleRepository.findByName(Role.ROLE_USER));
     user.setRoles(roles);
@@ -67,6 +65,7 @@ public class UserServiceImpl implements UserService {
     user.setEnabled(true);
     user.setProviderUserId(formDTO.getProviderUserId());
 
+    // user profile
     var userProfile = new UserProfile();
     userProfile.setIsDeleted(false);
     user.setUserProfile(userProfile);

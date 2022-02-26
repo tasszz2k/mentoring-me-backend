@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.minidev.json.annotate.JsonIgnore;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -18,6 +20,8 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name = "categories")
+@SQLDelete(sql = "update categories set is_deleted = true where id=?")
+@Where(clause = "is_deleted = false")
 public class Category {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

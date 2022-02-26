@@ -3,6 +3,8 @@ package com.labate.mentoringme.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -18,6 +20,8 @@ import java.util.stream.Stream;
 @Getter
 @Setter
 @Table(name = "addresses")
+@SQLDelete(sql = "update addresses set is_deleted = true where id=?")
+@Where(clause = "is_deleted = false")
 public class Address {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +29,10 @@ public class Address {
 
   private String name;
 
-  @Basic private Integer typeValue;
+  @Column(name = "type")
+  @Basic
+  private Integer typeValue;
+
   @Transient private Type type;
 
   @ManyToOne(cascade = CascadeType.ALL)

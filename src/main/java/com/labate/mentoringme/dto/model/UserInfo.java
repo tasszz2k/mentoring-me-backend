@@ -23,6 +23,7 @@ public class UserInfo {
   private final Integer status;
   private final Boolean verifiedEmail;
   private final Boolean verifiedPhoneNumber;
+  private final Boolean enabled;
 
   private final List<String> roles;
 }

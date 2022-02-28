@@ -12,6 +12,10 @@ public class BaseResponseEntity {
   }
 
   public static ResponseEntity<?> ok(Object data) {
-    return ResponseEntity.ok(ApiResponse.success(data, null));
+    return ResponseEntity.ok(ApiResponse.success(data, (String) null));
+  }
+
+  public static ResponseEntity<?> ok(Object data, Metadata metadata) {
+    return ResponseEntity.ok(ApiResponse.success(data, metadata));
   }
 }

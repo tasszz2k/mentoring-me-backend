@@ -51,7 +51,7 @@ public class User implements Serializable {
   private boolean verifiedPhoneNumber;
 
   @Column(name = "enabled", columnDefinition = "BIT", length = 1)
-  private boolean enabled;
+  private boolean enabled = true;
 
   @CreatedDate
   @Column(name = "created", nullable = false, updatable = false)

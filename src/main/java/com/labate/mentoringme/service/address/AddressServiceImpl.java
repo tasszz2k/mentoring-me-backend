@@ -15,6 +15,9 @@ public class AddressServiceImpl implements AddressService {
 
   @Override
   public Address findById(Long id) {
+    if (id == null) {
+      return null;
+    }
     return addressRepository.findById(id).orElse(null);
   }
 

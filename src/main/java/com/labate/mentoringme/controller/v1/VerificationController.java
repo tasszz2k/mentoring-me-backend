@@ -30,7 +30,7 @@ public class VerificationController {
   private final AccountVerificationService accountVerificationService;
 
   @GetMapping("/email")
-  public String verifyEmail(@RequestParam(required = false) String token) {
+  public String verifyEmail(@RequestParam String token) {
     if (!StringUtils.hasText(token)) {
       return messageSource.getMessage(
           "user.registration.verification.missing.token", null, LocaleContextHolder.getLocale());

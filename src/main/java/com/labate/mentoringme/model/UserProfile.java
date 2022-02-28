@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -43,7 +41,7 @@ public class UserProfile {
   private Boolean isOfflineStudy;
 
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
-  private Boolean isDeleted;
+  private Boolean isDeleted = false;
 
   @CreatedDate
   @Column(name = "created", updatable = false)
@@ -63,8 +61,8 @@ public class UserProfile {
   @JsonIgnore
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
-          name = "profiles_categories",
-          joinColumns = {@JoinColumn(name = "profile_id")},
-          inverseJoinColumns = {@JoinColumn(name = "category_id")})
+      name = "profiles_categories",
+      joinColumns = {@JoinColumn(name = "profile_id")},
+      inverseJoinColumns = {@JoinColumn(name = "category_id")})
   private Set<Category> categories;
 }

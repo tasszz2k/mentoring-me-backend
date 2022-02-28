@@ -27,7 +27,10 @@ public class UserProfile {
   private Date dob;
   private Float rating;
   private String detailAddress;
-  private Long addressId;
+
+  @ManyToOne
+  @JoinColumn(name = "address_id")
+  private Address address;
 
   private String bio;
   private String school;

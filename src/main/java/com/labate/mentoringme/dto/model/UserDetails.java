@@ -11,8 +11,8 @@ import java.util.List;
 @SuperBuilder
 public class UserDetails extends UserInfo {
   private String school;
+  private AddressDto address;
   private String detailAddress;
-  // TODO: Detail address level (Ward, District, Province)
   private Float rating;
   private String bio;
   private Boolean isOnlineStudy;

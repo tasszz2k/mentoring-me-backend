@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -23,8 +22,8 @@ public class PageCriteria {
   private Integer page = 1;
 
   @Min(value = 1, message = "limit must be greater than 0")
-  @Max(value = 100, message = "limit must be less than or equal to 100")
-  private Integer limit = 30;
+  // @Max(value = 100, message = "limit must be less than or equal to 100")
+  private Integer limit = Integer.MAX_VALUE;
 
   private List<String> sort = new ArrayList<>();
 

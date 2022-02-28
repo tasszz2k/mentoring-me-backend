@@ -9,13 +9,12 @@ import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.JwtAuthenticationResponse;
 import com.labate.mentoringme.exception.UserAlreadyExistAuthenticationException;
 import com.labate.mentoringme.security.jwt.TokenProvider;
+import com.labate.mentoringme.security.oauth2.AuthService;
 import com.labate.mentoringme.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,21 +30,13 @@ import javax.validation.Valid;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-  private final AuthenticationManager authenticationManager;
   private final UserService userService;
   private final TokenProvider tokenProvider;
+  private final AuthService authService;
 
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-    Authentication authentication =
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                loginRequest.getEmail(), loginRequest.getPassword()));
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-    String jwt = tokenProvider.createToken(authentication);
-    LocalUser localUser = (LocalUser) authentication.getPrincipal();
-    return BaseResponseEntity.ok(
-        new JwtAuthenticationResponse(jwt, UserMapper.buildUserInfo(localUser)));
+    return getResponseEntity(loginRequest.getEmail(), loginRequest.getPassword());
   }
 
   @PostMapping("/signup")
@@ -57,6 +48,15 @@ public class AuthController {
       return new ResponseEntity<>(
           ApiResponse.fail(null, "Email Address already in use!"), HttpStatus.BAD_REQUEST);
     }
-    return BaseResponseEntity.ok(null, "User registered successfully");
+    return getResponseEntity(signUpRequest.getEmail(), signUpRequest.getPassword());
+  }
+
+  private ResponseEntity<?> getResponseEntity(String email, String password) {
+    Authentication authentication = authService.getAuthentication(email, password);
+    SecurityContextHolder.getContext().setAuthentication(authentication);
+    String jwt = tokenProvider.createToken(authentication);
+    LocalUser localUser = (LocalUser) authentication.getPrincipal();
+    return BaseResponseEntity.ok(
+        new JwtAuthenticationResponse(jwt, UserMapper.buildUserInfo(localUser)));
   }
 }

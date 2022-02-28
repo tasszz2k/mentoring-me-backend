@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PageCriteria {
+public class PageCriteria { // TODO: Change Default -> find all
   public static final String ASC_SYMBOL = "+";
   public static final String DESC_SYMBOL = "-";
 

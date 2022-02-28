@@ -2,10 +2,10 @@ package com.labate.mentoringme.service.password;
 
 import com.labate.mentoringme.dto.context.ForgotPasswordEmailContext;
 import com.labate.mentoringme.dto.request.ForgotPasswordRequest;
+import com.labate.mentoringme.dto.request.ResetPasswordRequest;
 import com.labate.mentoringme.exception.InvalidPasswordException;
 import com.labate.mentoringme.exception.InvalidTokenException;
 import com.labate.mentoringme.exception.UserNotFoundException;
-import com.labate.mentoringme.model.SecureToken;
 import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.repository.UserRepository;
 import com.labate.mentoringme.security.token.SecureTokenService;
@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
-import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -66,12 +65,13 @@ public class PasswordServiceImpl implements PasswordService {
   }
 
   @Override
-  public boolean resetPassword(String token, String newPassword) throws InvalidTokenException {
-    SecureToken secureToken = secureTokenService.getValidSecureToken(token);
-    var user = userRepository.findById(secureToken.getUser().getId()).orElse(null);
-    if (Objects.isNull(user)) {
-      throw new InvalidTokenException("invalid token or user not found");
-    }
+  public boolean resetPassword(ResetPasswordRequest request) throws InvalidTokenException {
+    var token = request.getToken();
+    var newPassword = request.getNewPassword();
+    var email = request.getEmail();
+
+    var secureToken = secureTokenService.getValidSecureToken(token, email);
+    var user = secureToken.getUser();
 
     user.setPassword(passwordEncoder.encode(newPassword));
     userRepository.save(user);
@@ -81,7 +81,7 @@ public class PasswordServiceImpl implements PasswordService {
   }
 
   private void sendResetPasswordByEmail(User user) {
-    SecureToken secureToken = secureTokenService.createSecureToken(user);
+    var secureToken = secureTokenService.createSecureToken(user);
     ForgotPasswordEmailContext emailContext = new ForgotPasswordEmailContext();
     emailContext.init(user);
     emailContext.setToken(secureToken.getToken());

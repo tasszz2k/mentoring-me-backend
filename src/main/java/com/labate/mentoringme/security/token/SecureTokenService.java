@@ -12,5 +12,6 @@ public interface SecureTokenService {
     void removeToken(final SecureToken token);
     void removeTokenByToken(final String token);
     SecureToken getValidSecureToken(String token) throws InvalidTokenException;
+    SecureToken getValidSecureToken(String token, String email) throws InvalidTokenException;
 }
 

@@ -7,9 +7,11 @@ import com.labate.mentoringme.dto.response.ApiResponse;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.Metadata;
 import com.labate.mentoringme.service.category.CategoryService;
+import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -41,6 +43,14 @@ public class CategoryController {
     return BaseResponseEntity.ok(CategoryMapper.toDtos(categories), metadata);
   }
 
+  @ApiImplicitParam(
+          name = "Authorization",
+          value = "Access Token",
+          required = true,
+          paramType = "header",
+          dataTypeClass = String.class,
+          example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
   @PostMapping("")
   public ResponseEntity<?> addNewCategory(@Valid @RequestBody CategoryDto categoryDto) {
 
@@ -51,6 +61,14 @@ public class CategoryController {
     return BaseResponseEntity.ok(CategoryMapper.toDto(category));
   }
 
+  @ApiImplicitParam(
+          name = "Authorization",
+          value = "Access Token",
+          required = true,
+          paramType = "header",
+          dataTypeClass = String.class,
+          example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
   @PutMapping("/{categoryId}")
   public ResponseEntity<?> updateCategory(
       @PathVariable Long categoryId, @Valid @RequestBody CategoryDto categoryDto) {

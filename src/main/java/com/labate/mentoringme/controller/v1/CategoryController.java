@@ -100,7 +100,7 @@ public class CategoryController {
       example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
   @DeleteMapping("/{categoryId}")
-  public ResponseEntity<?> updateCategory(@PathVariable Long categoryId) {
+  public ResponseEntity<?> deleteCategory(@PathVariable Long categoryId) {
     var oldCategory = categoryService.findById(categoryId);
     if (oldCategory == null) {
       return ResponseEntity.badRequest().body(ApiResponse.fail(null, "Category not found"));

@@ -17,14 +17,14 @@ import java.util.List;
 public class PageCriteria {
   public static final String ASC_SYMBOL = "+";
   public static final String DESC_SYMBOL = "-";
-
+  @Builder.Default
   @Min(value = 1, message = "page must be greater than 0")
   private Integer page = 1;
-
+  @Builder.Default
   @Min(value = 1, message = "limit must be greater than 0")
   // @Max(value = 100, message = "limit must be less than or equal to 100")
   private Integer limit = Integer.MAX_VALUE;
-
+  @Builder.Default
   private List<String> sort = new ArrayList<>();
 
   public void setLimit(Integer limit) {

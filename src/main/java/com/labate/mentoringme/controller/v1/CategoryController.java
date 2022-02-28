@@ -2,6 +2,7 @@ package com.labate.mentoringme.controller.v1;
 
 import com.labate.mentoringme.dto.mapper.CategoryMapper;
 import com.labate.mentoringme.dto.model.CategoryDto;
+import com.labate.mentoringme.dto.request.GetCategoriesRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.response.ApiResponse;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
@@ -29,8 +30,8 @@ public class CategoryController {
   }
 
   @GetMapping("")
-  public ResponseEntity<?> findAllCategories(@Valid PageCriteria pageCriteria) {
-    var page = categoryService.findAllCategories(pageCriteria);
+  public ResponseEntity<?> findAllCategories(@Valid PageCriteria pageCriteria, @Valid GetCategoriesRequest request) {
+    var page = categoryService.findAllCategories(pageCriteria, request);
     var categories = page.getContent();
 
     var metadata =

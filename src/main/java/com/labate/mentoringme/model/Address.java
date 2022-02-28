@@ -50,7 +50,7 @@ public class Address {
   private Set<Address> subDistricts;
 
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
-  private Boolean isDeleted;
+  private Boolean isDeleted = false;
 
   @CreatedDate
   @Column(name = "created", updatable = false)

@@ -25,7 +25,7 @@ import java.util.Set;
 public class Category {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "parent_category_id")
@@ -42,7 +42,7 @@ public class Category {
   private String code;
 
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
-  private Boolean isDeleted;
+  private Boolean isDeleted = false;
 
   @CreatedDate
   @Column(name = "created", updatable = false)

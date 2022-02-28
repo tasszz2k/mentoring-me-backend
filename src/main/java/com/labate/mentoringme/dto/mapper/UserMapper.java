@@ -51,6 +51,7 @@ public class UserMapper {
         .email(user.getEmail())
         .phoneNumber(user.getPhoneNumber())
         .imageUrl(user.getImageUrl())
+        .enabled(user.isEnabled())
         .roles(roles)
         .verifiedEmail(user.isVerifiedEmail())
         .verifiedPhoneNumber(user.isVerifiedPhoneNumber())

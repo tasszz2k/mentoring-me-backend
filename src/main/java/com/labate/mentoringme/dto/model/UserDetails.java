@@ -32,6 +32,7 @@ public class UserDetails extends UserInfo {
         userInfo.getStatus(),
         userInfo.getVerifiedEmail(),
         userInfo.getVerifiedPhoneNumber(),
+        userInfo.getEnabled(),
         userInfo.getRoles());
   }
 }

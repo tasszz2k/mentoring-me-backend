@@ -2,6 +2,7 @@ package com.labate.mentoringme.controller.v1;
 
 import com.labate.mentoringme.config.CurrentUser;
 import com.labate.mentoringme.dto.model.LocalUser;
+import com.labate.mentoringme.dto.request.VerifyTokenRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.exception.InvalidTokenException;
 import com.labate.mentoringme.service.verification.AccountVerificationService;
@@ -14,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -72,5 +75,17 @@ public class VerificationController {
               LocaleContextHolder.getLocale()));
     }
     return BaseResponseEntity.ok(null, "Verification email sent");
+  }
+
+  @PostMapping("/otp/verify")
+  public ResponseEntity<?> verifyToken(@RequestBody @Valid VerifyTokenRequest request) {
+    try {
+      accountVerificationService.verifyToken(request);
+    } catch (InvalidTokenException e) {
+      return ResponseEntity.badRequest()
+          .body(messageSource.getMessage("token.invalid", null, LocaleContextHolder.getLocale()));
+    }
+    return BaseResponseEntity.ok(
+        null, messageSource.getMessage("token.valid", null, LocaleContextHolder.getLocale()));
   }
 }

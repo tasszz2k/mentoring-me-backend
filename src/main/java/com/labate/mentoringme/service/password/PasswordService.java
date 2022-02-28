@@ -1,6 +1,7 @@
 package com.labate.mentoringme.service.password;
 
 import com.labate.mentoringme.dto.request.ForgotPasswordRequest;
+import com.labate.mentoringme.dto.request.ResetPasswordRequest;
 import com.labate.mentoringme.exception.InvalidTokenException;
 import com.labate.mentoringme.exception.UserNotFoundException;
 
@@ -9,5 +10,5 @@ public interface PasswordService {
 
   void forgottenPassword(final ForgotPasswordRequest userName) throws UserNotFoundException;
 
-  boolean resetPassword(String token, String newPassword) throws InvalidTokenException;
+  boolean resetPassword(ResetPasswordRequest request) throws InvalidTokenException;
 }

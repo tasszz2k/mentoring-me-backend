@@ -30,9 +30,8 @@ public class DefaultSecureTokenService implements SecureTokenService {
 
   @Override
   public SecureToken createSecureToken(User user) {
-    String tokenValue =
-        generateToken(); // this is a sample, you can adapt as per your security need
-    SecureToken secureToken = new SecureToken();
+    var tokenValue = generateToken(); // this is a sample, you can adapt as per your security need
+    var secureToken = new SecureToken();
     secureToken.setToken(tokenValue);
     secureToken.setExpireAt(LocalDateTime.now().plusSeconds(getTokenValidityInSeconds()));
     secureToken.setUser(user);
@@ -45,7 +44,7 @@ public class DefaultSecureTokenService implements SecureTokenService {
   }
 
   public int generateOTP() {
-    Random random = new Random();
+    var random = new Random();
     return 100000 + random.nextInt(900000);
   }
 
@@ -74,11 +73,21 @@ public class DefaultSecureTokenService implements SecureTokenService {
   }
 
   public SecureToken getValidSecureToken(String token) throws InvalidTokenException {
-    SecureToken secureToken = findByToken(token);
+    var secureToken = findByToken(token);
     if (Objects.isNull(secureToken)
         || !StringUtils.equals(token, secureToken.getToken())
         || secureToken.isExpired()) {
       throw new InvalidTokenException("Token is not valid");
+    }
+    return secureToken;
+  }
+
+  @Override
+  public SecureToken getValidSecureToken(String token, String email) throws InvalidTokenException {
+    var secureToken = getValidSecureToken(token);
+    var user = secureToken.getUser();
+    if (Objects.isNull(user) || !user.getEmail().equals(email)) {
+      throw new InvalidTokenException("Invalid token");
     }
     return secureToken;
   }

@@ -1,6 +1,7 @@
 package com.labate.mentoringme.service.verification;
 
 import com.labate.mentoringme.dto.context.AccountVerificationEmailContext;
+import com.labate.mentoringme.dto.request.VerifyTokenRequest;
 import com.labate.mentoringme.exception.InvalidTokenException;
 import com.labate.mentoringme.model.SecureToken;
 import com.labate.mentoringme.model.User;
@@ -54,10 +55,18 @@ public class AccountVerificationServiceImpl implements AccountVerificationServic
       return false;
     }
     user.setVerifiedEmail(true);
-    userRepository.save(user); // let's same user details
+    userRepository.save(user);
 
-    // we don't need invalid password now
     secureTokenService.removeToken(secureToken);
+    return true;
+  }
+
+  @Override
+  public boolean verifyToken(VerifyTokenRequest request) throws InvalidTokenException {
+    String token = request.getToken();
+    String email = request.getEmail();
+
+    secureTokenService.getValidSecureToken(token, email);
     return true;
   }
 }

@@ -15,11 +15,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
@@ -52,26 +53,13 @@ public class PasswordController {
   }
 
   @PostMapping("/reset")
-  public ResponseEntity<?> resetPassword(
-      @Valid @RequestBody ResetPasswordRequest request,
-      @RequestParam(required = false) String token) {
-
-    if (!StringUtils.hasText(token)) {
-      return new ResponseEntity<>(
-          ApiResponse.fail(
-              false,
-              messageSource.getMessage(
-                  "user.registration.verification.invalid.token",
-                  null,
-                  LocaleContextHolder.getLocale())),
-          HttpStatus.UNAUTHORIZED);
-    }
+  public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
 
     try {
-      passwordService.resetPassword(token, request.getNewPassword());
+      passwordService.resetPassword(request);
     } catch (InvalidTokenException e) {
-      e.printStackTrace();
-      return ResponseEntity.badRequest().body(ApiResponse.fail(false, e.getMessage()));
+      log.info("Invalid token: {}", request.getToken());
+      return ResponseEntity.badRequest().body(ApiResponse.fail(null, e.getMessage()));
     }
     return BaseResponseEntity.ok(null, "Password reset successfully");
   }
@@ -83,7 +71,7 @@ public class PasswordController {
       passwordService.forgottenPassword(forgotPasswordRequest);
     } catch (UserNotFoundException e) {
       log.info("User not found: {}", forgotPasswordRequest.getEmail());
-      return ResponseEntity.badRequest().body(ApiResponse.fail(false, e.getMessage()));
+      return ResponseEntity.badRequest().body(ApiResponse.fail(null, e.getMessage()));
     }
     // TODO: Change response details
     return ResponseEntity.ok(

@@ -1,6 +1,7 @@
 package com.labate.mentoringme.service.category;
 
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
+import com.labate.mentoringme.dto.request.GetCategoriesRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.model.Category;
 import com.labate.mentoringme.repository.CategoryRepository;
@@ -24,9 +25,9 @@ public class CategoryServiceImpl implements CategoryService {
   }
 
   @Override
-  public Page<Category> findAllCategories(PageCriteria pageCriteria) {
+  public Page<Category> findAllCategories(PageCriteria pageCriteria, GetCategoriesRequest request) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
-    return categoryRepository.findAll(pageable);
+    return categoryRepository.findAllByConditions(request, pageable);
   }
 
   @Override

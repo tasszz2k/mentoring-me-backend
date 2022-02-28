@@ -22,6 +22,9 @@ public class CategoryMapper {
   }
 
   public static CategoryDto toDto(Category entity) {
+    if (entity == null) {
+      return null;
+    }
     var dto = ObjectMapperUtils.map(entity, CategoryDto.class);
     var parent = entity.getParentCategory();
     var parentCategoryId = parent == null ? null : parent.getId();
@@ -30,6 +33,9 @@ public class CategoryMapper {
   }
 
   public static Category toEntity(CategoryDto dto) {
+    if (dto == null) {
+      return null;
+    }
     var entity = ObjectMapperUtils.map(dto, Category.class);
     var parentCategoryId = dto.getParentCategoryId();
 

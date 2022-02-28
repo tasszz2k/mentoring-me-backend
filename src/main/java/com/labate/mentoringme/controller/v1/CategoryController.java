@@ -26,11 +26,16 @@ public class CategoryController {
 
   @GetMapping("/{categoryId}")
   public ResponseEntity<?> findCategoryById(@PathVariable Long categoryId) {
-    return BaseResponseEntity.ok(CategoryMapper.toDto(categoryService.findById(categoryId)));
+    var category = categoryService.findById(categoryId);
+    if (category == null) {
+      return ResponseEntity.badRequest().body(ApiResponse.fail(null, "Category not found"));
+    }
+    return BaseResponseEntity.ok(CategoryMapper.toDto(category));
   }
 
   @GetMapping("")
-  public ResponseEntity<?> findAllCategories(@Valid PageCriteria pageCriteria, @Valid GetCategoriesRequest request) {
+  public ResponseEntity<?> findAllCategories(
+      @Valid PageCriteria pageCriteria, @Valid GetCategoriesRequest request) {
     var page = categoryService.findAllCategories(pageCriteria, request);
     var categories = page.getContent();
 
@@ -45,12 +50,12 @@ public class CategoryController {
   }
 
   @ApiImplicitParam(
-          name = "Authorization",
-          value = "Access Token",
-          required = true,
-          paramType = "header",
-          dataTypeClass = String.class,
-          example = "Bearer access_token")
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
   @PostMapping("")
   public ResponseEntity<?> addNewCategory(@Valid @RequestBody CategoryDto categoryDto) {
@@ -63,12 +68,12 @@ public class CategoryController {
   }
 
   @ApiImplicitParam(
-          name = "Authorization",
-          value = "Access Token",
-          required = true,
-          paramType = "header",
-          dataTypeClass = String.class,
-          example = "Bearer access_token")
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
   @PutMapping("/{categoryId}")
   public ResponseEntity<?> updateCategory(
@@ -84,5 +89,25 @@ public class CategoryController {
     category = categoryService.saveCategory(category);
 
     return BaseResponseEntity.ok(CategoryMapper.toDto(category));
+  }
+
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
+  @DeleteMapping("/{categoryId}")
+  public ResponseEntity<?> updateCategory(@PathVariable Long categoryId) {
+    var oldCategory = categoryService.findById(categoryId);
+    if (oldCategory == null) {
+      return ResponseEntity.badRequest().body(ApiResponse.fail(null, "Category not found"));
+    }
+
+    categoryService.deleteCategory(categoryId);
+
+    return BaseResponseEntity.ok(null, "Category deleted successfully");
   }
 }

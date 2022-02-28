@@ -1,6 +1,5 @@
 package com.labate.mentoringme.service.user;
 
-import com.labate.mentoringme.constant.UserRole;
 import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
@@ -122,6 +121,15 @@ public class UserServiceImpl implements UserService {
     var updatedUser = userRepository.save(user);
     userProfileRepository.save(user.getUserProfile());
     return updatedUser;
+  }
+
+  @Override
+  public void updateUserEnableStatus(Long userId, boolean enable) throws UserNotFoundException {
+    var user = findUserById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+    if (user.isEnabled() != enable) {
+      user.setEnabled(enable);
+      userRepository.save(user);
+    }
   }
 
   private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {

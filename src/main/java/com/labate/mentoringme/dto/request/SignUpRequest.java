@@ -1,6 +1,8 @@
 package com.labate.mentoringme.dto.request;
 
 import com.labate.mentoringme.constant.SocialProvider;
+import com.labate.mentoringme.constant.UserRole;
+import com.labate.mentoringme.validator.AcceptableRoleRegister;
 import com.labate.mentoringme.validator.ValidPassword;
 import lombok.Data;
 
@@ -22,8 +24,10 @@ public class SignUpRequest {
 
   @ValidPassword private String password;
 
-  // @NotBlank(message = "confirm Password is mandatory")
-  // private String confirmPassword;
+  @AcceptableRoleRegister(
+      roles = {UserRole.ROLE_USER, UserRole.ROLE_MENTOR},
+      message = "Use only can be user or mentor")
+  private UserRole role;
 
   public SignUpRequest(
       String providerUserId,

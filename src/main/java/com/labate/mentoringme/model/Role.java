@@ -18,11 +18,6 @@ import java.util.Set;
 @Table(name = "roles")
 public class Role implements Serializable {
   private static final long serialVersionUID = 1L;
-  public static final String USER = "USER";
-  public static final String ROLE_ADMIN = "ROLE_ADMIN";
-  public static final String ROLE_MODERATOR = "ROLE_MODERATOR";
-  public static final String ROLE_MENTOR = "ROLE_MENTOR";
-  public static final String ROLE_USER = "ROLE_USER";
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

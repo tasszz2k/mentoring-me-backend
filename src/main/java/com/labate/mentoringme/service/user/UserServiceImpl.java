@@ -1,5 +1,6 @@
 package com.labate.mentoringme.service.user;
 
+import com.labate.mentoringme.constant.UserRole;
 import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
@@ -53,19 +54,20 @@ public class UserServiceImpl implements UserService {
     return user;
   }
 
-  private User buildUser(final SignUpRequest formDTO) {
+  private User buildUser(final SignUpRequest formDto) {
     var user = new User();
-    user.setFullName(formDTO.getFullName());
-    user.setEmail(formDTO.getEmail());
-    user.setPassword(passwordEncoder.encode(formDTO.getPassword()));
+    user.setFullName(formDto.getFullName());
+    user.setEmail(formDto.getEmail());
+    user.setPassword(passwordEncoder.encode(formDto.getPassword()));
 
     // user roles
     final var roles = new HashSet<Role>();
-    roles.add(roleRepository.findByName(Role.ROLE_USER));
+    var role = formDto.getRole();
+    roles.add(roleRepository.findByName(role.name()));
     user.setRoles(roles);
-    user.setProvider(formDTO.getSocialProvider().getProviderType());
+    user.setProvider(formDto.getSocialProvider().getProviderType());
     user.setEnabled(true);
-    user.setProviderUserId(formDTO.getProviderUserId());
+    user.setProviderUserId(formDto.getProviderUserId());
 
     // user profile
     var userProfile = new UserProfile();

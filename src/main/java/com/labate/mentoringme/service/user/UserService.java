@@ -25,4 +25,6 @@ public interface UserService {
       Map<String, Object> attributes,
       OidcIdToken idToken,
       OidcUserInfo userInfo);
+
+    User save(User user);
 }

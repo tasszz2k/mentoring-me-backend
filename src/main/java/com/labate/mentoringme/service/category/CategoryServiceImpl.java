@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -34,4 +36,9 @@ public class CategoryServiceImpl implements CategoryService {
 
   @Override
   public void deleteCategory(Long id) {}
+
+  @Override
+  public List<Category> findByIds(List<Long> categoryIds) {
+    return categoryRepository.findAllById(categoryIds);
+  }
 }

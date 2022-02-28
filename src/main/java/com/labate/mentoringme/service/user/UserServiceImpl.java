@@ -11,6 +11,7 @@ import com.labate.mentoringme.model.Role;
 import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.model.UserProfile;
 import com.labate.mentoringme.repository.RoleRepository;
+import com.labate.mentoringme.repository.UserProfileRepository;
 import com.labate.mentoringme.repository.UserRepository;
 import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfo;
 import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfoFactory;
@@ -33,6 +34,7 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
   private final PasswordEncoder passwordEncoder;
+  private final UserProfileRepository userProfileRepository;
 
   @Override
   @Transactional(value = "transactionManager")
@@ -110,6 +112,14 @@ public class UserServiceImpl implements UserService {
     }
 
     return LocalUser.create(user, attributes, idToken, userInfo);
+  }
+
+  @Transactional
+  @Override
+  public User save(User user) {
+    var updatedUser = userRepository.save(user);
+    userProfileRepository.save(user.getUserProfile());
+    return updatedUser;
   }
 
   private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {

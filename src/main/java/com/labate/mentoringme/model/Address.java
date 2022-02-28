@@ -1,5 +1,6 @@
 package com.labate.mentoringme.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -61,6 +62,10 @@ public class Address {
   @Column(name = "modified")
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
+
+  @JsonIgnore
+  @OneToMany(mappedBy = "address")
+  private Set<UserProfile> userProfiles;
 
   @PostLoad
   void fillTransient() {

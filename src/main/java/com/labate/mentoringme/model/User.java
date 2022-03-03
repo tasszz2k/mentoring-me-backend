@@ -1,6 +1,9 @@
 package com.labate.mentoringme.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.labate.mentoringme.model.quiz.Quiz;
+import com.labate.mentoringme.model.quiz.QuizResult;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,63 +25,69 @@ import java.util.Set;
 @Table(name = "users")
 public class User implements Serializable {
 
-  /***/
-  private static final long serialVersionUID = 65981149772133526L;
+	/***/
+	private static final long serialVersionUID = 65981149772133526L;
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-  @Column(unique = true)
-  private String email;
+	@Column(unique = true)
+	private String email;
 
-  @Column(unique = true)
-  private String phoneNumber;
+	@Column(unique = true)
+	private String phoneNumber;
 
-  private String password;
-  private String hash;
-  private String fullName;
-  private String imageUrl;
-  private String provider;
-  private String providerUserId;
+	private String password;
+	private String hash;
+	private String fullName;
+	private String imageUrl;
+	private String provider;
+	private String providerUserId;
 
-  private Integer status;
+	private Integer status;
 
-  @Column(name = "verified_email", columnDefinition = "BIT", length = 1)
-  private boolean verifiedEmail;
+	@Column(name = "verified_email", columnDefinition = "BIT", length = 1)
+	private boolean verifiedEmail;
 
-  @Column(name = "verified_phone_number", columnDefinition = "BIT", length = 1)
-  private boolean verifiedPhoneNumber;
+	@Column(name = "verified_phone_number", columnDefinition = "BIT", length = 1)
+	private boolean verifiedPhoneNumber;
 
-  @Column(name = "enabled", columnDefinition = "BIT", length = 1)
-  private boolean enabled = true;
+	@Column(name = "enabled", columnDefinition = "BIT", length = 1)
+	private boolean enabled = true;
 
-  @CreatedDate
-  @Column(name = "created", nullable = false, updatable = false)
-  @Temporal(TemporalType.TIMESTAMP)
-  private Date createdDate;
+	@CreatedDate
+	@Column(name = "created", nullable = false, updatable = false)
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date createdDate;
 
-  @LastModifiedDate
-  @Column(name = "modified")
-  @Temporal(TemporalType.TIMESTAMP)
-  private Date modifiedDate;
+	@LastModifiedDate
+	@Column(name = "modified")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date modifiedDate;
 
-  // bidirectional many-to-many association to Role
-  @JsonIgnore
-  @ManyToMany
-  @JoinTable(
-      name = "users_roles",
-      joinColumns = {@JoinColumn(name = "user_id")},
-      inverseJoinColumns = {@JoinColumn(name = "role_id")})
-  private Set<Role> roles;
+	// bidirectional many-to-many association to Role
+	@JsonIgnore
+	@ManyToMany
+	@JoinTable(name = "users_roles", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "role_id") })
+	private Set<Role> roles;
 
-  @JsonIgnore
-  @OneToOne
-  @MapsId
-  @JoinColumn(name = "profile_id")
-  private UserProfile userProfile;
+	@JsonIgnore
+	@OneToOne
+	@MapsId
+	@JoinColumn(name = "profile_id")
+	private UserProfile userProfile;
 
-  @JsonIgnore
-  @OneToMany(mappedBy = "user")
-  private Set<SecureToken> tokens;
+	@JsonIgnore
+	@OneToMany(mappedBy = "user")
+	private Set<SecureToken> tokens;
+
+	@JsonIgnore
+	@OneToMany(mappedBy = "user")
+	private Set<Quiz> quizzes;
+
+	@JsonIgnore
+	@OneToMany(mappedBy = "user")
+	private Set<QuizResult> quizResults;
 }

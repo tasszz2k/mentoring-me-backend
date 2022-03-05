@@ -59,6 +59,7 @@ public class Category {
   @ManyToMany(mappedBy = "categories", fetch = FetchType.EAGER)
   private Set<UserProfile> userProfiles;
   
+  @JsonIgnore
   @ManyToMany(mappedBy = "categories")
   private Set<Quiz> quizzes;
 }

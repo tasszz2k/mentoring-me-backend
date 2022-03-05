@@ -85,9 +85,5 @@ public class User implements Serializable {
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "user")
-	private Set<Quiz> quizzes;
-
-	@JsonIgnore
-	@OneToMany(mappedBy = "user")
 	private Set<QuizResult> quizResults;
 }

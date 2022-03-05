@@ -3,9 +3,11 @@ package com.labate.mentoringme.model.quiz;
 import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,6 +26,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,6 +34,7 @@ import lombok.Setter;
 @EntityListeners(AuditingEntityListener.class)
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Table(name = "questions")
@@ -40,16 +44,18 @@ public class Question {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	@ManyToOne
-	@JoinColumn(name = "quiz_id")
+
+	@JsonIgnore
+	@ManyToOne()
+	@JoinColumn(name = "quiz_id", referencedColumnName = "id", insertable = true, updatable = true)
 	private Quiz quiz;
-	
+
 	private String question;
 
 	private String description;
-	
-	private Integer type;
+
+	@Column(name = "is_multiple_choice", columnDefinition = "BIT", length = 1)
+	private Boolean isMultipleChoice;
 
 	@Column(name = "is_deleted", columnDefinition = "BIT", length = 1)
 	private Boolean isDeleted;
@@ -63,8 +69,7 @@ public class Question {
 	@Column(name = "modified")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modifiedDate;
-	
-	@JsonIgnore
-	@OneToMany(mappedBy = "question")
+
+	@OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	private Set<Answer> answers;
 }

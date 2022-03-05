@@ -49,6 +49,10 @@ public class QuizResult {
 	
 	private Float score;
 	
+	private Integer numberOfTrue;
+	
+	private Integer numberOfFalse;
+	
 	@Column(name = "is_deleted", columnDefinition = "BIT", length = 1)
 	private Boolean isDeleted;
 

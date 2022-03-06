@@ -1,8 +1,6 @@
 package com.labate.mentoringme.model.quiz;
 
 import java.util.Date;
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -15,19 +13,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.labate.mentoringme.model.Category;
-import com.labate.mentoringme.model.User;
-
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -42,30 +34,30 @@ import lombok.Setter;
 @SQLDelete(sql = "update answers set is_deleted = true where id=?")
 @Where(clause = "is_deleted = false")
 public class Answer {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	
-	@JsonIgnore
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "question_id", referencedColumnName = "id")
-	private Question question;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-	private String answer;
+  @JsonIgnore
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "question_id", referencedColumnName = "id")
+  private Question question;
 
-	@Column(name = "is_correct", columnDefinition = "BIT", length = 1)
-	private Boolean isCorrect;;
+  private String answer;
 
-	@Column(name = "is_deleted", columnDefinition = "BIT", length = 1)
-	private Boolean isDeleted;
+  @Column(name = "is_correct", columnDefinition = "BIT", length = 1)
+  private Boolean isCorrect;;
 
-	@CreatedDate
-	@Column(name = "created", nullable = false, updatable = false)
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date createdDate;
+  @Column(name = "is_deleted", columnDefinition = "BIT", length = 1)
+  private Boolean isDeleted;
 
-	@LastModifiedDate
-	@Column(name = "modified")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date modifiedDate;
+  @CreatedDate
+  @Column(name = "created", nullable = false, updatable = false)
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date createdDate;
+
+  @LastModifiedDate
+  @Column(name = "modified")
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date modifiedDate;
 }

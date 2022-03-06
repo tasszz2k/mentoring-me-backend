@@ -25,6 +25,7 @@ public class QuizDto {
 	private Long createdBy;
 	private Long modifiedBy;
 	private Boolean isDraft;
+	private String author;
 	private List<QuestionDto> questions;
 	private List<QuizCategoryDto> categories;
 }

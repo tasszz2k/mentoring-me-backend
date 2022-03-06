@@ -22,7 +22,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.labate.mentoringme.model.quiz.QuizResult;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -93,8 +92,4 @@ public class User implements Serializable {
   @JsonIgnore
   @OneToMany(mappedBy = "user")
   private Set<SecureToken> tokens;
-
-  @JsonIgnore
-  @OneToMany(mappedBy = "user")
-  private Set<QuizResult> quizResults;
 }

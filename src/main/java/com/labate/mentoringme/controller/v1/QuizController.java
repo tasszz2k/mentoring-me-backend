@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.labate.mentoringme.dto.request.FindQuizRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.CreateQuizRequest;
+import com.labate.mentoringme.dto.request.quiz.ResultQuizCheckingRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizRequest;
 import com.labate.mentoringme.dto.response.ApiResponse;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
@@ -78,5 +79,10 @@ public class QuizController {
   @GetMapping("/{userId}/results")
   private ResponseEntity<?> getQuizTakingHistory(@PathVariable Long userId) {
     return BaseResponseEntity.ok(quizService.getQuizTakingHistory(userId));
+  }
+
+  @PostMapping("/results")
+  private ResponseEntity<?> getQuizTakingResult(@RequestBody ResultQuizCheckingRequest request) {
+    return BaseResponseEntity.ok(quizService.getQuizResult(request));
   }
 }

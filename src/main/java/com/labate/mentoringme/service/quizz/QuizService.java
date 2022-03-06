@@ -7,7 +7,9 @@ import com.labate.mentoringme.dto.model.QuizOverviewDto;
 import com.labate.mentoringme.dto.request.FindQuizRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.CreateQuizRequest;
+import com.labate.mentoringme.dto.request.quiz.ResultQuizCheckingRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizRequest;
+import com.labate.mentoringme.dto.response.QuizResultResponse;
 import com.labate.mentoringme.dto.response.QuizTakingHistoryResponse;
 import com.labate.mentoringme.model.quiz.Quiz;
 
@@ -29,4 +31,6 @@ public interface QuizService {
   void saveDraftQuiz(Long quizId);
 
   List<QuizTakingHistoryResponse> getQuizTakingHistory(Long userId);
+
+  QuizResultResponse getQuizResult(ResultQuizCheckingRequest request);
 }

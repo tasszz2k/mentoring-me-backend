@@ -1,17 +1,31 @@
 package com.labate.mentoringme.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.MapsId;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.labate.mentoringme.model.quiz.QuizResult;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /** The persistent class for the user database table. */
 @EntityListeners(AuditingEntityListener.class)
@@ -66,9 +80,7 @@ public class User implements Serializable {
   // bidirectional many-to-many association to Role
   @JsonIgnore
   @ManyToMany
-  @JoinTable(
-      name = "users_roles",
-      joinColumns = {@JoinColumn(name = "user_id")},
+  @JoinTable(name = "users_roles", joinColumns = {@JoinColumn(name = "user_id")},
       inverseJoinColumns = {@JoinColumn(name = "role_id")})
   private Set<Role> roles;
 
@@ -81,4 +93,8 @@ public class User implements Serializable {
   @JsonIgnore
   @OneToMany(mappedBy = "user")
   private Set<SecureToken> tokens;
+
+  @JsonIgnore
+  @OneToMany(mappedBy = "user")
+  private Set<QuizResult> quizResults;
 }

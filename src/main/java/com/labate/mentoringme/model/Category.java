@@ -10,6 +10,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.labate.mentoringme.model.quiz.Quiz;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
@@ -56,4 +58,8 @@ public class Category {
 
   @ManyToMany(mappedBy = "categories", fetch = FetchType.EAGER)
   private Set<UserProfile> userProfiles;
+  
+  @JsonIgnore
+  @ManyToMany(mappedBy = "categories")
+  private Set<Quiz> quizzes;
 }

@@ -3,18 +3,17 @@ package com.labate.mentoringme.projection;
 import java.util.Date;
 
 public interface QuizTakingHistoryProjection {
-  public String getTitle();
+  String getTitle();
 
-  public Date getCreated();
+  Date getCreated();
 
-  public Integer getScore();
+  Integer getScore();
 
-  public Integer getNumberOfQuestion();
+  Integer getNumberOfQuestion();
 
-  public Integer getNumberOfTrue();
+  Integer getNumberOfTrue();
 
-  public Integer getNumberOfFalse();
+  Integer getNumberOfFalse();
 
-  public String getAuthor();
-
+  String getAuthor();
 }

@@ -1,16 +1,15 @@
 package com.labate.mentoringme.dto.model;
 
-import java.util.List;
-
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class QuestionDto {
-	private Long id;
-	private String question;
-	private String description;
-	private Boolean isMultipleChoice;
-	private Boolean isDeleted = false;
-	private List<AnswerDto> answers;
-	
+  private Long id;
+  private String question;
+  private String description;
+  private Boolean isMultipleChoice;
+  private Boolean isDeleted = false;
+  private List<AnswerDto> answers;
 }

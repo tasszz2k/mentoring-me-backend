@@ -7,11 +7,11 @@ public enum SocialProvider {
 
   private final String providerType;
 
-  public String getProviderType() {
-    return providerType;
-  }
-
   SocialProvider(final String providerType) {
     this.providerType = providerType;
+  }
+
+  public String getProviderType() {
+    return providerType;
   }
 }

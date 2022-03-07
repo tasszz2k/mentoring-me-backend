@@ -93,16 +93,16 @@ public class Address {
       this.value = value;
     }
 
-    public Integer getValue() {
-      return value;
-    }
-
     public static Type of(Integer value) {
       return Stream.of(Type.values())
           .filter(type -> type.getValue().equals(value))
           .findFirst()
           .orElseThrow(
               () -> new IllegalArgumentException("Invalid address type with value: " + value));
+    }
+
+    public Integer getValue() {
+      return value;
     }
   }
 }

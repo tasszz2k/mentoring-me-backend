@@ -27,7 +27,7 @@ public interface UserService {
       OidcIdToken idToken,
       OidcUserInfo userInfo);
 
-    User save(User user);
+  User save(User user);
 
-    void updateUserEnableStatus(Long userId, boolean enable) throws UserNotFoundException;
+  void updateUserEnableStatus(Long userId, boolean enable) throws UserNotFoundException;
 }

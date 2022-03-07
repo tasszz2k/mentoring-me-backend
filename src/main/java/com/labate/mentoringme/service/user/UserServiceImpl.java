@@ -16,6 +16,7 @@ import com.labate.mentoringme.repository.UserRepository;
 import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfo;
 import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfoFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
@@ -35,6 +36,9 @@ public class UserServiceImpl implements UserService {
   private final RoleRepository roleRepository;
   private final PasswordEncoder passwordEncoder;
   private final UserProfileRepository userProfileRepository;
+
+  @Value("${labate.secure.default-password}")
+  private String defaultPassword;
 
   @Override
   @Transactional(value = "transactionManager")
@@ -125,7 +129,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void updateUserEnableStatus(Long userId, boolean enable) throws UserNotFoundException {
-    var user = findUserById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+    var user = findUserById(userId).orElseThrow(() -> new UserNotFoundException("id = " + userId));
     if (user.isEnabled() != enable) {
       user.setEnabled(enable);
       userRepository.save(user);
@@ -145,7 +149,7 @@ public class UserServiceImpl implements UserService {
         .addFullName(oAuth2UserInfo.getName())
         .addEmail(oAuth2UserInfo.getEmail())
         .addSocialProvider(UserMapper.toSocialProvider(registrationId))
-        .addPassword("IMPORTANCE...CHANGEIT!!!") // FIXME: change it to a random password
+        .addPassword(defaultPassword) // FIXME: change it to a random password
         .build();
   }
 
@@ -158,7 +162,7 @@ public class UserServiceImpl implements UserService {
   public LocalUser findLocalUserById(Long id) {
     var user = userRepository.findById(id).orElse(null);
     if (user == null) {
-      throw new UserNotFoundException("User with id " + id + " not found");
+      throw new UserNotFoundException("id = " + id);
     }
     return LocalUser.create(user, null, null, null);
   }

@@ -27,6 +27,7 @@ public class PasswordServiceImpl implements PasswordService {
   private final UserRepository userRepository;
   private final SecureTokenService secureTokenService;
   private final EmailService emailService;
+
   @Value("${site.base.url.https}")
   private String baseURL;
 
@@ -35,7 +36,7 @@ public class PasswordServiceImpl implements PasswordService {
     var user =
         userService
             .findUserById(userId)
-            .orElseThrow(() -> new UserNotFoundException("User with id " + userId + " not found"));
+            .orElseThrow(() -> new UserNotFoundException("id = " + userId));
 
     if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
       throw new InvalidPasswordException("Old password is incorrect");
@@ -47,14 +48,14 @@ public class PasswordServiceImpl implements PasswordService {
   }
 
   @Override
-  public void forgottenPassword(ForgotPasswordRequest userName) throws UserNotFoundException {
-    String email = userName.getEmail();
-    String phoneNumber = userName.getPhoneNumber();
+  public void forgottenPassword(ForgotPasswordRequest request) throws UserNotFoundException {
+    String email = request.getEmail();
+    String phoneNumber = request.getPhoneNumber();
     User user = null;
     if (email != null) {
       user = userService.findUserByEmail(email);
       if (user == null) {
-        throw new UserNotFoundException("user not found!");
+        throw new UserNotFoundException("email = " + email);
       }
       sendResetPasswordByEmail(user);
     } else if (phoneNumber != null) {

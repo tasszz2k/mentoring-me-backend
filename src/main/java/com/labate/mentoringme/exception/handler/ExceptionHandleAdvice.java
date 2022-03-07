@@ -66,7 +66,7 @@ public class ExceptionHandleAdvice {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(
             new InvalidInputResponse(
-                HttpStatus.BAD_REQUEST.value(),
+                BadRequestError.INVALID_INPUT.getCode(),
                 e.getMessage(),
                 BadRequestError.INVALID_INPUT.getName(),
                 errors));
@@ -145,7 +145,7 @@ public class ExceptionHandleAdvice {
               .map(
                   fieldErrorResponse ->
                       new InvalidInputResponse(
-                          HttpStatus.BAD_REQUEST.value(),
+                          BadRequestError.INVALID_INPUT.getCode(),
                           fieldErrorResponse.getMessage(),
                           fieldErrorResponse.getObjectName(),
                           errors))
@@ -153,7 +153,7 @@ public class ExceptionHandleAdvice {
     } else {
       invalidInputResponse =
           new InvalidInputResponse(
-              HttpStatus.BAD_REQUEST.value(),
+              BadRequestError.INVALID_INPUT.getCode(),
               languageService.getMessage(
                   BadRequestError.INVALID_INPUT.getMessage(), "Invalid request arguments"),
               BadRequestError.INVALID_INPUT.getName(),
@@ -177,7 +177,7 @@ public class ExceptionHandleAdvice {
               .collect(Collectors.joining("."));
       invalidInputResponse =
           new InvalidInputResponse(
-              HttpStatus.BAD_REQUEST.value(),
+              BadRequestError.INVALID_INPUT.getCode(),
               e.getMessage(),
               BadRequestError.INVALID_INPUT.name(),
               Collections.singleton(
@@ -190,7 +190,7 @@ public class ExceptionHandleAdvice {
       JsonParseException jsonParseException = (JsonParseException) cause;
       invalidInputResponse =
           new InvalidInputResponse(
-              HttpStatus.BAD_REQUEST.value(),
+              BadRequestError.INVALID_INPUT.getCode(),
               BadRequestError.INVALID_INPUT.getMessage(),
               BadRequestError.INVALID_INPUT.name(),
               Collections.singleton(
@@ -248,7 +248,7 @@ public class ExceptionHandleAdvice {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(
             new InvalidInputResponse(
-                HttpStatus.BAD_REQUEST.value(),
+                BadRequestError.INVALID_INPUT.getCode(),
                 e.getMessage(),
                 BadRequestError.INVALID_INPUT.getName(),
                 fieldErrors));
@@ -277,7 +277,7 @@ public class ExceptionHandleAdvice {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(
             new InvalidInputResponse(
-                HttpStatus.BAD_REQUEST.value(),
+                BadRequestError.INVALID_INPUT.getCode(),
                 e.getMessage(),
                 BadRequestError.INVALID_INPUT.getName(),
                 Collections.singleton(
@@ -306,7 +306,7 @@ public class ExceptionHandleAdvice {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(
             new InvalidInputResponse(
-                HttpStatus.BAD_REQUEST.value(),
+                BadRequestError.INVALID_INPUT.getCode(),
                 message,
                 BadRequestError.INVALID_INPUT.name(),
                 fieldsErrors));
@@ -319,7 +319,7 @@ public class ExceptionHandleAdvice {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(
             new InvalidInputResponse(
-                HttpStatus.BAD_REQUEST.value(),
+                BadRequestError.INVALID_INPUT.getCode(),
                 BadRequestError.INVALID_INPUT.getMessage(),
                 BadRequestError.INVALID_INPUT.getName(),
                 Collections.singleton(

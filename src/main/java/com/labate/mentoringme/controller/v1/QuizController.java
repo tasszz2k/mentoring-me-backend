@@ -24,13 +24,13 @@ public class QuizController {
   private final QuizService quizService;
 
   @GetMapping()
-  private ResponseEntity<?> getAllQuiz(
+  public ResponseEntity<?> getAllQuiz(
       @Valid PageCriteria pageCriteria, FindQuizRequest quizRequest) {
     return BaseResponseEntity.ok(quizService.findAllQuiz(quizRequest, pageCriteria));
   }
 
   @GetMapping("/{quizId}")
-  private ResponseEntity<?> getQuizDetail(@PathVariable Long quizId) {
+  public ResponseEntity<?> getQuizDetail(@PathVariable Long quizId) {
     var quiz = quizService.findById(quizId);
     if (quiz == null) {
       return ResponseEntity.badRequest().body(ApiResponse.fail(null, "Quiz not found"));
@@ -38,30 +38,30 @@ public class QuizController {
     return BaseResponseEntity.ok(quiz);
   }
 
-  @ApiImplicitParam(
-      name = "Authorization",
-      value = "Access Token",
-      required = true,
-      paramType = "header",
-      dataTypeClass = String.class,
-      example = "Bearer access_token")
-  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR')")
+  // @ApiImplicitParam(
+  //     name = "Authorization",
+  //     value = "Access Token",
+  //     required = true,
+  //     paramType = "header",
+  //     dataTypeClass = String.class,
+  //     example = "Bearer access_token")
+  // @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR')")
   @PostMapping()
-  private ResponseEntity<?> addQuiz(@RequestBody CreateQuizRequest createQuizRequest) {
+  public ResponseEntity<?> addQuiz(@RequestBody CreateQuizRequest createQuizRequest) {
     var quiz = quizService.addQuiz(createQuizRequest);
     return BaseResponseEntity.ok(quiz);
   }
 
-  @ApiImplicitParam(
-      name = "Authorization",
-      value = "Access Token",
-      required = true,
-      paramType = "header",
-      dataTypeClass = String.class,
-      example = "Bearer access_token")
-  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR')")
+  // @ApiImplicitParam(
+  //     name = "Authorization",
+  //     value = "Access Token",
+  //     required = true,
+  //     paramType = "header",
+  //     dataTypeClass = String.class,
+  //     example = "Bearer access_token")
+  // @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR')")
   @PutMapping()
-  private ResponseEntity<?> updateQuiz(@RequestBody UpdateQuizRequest updateQuizRequest) {
+  public ResponseEntity<?> updateQuiz(@RequestBody UpdateQuizRequest updateQuizRequest) {
     var quiz = quizService.updateQuiz(updateQuizRequest);
     return BaseResponseEntity.ok(quiz);
   }
@@ -75,7 +75,7 @@ public class QuizController {
       example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR')")
   @GetMapping("/drafts")
-  private ResponseEntity<?> getListDraftQuiz() {
+  public ResponseEntity<?> getListDraftQuiz() {
     return BaseResponseEntity.ok(quizService.getListDraftQuiz());
   }
 
@@ -106,7 +106,7 @@ public class QuizController {
       example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('MENTOR', 'USER')")
   @GetMapping("/results")
-  private ResponseEntity<?> getQuizTakingHistory() {
+  public ResponseEntity<?> getQuizTakingHistory() {
     return BaseResponseEntity.ok(quizService.getQuizTakingHistory());
   }
 
@@ -119,7 +119,7 @@ public class QuizController {
       example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('MENTOR', 'USER')")
   @PostMapping("/results")
-  private ResponseEntity<?> getQuizTakingResult(@RequestBody ResultQuizCheckingRequest request) {
+  public ResponseEntity<?> getQuizTakingResult(@RequestBody ResultQuizCheckingRequest request) {
     return BaseResponseEntity.ok(quizService.getQuizResult(request));
   }
 }

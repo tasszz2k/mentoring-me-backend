@@ -21,6 +21,7 @@ import com.labate.mentoringme.repository.QuizRepository;
 import com.labate.mentoringme.repository.QuizResultRepository;
 import com.labate.mentoringme.util.ObjectMapperUtils;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,15 +31,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class QuizServiceImpl implements QuizService {
 
   private final QuizRepository quizRepository;
-
   private final QuestionRepository questionRepository;
-
   private final QuizResultRepository quizResultRepository;
-
   private final ModelMapper modelMapper = new ModelMapper();
 
   @Override

@@ -22,15 +22,13 @@ public interface QuizService {
 
   void deleteById(Long quizId);
 
-  List<QuizOverviewDto> getDraftQuizByUserId(Long userId);
+  List<QuizOverviewDto> getListDraftQuiz();
 
   Quiz addQuiz(CreateQuizRequest createQuizRequest);
 
   Quiz updateQuiz(UpdateQuizRequest updateQuizRequest);
 
-  void saveDraftQuiz(Long quizId);
-
-  List<QuizTakingHistoryResponse> getQuizTakingHistory(Long userId);
+  List<QuizTakingHistoryResponse> getQuizTakingHistory();
 
   QuizResultResponse getQuizResult(ResultQuizCheckingRequest request);
 }

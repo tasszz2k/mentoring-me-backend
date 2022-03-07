@@ -9,10 +9,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.labate.mentoringme.dto.QuizResultCheckingDto;
 import com.labate.mentoringme.dto.UserSelectionDto;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
+import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.model.QuizDto;
 import com.labate.mentoringme.dto.model.QuizOverviewDto;
 import com.labate.mentoringme.dto.request.FindQuizRequest;
@@ -75,22 +77,17 @@ public class QuizServiceImpl implements QuizService {
   @Override
   public void deleteById(Long quizId) {
     quizRepository.deleteById(quizId);
-
-  }
-
-  @Override
-  public List<QuizOverviewDto> getDraftQuizByUserId(Long userId) {
-    return quizRepository.findAllByCreatedByAndIsDraft(userId, true).stream().map(quiz -> {
-      var quizOverviewDto = modelMapper.map(quiz, QuizOverviewDto.class);
-      return quizOverviewDto;
-    }).collect(Collectors.toList());
   }
 
   @Override
   public Quiz addQuiz(CreateQuizRequest createQuizRequest) {
+    LocalUser localUser =
+        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var quiz = modelMapper.map(createQuizRequest, Quiz.class);
+    quiz.setCreatedBy(localUser.getUser().getId());
     quiz.setCreatedDate(new Date());
     quiz.setModifiedDate(new Date());
+    quiz.setAuthor(localUser.getUser().getFullName());
     quiz.getQuestions().forEach(question -> {
       question.setQuiz(quiz);
     });
@@ -102,8 +99,11 @@ public class QuizServiceImpl implements QuizService {
 
   @Override
   public Quiz updateQuiz(UpdateQuizRequest updateQuizRequest) {
+    LocalUser localUser =
+        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var quiz = modelMapper.map(updateQuizRequest, Quiz.class);
     quiz.setModifiedDate(new Date());
+    quiz.setModifiedBy(localUser.getUser().getId());
     quiz.getQuestions().forEach(question -> {
       question.setQuiz(quiz);
     });
@@ -114,12 +114,10 @@ public class QuizServiceImpl implements QuizService {
   }
 
   @Override
-  public void saveDraftQuiz(Long quizId) {
-    quizRepository.saveDraftQuiz(quizId);
-  }
-
-  @Override
-  public List<QuizTakingHistoryResponse> getQuizTakingHistory(Long userId) {
+  public List<QuizTakingHistoryResponse> getQuizTakingHistory() {
+    LocalUser localUser =
+        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    var userId = localUser.getUser().getId();
     return quizRepository.getQuizTakingHistory(userId).stream().map(item -> {
       var quizTakingHistoryResponse = modelMapper.map(item, QuizTakingHistoryResponse.class);
       return quizTakingHistoryResponse;
@@ -133,14 +131,16 @@ public class QuizServiceImpl implements QuizService {
       return item;
     }).collect(Collectors.toList());
     var response = calculateUserResult(request, results);
-    saveToQuizResult(response, request.getUserId(), request.getQuizId());
+    saveToQuizResult(response, request.getQuizId());
     return response;
   }
 
-  private void saveToQuizResult(QuizResultResponse response, Long userId, Long quizId) {
+  private void saveToQuizResult(QuizResultResponse response, Long quizId) {
+    LocalUser localUser =
+        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var quizResult = modelMapper.map(response, QuizResult.class);
     quizResult.setCreatedDate(new Date());
-    quizResult.setQuizId(userId);
+    quizResult.setQuizId(localUser.getUser().getId());
     quizResult.setUserId(quizId);
     quizResult.setIsDeleted(false);
     quizResultRepository.save(quizResult);
@@ -198,6 +198,17 @@ public class QuizServiceImpl implements QuizService {
     response.setNumberOfTrue(numberOfQuestion - numberOfFalse);
     response.setScore(score);
     return response;
+  }
+
+  @Override
+  public List<QuizOverviewDto> getListDraftQuiz() {
+    LocalUser localUser =
+        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    var userId = localUser.getUser().getId();
+    return quizRepository.findAllByCreatedByAndIsDraft(userId, true).stream().map(quiz -> {
+      var quizOverviewDto = modelMapper.map(quiz, QuizOverviewDto.class);
+      return quizOverviewDto;
+    }).collect(Collectors.toList());
   }
 
 

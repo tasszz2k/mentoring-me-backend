@@ -13,13 +13,13 @@ public class UpdateQuizRequest {
   private Long id;
   @NotBlank
   private String title;
-  private String description;
   @NotNull
   private Integer numberOfQuestion;
+  @NotNull
   private Integer time;
+  @NotNull
   private Boolean isDraft;
   @NotNull
-  private Long modifiedBy;
   private List<QuizCategoryDto> categories;
   private List<QuestionDto> questions;
 }

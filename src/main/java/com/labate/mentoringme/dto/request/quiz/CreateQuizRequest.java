@@ -12,14 +12,12 @@ public class CreateQuizRequest {
 
   @NotBlank
   private String title;
-  private String description;
   @NotNull
   private Integer numberOfQuestion;
   @NotNull
   private Integer time;
-  private Boolean isDraft;
   @NotNull
-  private Long createdBy;
+  private Boolean isDraft;
   @NotNull
   private List<QuizCategoryDto> categories;
   private List<QuestionDto> questions;

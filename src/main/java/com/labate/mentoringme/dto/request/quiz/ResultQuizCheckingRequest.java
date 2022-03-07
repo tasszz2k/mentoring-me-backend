@@ -10,7 +10,5 @@ public class ResultQuizCheckingRequest {
   @NotNull
   private Long quizId;
   @NotNull
-  private Long userId;
-  @NotNull
   private List<UserSelectionDto> userSelection;
 }

@@ -18,4 +18,6 @@ public interface QuizProjection {
   public Integer getTime();
 
   public Boolean getIsDraft();
+
+  public String getAuthor();
 }

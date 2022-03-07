@@ -68,7 +68,7 @@ public class Quiz {
 
   private Integer type;
 
-  private Integer modifiedBy;
+  private Long modifiedBy;
 
   @CreatedDate
   @Column(name = "created", nullable = false, updatable = false)
@@ -89,4 +89,6 @@ public class Quiz {
   @JoinTable(name = "quizzes_categories", joinColumns = {@JoinColumn(name = "quiz_id")},
       inverseJoinColumns = {@JoinColumn(name = "category_id")})
   private Set<Category> categories;
+
+  private String author;
 }

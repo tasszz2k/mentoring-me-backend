@@ -4,9 +4,10 @@ import com.labate.mentoringme.dto.mapper.CategoryMapper;
 import com.labate.mentoringme.dto.model.CategoryDto;
 import com.labate.mentoringme.dto.request.GetCategoriesRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
-import com.labate.mentoringme.dto.response.ApiResponse;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
+import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
+import com.labate.mentoringme.exception.CategoryNotFoundException;
 import com.labate.mentoringme.service.category.CategoryService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class CategoryController {
   public ResponseEntity<?> findCategoryById(@PathVariable Long categoryId) {
     var category = categoryService.findById(categoryId);
     if (category == null) {
-      return ResponseEntity.badRequest().body(ApiResponse.fail(null, "Category not found"));
+      throw new CategoryNotFoundException("id = " + categoryId);
     }
     return BaseResponseEntity.ok(CategoryMapper.toDto(category));
   }
@@ -39,14 +40,14 @@ public class CategoryController {
     var page = categoryService.findAllCategories(pageCriteria, request);
     var categories = page.getContent();
 
-    var metadata =
+    var paging =
         Paging.builder()
             .limit(pageCriteria.getLimit())
             .page(pageCriteria.getPage())
             .total(page.getTotalElements())
             .build();
-
-    return BaseResponseEntity.ok(CategoryMapper.toDtos(categories), metadata);
+    var response = new PageResponse(CategoryMapper.toDtos(categories), paging);
+    return BaseResponseEntity.ok(response);
   }
 
   @ApiImplicitParam(
@@ -81,7 +82,7 @@ public class CategoryController {
 
     var oldCategory = categoryService.findById(categoryId);
     if (oldCategory == null) {
-      return ResponseEntity.badRequest().body(ApiResponse.fail(null, "Category not found"));
+      throw new CategoryNotFoundException("id = " + categoryId);
     }
 
     categoryDto.setId(categoryId);
@@ -103,7 +104,7 @@ public class CategoryController {
   public ResponseEntity<?> deleteCategory(@PathVariable Long categoryId) {
     var oldCategory = categoryService.findById(categoryId);
     if (oldCategory == null) {
-      return ResponseEntity.badRequest().body(ApiResponse.fail(null, "Category not found"));
+      throw new CategoryNotFoundException("id = " + categoryId);
     }
 
     categoryService.deleteCategory(categoryId);

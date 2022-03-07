@@ -7,8 +7,7 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.labate.mentoringme.dto.response.ErrorResponse;
 import com.labate.mentoringme.dto.response.FieldErrorResponse;
 import com.labate.mentoringme.dto.response.InvalidInputResponse;
-import com.labate.mentoringme.exception.UserAlreadyExistAuthenticationException;
-import com.labate.mentoringme.exception.UserNotFoundException;
+import com.labate.mentoringme.exception.*;
 import com.labate.mentoringme.exception.http.ResponseError;
 import com.labate.mentoringme.exception.http.ResponseException;
 import com.labate.mentoringme.internationalization.LanguageService;
@@ -357,16 +356,59 @@ public class ExceptionHandleAdvice {
                 .build());
   }
 
+  @ExceptionHandler(CategoryNotFoundException.class)
+  public ResponseEntity<ErrorResponse<Void>> handleCategoryNotFoundException(
+      CategoryNotFoundException e, HttpServletRequest request) {
+    ResponseError error = NotFoundError.CATEGORY_NOT_FOUND;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            ErrorResponse.<Void>builder()
+                .code(error.getCode())
+                .error(error.getName())
+                .message(MessageFormat.format(error.getMessage(), e.getMessage()))
+                .build());
+  }
+
+  @ExceptionHandler(QuizNotFoundException.class)
+  public ResponseEntity<ErrorResponse<Void>> handleQuizNotFoundException(
+      QuizNotFoundException e, HttpServletRequest request) {
+    ResponseError error = NotFoundError.QUIZ_NOT_FOUND;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            ErrorResponse.<Void>builder()
+                .code(error.getCode())
+                .error(error.getName())
+                .message(MessageFormat.format(error.getMessage(), e.getMessage()))
+                .build());
+  }
+
   @ExceptionHandler(UserAlreadyExistAuthenticationException.class)
   public ResponseEntity<ErrorResponse<Void>> handleUserAlreadyExistAuthenticationException(
       UserAlreadyExistAuthenticationException e, HttpServletRequest request) {
     ResponseError error = InvalidInputError.USER_ALREADY_EXISTED;
     log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    return ResponseEntity.status(error.getStatus())
         .body(
             new InvalidInputResponse(
                 error.getCode(),
                 MessageFormat.format(error.getMessage(), e.getMessage()),
+                error.getName(),
+                Collections.singleton(
+                    FieldErrorResponse.builder().message(e.getMessage()).build())));
+  }
+
+  @ExceptionHandler(InvalidTokenException.class)
+  public ResponseEntity<ErrorResponse<Void>> handleInvalidTokenException(
+      InvalidTokenException e, HttpServletRequest request) {
+    ResponseError error = UnauthorizedError.FORBIDDEN_ACCESS_TOKEN;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            new InvalidInputResponse(
+                error.getCode(),
+                error.getMessage(),
                 error.getName(),
                 Collections.singleton(
                     FieldErrorResponse.builder().message(e.getMessage()).build())));

@@ -17,8 +17,8 @@ public class ErrorResponse<T> extends ServiceResponse<T> {
     private String error;
 
     @Builder
-    public ErrorResponse(int code, String message, T data, String error) {
-        super(code, message, data);
+    public ErrorResponse(int code, T data, String message, String error) {
+        super(code, data, message);
         this.error = error;
     }
 }

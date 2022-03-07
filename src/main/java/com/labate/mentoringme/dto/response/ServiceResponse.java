@@ -11,15 +11,15 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ServiceResponse<T> {
-    private int code;
-    private String message;
-    private T data;
+  private int code;
+  private T data;
+  private String message;
 
-    public static <T> ServiceResponse<T> succeed(HttpStatus status, T datta) {
-        return new ServiceResponse<>(status.value(), null, datta);
-    }
+  public static <T> ServiceResponse<T> succeed(HttpStatus status, T data) {
+    return new ServiceResponse<>(status.value(), data, null);
+  }
 
-    public static <T> ServiceResponse<T> succeed(HttpStatus status, String message, T datta) {
-        return new ServiceResponse<>(status.value(), message, datta);
-    }
+  public static <T> ServiceResponse<T> succeed(HttpStatus status, T data, String message) {
+    return new ServiceResponse<>(status.value(), data, message);
+  }
 }

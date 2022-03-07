@@ -5,10 +5,8 @@ import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.ChangePasswordRequest;
 import com.labate.mentoringme.dto.request.ForgotPasswordRequest;
 import com.labate.mentoringme.dto.request.ResetPasswordRequest;
-import com.labate.mentoringme.dto.response.ApiResponse;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.exception.InvalidTokenException;
-import com.labate.mentoringme.exception.UserNotFoundException;
 import com.labate.mentoringme.service.password.PasswordService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
@@ -53,30 +51,18 @@ public class PasswordController {
   }
 
   @PostMapping("/reset")
-  public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
-
-    try {
-      passwordService.resetPassword(request);
-    } catch (InvalidTokenException e) {
-      log.info("Invalid token: {}", request.getToken());
-      return ResponseEntity.badRequest().body(ApiResponse.fail(null, e.getMessage()));
-    }
+  public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request)
+      throws InvalidTokenException {
+    passwordService.resetPassword(request);
     return BaseResponseEntity.ok(null, "Password reset successfully");
   }
 
   @PostMapping("/forgot")
   public ResponseEntity<?> forgotPassword(
       @Valid @RequestBody final ForgotPasswordRequest forgotPasswordRequest) {
-    try {
-      passwordService.forgottenPassword(forgotPasswordRequest);
-    } catch (UserNotFoundException e) {
-      log.info("User not found: {}", forgotPasswordRequest.getEmail());
-      return ResponseEntity.badRequest().body(ApiResponse.fail(null, e.getMessage()));
-    }
-    // TODO: Change response details
-    return ResponseEntity.ok(
-        ApiResponse.success(
-            true,
-            messageSource.getMessage("user.forgotpwd.msg", null, LocaleContextHolder.getLocale())));
+    passwordService.forgottenPassword(forgotPasswordRequest);
+    return BaseResponseEntity.ok(
+        null,
+        messageSource.getMessage("user.forgotpwd.msg", null, LocaleContextHolder.getLocale()));
   }
 }

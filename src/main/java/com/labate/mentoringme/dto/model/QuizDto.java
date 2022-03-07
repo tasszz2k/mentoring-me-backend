@@ -19,7 +19,7 @@ public class QuizDto {
   private String title;
   private String description;
   private Integer numberOfQuestion;
-  private Boolean isDeleted = false;
+  @Builder.Default private Boolean isDeleted = false;
   private Integer time;
   private Long createdBy;
   private Long modifiedBy;

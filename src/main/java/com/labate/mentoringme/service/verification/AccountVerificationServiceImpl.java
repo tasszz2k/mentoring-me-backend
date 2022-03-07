@@ -6,15 +6,14 @@ import com.labate.mentoringme.exception.InvalidTokenException;
 import com.labate.mentoringme.model.SecureToken;
 import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.repository.SecureTokenRepository;
-import com.labate.mentoringme.repository.UserRepository;
 import com.labate.mentoringme.security.token.SecureTokenService;
 import com.labate.mentoringme.service.mail.EmailService;
+import com.labate.mentoringme.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
-import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -23,7 +22,7 @@ public class AccountVerificationServiceImpl implements AccountVerificationServic
   private final SecureTokenService secureTokenService;
   private final SecureTokenRepository secureTokenRepository;
   private final EmailService emailService;
-  private final UserRepository userRepository;
+  private final UserService userService;
 
   @Value("${site.base.url.https}")
   private String baseURL;
@@ -50,12 +49,10 @@ public class AccountVerificationServiceImpl implements AccountVerificationServic
   @Override
   public boolean verifyUser(String token) throws InvalidTokenException {
     SecureToken secureToken = secureTokenService.getValidSecureToken(token);
-    var user = userRepository.findById(secureToken.getUser().getId()).orElse(null);
-    if (Objects.isNull(user) || user.isVerifiedEmail()) {
-      return false;
-    }
+    Long userId = secureToken.getUser().getId();
+    var user = userService.findUserById(userId).orElseThrow();
     user.setVerifiedEmail(true);
-    userRepository.save(user);
+    userService.save(user);
 
     secureTokenService.removeToken(secureToken);
     return true;

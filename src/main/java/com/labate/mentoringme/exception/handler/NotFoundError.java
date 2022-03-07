@@ -12,7 +12,10 @@ public enum NotFoundError implements ResponseError {
   RESOURCE_NOT_FOUND(4040005, "Resource not found: {0}"),
   GROUP_NOT_FOUND(4040006, "Group not found: {0}"),
   TENANT_NOT_FOUND(4040007, "Tenant not found: {0}"),
-  RESOURCE_SCOPE_NOT_FOUND(4040008, "Resource scope not found: {0}");
+  RESOURCE_SCOPE_NOT_FOUND(4040008, "Resource scope not found: {0}"),
+  CATEGORY_NOT_FOUND(4040009, "Category not found: {0}"),
+  QUIZ_NOT_FOUND(4040010, "Quiz not found: {0}"),
+  ;
 
   private final Integer code;
   private final String message;

@@ -3,9 +3,7 @@ package com.labate.mentoringme.controller.v1;
 import com.labate.mentoringme.config.CurrentUser;
 import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
-import com.labate.mentoringme.dto.response.ApiResponse;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
-import com.labate.mentoringme.exception.UserNotFoundException;
 import com.labate.mentoringme.service.user.UserService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
@@ -48,11 +46,7 @@ public class UserController {
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
   @PatchMapping("/{userId}/enable")
   public ResponseEntity<?> enableUser(@PathVariable Long userId) {
-    try {
-      userService.updateUserEnableStatus(userId, true);
-    } catch (UserNotFoundException e) {
-      return ResponseEntity.badRequest().body(ApiResponse.fail(null, e.getMessage()));
-    }
+    userService.updateUserEnableStatus(userId, true);
     return BaseResponseEntity.ok("User enabled");
   }
 
@@ -66,11 +60,7 @@ public class UserController {
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
   @PatchMapping("/{userId}/disable")
   public ResponseEntity<?> disableUser(@PathVariable Long userId) {
-    try {
-      userService.updateUserEnableStatus(userId, false);
-    } catch (UserNotFoundException e) {
-      return ResponseEntity.badRequest().body(ApiResponse.fail(null, e.getMessage()));
-    }
+    userService.updateUserEnableStatus(userId, false);
     return BaseResponseEntity.ok("User enabled");
   }
 }

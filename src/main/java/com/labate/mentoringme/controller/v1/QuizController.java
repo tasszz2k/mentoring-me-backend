@@ -38,28 +38,28 @@ public class QuizController {
     return BaseResponseEntity.ok(quiz);
   }
 
-  // @ApiImplicitParam(
-  //     name = "Authorization",
-  //     value = "Access Token",
-  //     required = true,
-  //     paramType = "header",
-  //     dataTypeClass = String.class,
-  //     example = "Bearer access_token")
-  // @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR')")
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR')")
   @PostMapping()
   public ResponseEntity<?> addQuiz(@RequestBody CreateQuizRequest createQuizRequest) {
     var quiz = quizService.addQuiz(createQuizRequest);
     return BaseResponseEntity.ok(quiz);
   }
 
-  // @ApiImplicitParam(
-  //     name = "Authorization",
-  //     value = "Access Token",
-  //     required = true,
-  //     paramType = "header",
-  //     dataTypeClass = String.class,
-  //     example = "Bearer access_token")
-  // @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR')")
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR')")
   @PutMapping()
   public ResponseEntity<?> updateQuiz(@RequestBody UpdateQuizRequest updateQuizRequest) {
     var quiz = quizService.updateQuiz(updateQuizRequest);

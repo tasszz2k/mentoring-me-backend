@@ -27,7 +27,9 @@ public enum InvalidInputError implements ResponseError {
   LOGIN_STATUS_NOT_VALID(4000017, "login status not valid: {0}"),
   USER_STATUS_NOT_VALID(4000018, "User status not valid: {0}"),
   FILE_NOT_EXISTED(4000019, "File not existed: {0}"),
-  USER_AVATAR_IMAGE_UUID_FORMAT(400020, "User avatar image uuid not format");
+  USER_AVATAR_IMAGE_UUID_FORMAT(400020, "User avatar image uuid not format"),
+  USER_ALREADY_EXISTED(400021, "User already existed: {0}"),
+  ;
 
   private final Integer code;
   private final String message;

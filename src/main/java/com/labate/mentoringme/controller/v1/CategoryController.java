@@ -6,7 +6,7 @@ import com.labate.mentoringme.dto.request.GetCategoriesRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.response.ApiResponse;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
-import com.labate.mentoringme.dto.response.Metadata;
+import com.labate.mentoringme.dto.response.Paging;
 import com.labate.mentoringme.service.category.CategoryService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public class CategoryController {
     var categories = page.getContent();
 
     var metadata =
-        Metadata.builder()
+        Paging.builder()
             .limit(pageCriteria.getLimit())
             .page(pageCriteria.getPage())
             .total(page.getTotalElements())

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.labate.mentoringme.dto.response.ErrorResponse;
 import com.labate.mentoringme.dto.response.FieldErrorResponse;
 import com.labate.mentoringme.dto.response.InvalidInputResponse;
+import com.labate.mentoringme.exception.UserAlreadyExistAuthenticationException;
 import com.labate.mentoringme.exception.UserNotFoundException;
 import com.labate.mentoringme.exception.http.ResponseError;
 import com.labate.mentoringme.exception.http.ResponseException;
@@ -354,5 +355,20 @@ public class ExceptionHandleAdvice {
                 .error(error.getName())
                 .message(MessageFormat.format(error.getMessage(), e.getMessage()))
                 .build());
+  }
+
+  @ExceptionHandler(UserAlreadyExistAuthenticationException.class)
+  public ResponseEntity<ErrorResponse<Void>> handleUserAlreadyExistAuthenticationException(
+      UserAlreadyExistAuthenticationException e, HttpServletRequest request) {
+    ResponseError error = InvalidInputError.USER_ALREADY_EXISTED;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(
+            new InvalidInputResponse(
+                error.getCode(),
+                MessageFormat.format(error.getMessage(), e.getMessage()),
+                error.getName(),
+                Collections.singleton(
+                    FieldErrorResponse.builder().message(e.getMessage()).build())));
   }
 }

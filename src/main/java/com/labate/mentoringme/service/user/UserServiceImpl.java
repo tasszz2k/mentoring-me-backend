@@ -45,8 +45,7 @@ public class UserServiceImpl implements UserService {
   public User registerNewUser(final SignUpRequest signUpRequest)
       throws UserAlreadyExistAuthenticationException {
     if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-      throw new UserAlreadyExistAuthenticationException(
-          "User with email id " + signUpRequest.getEmail() + " already exist");
+      throw new UserAlreadyExistAuthenticationException("email = " + signUpRequest.getEmail());
     }
     User user = buildUser(signUpRequest);
     // Date now = Calendar.getInstance().getTime();

@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Builder
 @Value
-public class Metadata {
+public class Paging {
   int limit;
   int page;
   long total;

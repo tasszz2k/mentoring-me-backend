@@ -5,8 +5,8 @@ import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.CreateQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.ResultQuizCheckingRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizRequest;
-import com.labate.mentoringme.dto.response.ApiResponse;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
+import com.labate.mentoringme.exception.QuizNotFoundException;
 import com.labate.mentoringme.service.quizz.QuizService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class QuizController {
   public ResponseEntity<?> getQuizDetail(@PathVariable Long quizId) {
     var quiz = quizService.findById(quizId);
     if (quiz == null) {
-      return ResponseEntity.badRequest().body(ApiResponse.fail(null, "Quiz not found"));
+      throw new QuizNotFoundException("id = " + quizId);
     }
     return BaseResponseEntity.ok(quiz);
   }
@@ -91,7 +91,7 @@ public class QuizController {
   public ResponseEntity<?> deleteCategory(@PathVariable Long quizId) {
     var quiz = quizService.findById(quizId);
     if (quiz == null) {
-      return ResponseEntity.badRequest().body(ApiResponse.fail(null, "Quiz not found"));
+      throw new QuizNotFoundException("id = " + quizId);
     }
     quizService.deleteById(quizId);
     return BaseResponseEntity.ok("Category deleted successfully");

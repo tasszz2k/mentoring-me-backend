@@ -4,14 +4,13 @@ import com.labate.mentoringme.config.CurrentUser;
 import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.UpdateUserProfileRequest;
-import com.labate.mentoringme.dto.response.ApiResponse;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.service.user.UserService;
 import com.labate.mentoringme.service.userprofile.UserProfileService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,9 +57,7 @@ public class UserProfileController {
       @RequestBody @Valid UpdateUserProfileRequest request,
       @CurrentUser LocalUser localUser) {
     if (!userId.equals(localUser.getUser().getId())) {
-      return new ResponseEntity<>(
-          ApiResponse.fail(null, "This localUser do not have permission!"),
-          HttpStatus.UNAUTHORIZED);
+      throw new AccessDeniedException("You can't update other user's profile");
     }
 
     var user = UserMapper.toEntity(localUser, request);

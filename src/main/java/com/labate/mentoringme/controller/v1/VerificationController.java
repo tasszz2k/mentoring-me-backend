@@ -3,7 +3,6 @@ package com.labate.mentoringme.controller.v1;
 import com.labate.mentoringme.config.CurrentUser;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.VerifyTokenRequest;
-import com.labate.mentoringme.dto.response.ApiResponse;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.exception.InvalidTokenException;
 import com.labate.mentoringme.service.verification.AccountVerificationService;
@@ -30,27 +29,11 @@ public class VerificationController {
   private final AccountVerificationService accountVerificationService;
 
   @GetMapping("/email")
-  public String verifyEmail(@RequestParam String token) {
+  public String verifyEmail(@RequestParam String token) throws InvalidTokenException {
     if (!StringUtils.hasText(token)) {
-      return messageSource.getMessage(
-          "user.registration.verification.missing.token", null, LocaleContextHolder.getLocale());
+      throw new InvalidTokenException("Token is empty");
     }
-
-    boolean isSuccess;
-    try {
-      isSuccess = accountVerificationService.verifyUser(token);
-    } catch (InvalidTokenException e) {
-      return messageSource.getMessage(
-          "user.registration.verification.invalid.token", null, LocaleContextHolder.getLocale());
-    }
-
-    if (!isSuccess) {
-      return messageSource.getMessage(
-          "user.registration.verification.email.fail.verified",
-          null,
-          LocaleContextHolder.getLocale());
-    }
-    // TODO: Change response details
+    accountVerificationService.verifyUser(token);
     return messageSource.getMessage(
         "user.registration.verification.success", null, LocaleContextHolder.getLocale());
   }
@@ -67,24 +50,13 @@ public class VerificationController {
   public ResponseEntity<?> resendVerificationEmail(@CurrentUser LocalUser localUser) {
     var isSuccess =
         accountVerificationService.sendRegistrationConfirmationEmail(localUser.getUser());
-    if (!isSuccess) {
-      return BaseResponseEntity.fail(
-          false,
-          messageSource.getMessage(
-              "user.registration.verification.email.fail.verified",
-              null,
-              LocaleContextHolder.getLocale()));
-    }
     return BaseResponseEntity.ok(null, "Verification email sent");
   }
 
   @PostMapping("/otp/verify")
-  public ResponseEntity<?> verifyToken(@RequestBody @Valid VerifyTokenRequest request) {
-    try {
-      accountVerificationService.verifyToken(request);
-    } catch (InvalidTokenException e) {
-      return ResponseEntity.badRequest().body(ApiResponse.fail(null, e.getMessage()));
-    }
+  public ResponseEntity<?> verifyToken(@RequestBody @Valid VerifyTokenRequest request)
+      throws InvalidTokenException {
+    accountVerificationService.verifyToken(request);
     return BaseResponseEntity.ok(
         null, messageSource.getMessage("token.valid", null, LocaleContextHolder.getLocale()));
   }

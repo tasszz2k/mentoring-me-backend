@@ -8,10 +8,13 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface CategoryService {
-    Category findById(Long id);
-    Page<Category> findAllCategories(PageCriteria pageCriteria, GetCategoriesRequest request);
-    Category saveCategory(Category category);
-    void deleteCategory(Long id);
+  Category findById(Long id);
 
-    List<Category> findByIds(List<Long> categoryIds);
+  Page<Category> findAllCategories(PageCriteria pageCriteria, GetCategoriesRequest request);
+
+  Category saveCategory(Category category);
+
+  void deleteCategory(Long id);
+
+  List<Category> findByIds(List<Long> categoryIds);
 }

@@ -5,7 +5,6 @@ import org.springframework.beans.BeanWrapperImpl;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-
 public class PasswordFieldsValueMatchValidator
     implements ConstraintValidator<PasswordValueMatch, Object> {
 

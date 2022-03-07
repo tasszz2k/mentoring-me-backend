@@ -22,11 +22,9 @@ public class DefaultSecureTokenService implements SecureTokenService {
 
   private static final BytesKeyGenerator DEFAULT_TOKEN_GENERATOR = KeyGenerators.secureRandom(15);
   private static final Charset US_ASCII = StandardCharsets.US_ASCII;
-
+  @Autowired SecureTokenRepository secureTokenRepository;
   @Value("${labate.secure.token.validity}")
   private int tokenValidityInSeconds;
-
-  @Autowired SecureTokenRepository secureTokenRepository;
 
   @Override
   public SecureToken createSecureToken(User user) {
@@ -40,7 +38,7 @@ public class DefaultSecureTokenService implements SecureTokenService {
   }
 
   private String generateToken() {
-    return new String(String.valueOf(generateOTP()));
+    return String.valueOf(generateOTP());
   }
 
   public int generateOTP() {

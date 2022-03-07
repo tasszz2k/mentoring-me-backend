@@ -1,7 +1,7 @@
 package com.labate.mentoringme.projection;
 
 public interface QuizResultCheckingProjection {
-  public Long getQuestionId();
+  Long getQuestionId();
 
-  public Long getAnswerId();
+  Long getAnswerId();
 }

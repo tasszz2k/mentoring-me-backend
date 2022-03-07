@@ -1,23 +1,23 @@
 package com.labate.mentoringme.projection;
 
 public interface QuizProjection {
-  public Long getId();
+  Long getId();
 
-  public String getTitle();
+  String getTitle();
 
-  public String getDescription();
+  String getDescription();
 
-  public Integer getNumberOfQuestion();
+  Integer getNumberOfQuestion();
 
-  public Boolean getVisibleStatus();
+  Boolean getVisibleStatus();
 
-  public Boolean getEditableStatus();
+  Boolean getEditableStatus();
 
-  public Integer getType();
+  Integer getType();
 
-  public Integer getTime();
+  Integer getTime();
 
-  public Boolean getIsDraft();
+  Boolean getIsDraft();
 
-  public String getAuthor();
+  String getAuthor();
 }

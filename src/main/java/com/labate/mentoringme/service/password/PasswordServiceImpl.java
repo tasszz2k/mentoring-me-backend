@@ -22,14 +22,13 @@ import javax.mail.MessagingException;
 @Service
 public class PasswordServiceImpl implements PasswordService {
 
-  @Value("${site.base.url.https}")
-  private String baseURL;
-
   private final PasswordEncoder passwordEncoder;
   private final UserService userService;
   private final UserRepository userRepository;
   private final SecureTokenService secureTokenService;
   private final EmailService emailService;
+  @Value("${site.base.url.https}")
+  private String baseURL;
 
   @Override
   public boolean changePassword(Long userId, String oldPassword, String newPassword) {

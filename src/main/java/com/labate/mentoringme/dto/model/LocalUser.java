@@ -18,8 +18,8 @@ public class LocalUser extends User implements OAuth2User, OidcUser {
 
   private final OidcIdToken idToken;
   private final OidcUserInfo userInfo;
-  private Map<String, Object> attributes;
   private final com.labate.mentoringme.model.User user;
+  private Map<String, Object> attributes;
 
   public LocalUser(
       final String userID,
@@ -88,10 +88,6 @@ public class LocalUser extends User implements OAuth2User, OidcUser {
     return localUser;
   }
 
-  public void setAttributes(Map<String, Object> attributes) {
-    this.attributes = attributes;
-  }
-
   @Override
   public String getName() {
     return this.user.getFullName();
@@ -100,6 +96,10 @@ public class LocalUser extends User implements OAuth2User, OidcUser {
   @Override
   public Map<String, Object> getAttributes() {
     return this.attributes;
+  }
+
+  public void setAttributes(Map<String, Object> attributes) {
+    this.attributes = attributes;
   }
 
   @Override

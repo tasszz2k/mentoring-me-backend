@@ -35,6 +35,7 @@ public class QuizController {
   public ResponseEntity<?> getAllQuiz(@Valid PageCriteria pageCriteria,
       FindQuizRequest quizRequest) {
 
+
     var pageData = quizService.findAllQuiz(quizRequest, pageCriteria);
     var paging = Paging.builder().limit(pageCriteria.getLimit()).page(pageCriteria.getPage())
         .total(pageData.getTotalElements()).build();

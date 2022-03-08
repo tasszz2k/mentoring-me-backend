@@ -38,7 +38,7 @@ public class LocalUserDetailService implements UserDetailsService {
    * @param user
    * @return
    */
-  private LocalUser createLocalUser(User user) {
+  public LocalUser createLocalUser(User user) {
     return new LocalUser(
         user.getEmail(),
         user.getPassword(),

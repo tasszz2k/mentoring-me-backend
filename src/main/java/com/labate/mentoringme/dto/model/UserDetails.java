@@ -14,6 +14,7 @@ public class UserDetails extends UserInfo {
   private AddressDto address;
   private String detailAddress;
   private Float rating;
+  private Float price;
   private String bio;
   private Boolean isOnlineStudy;
   private Boolean isOfflineStudy;

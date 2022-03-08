@@ -1,8 +1,11 @@
 package com.labate.mentoringme.service.user;
 
 import com.labate.mentoringme.constant.SocialProvider;
+import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
 import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
+import com.labate.mentoringme.dto.request.FindUsersRequest;
+import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.SignUpRequest;
 import com.labate.mentoringme.exception.OAuth2AuthenticationProcessingException;
 import com.labate.mentoringme.exception.UserAlreadyExistAuthenticationException;
@@ -11,12 +14,13 @@ import com.labate.mentoringme.model.Role;
 import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.model.UserProfile;
 import com.labate.mentoringme.repository.RoleRepository;
-import com.labate.mentoringme.repository.UserProfileRepository;
 import com.labate.mentoringme.repository.UserRepository;
 import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfo;
 import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfoFactory;
+import com.labate.mentoringme.service.userprofile.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
@@ -35,7 +39,7 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
   private final PasswordEncoder passwordEncoder;
-  private final UserProfileRepository userProfileRepository;
+  private final UserProfileService userProfileService;
 
   @Value("${labate.secure.default-password}")
   private String defaultPassword;
@@ -122,7 +126,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public User save(User user) {
     var updatedUser = userRepository.save(user);
-    userProfileRepository.save(user.getUserProfile());
+    userProfileService.save(user.getUserProfile());
     return updatedUser;
   }
 
@@ -133,6 +137,15 @@ public class UserServiceImpl implements UserService {
       user.setEnabled(enable);
       userRepository.save(user);
     }
+  }
+
+  @Override
+  public Page<User> findAllUsers(PageCriteria pageCriteria, FindUsersRequest request) {
+    var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
+
+    // var sort = pageable.getSort().;
+    // System.out.println(sort);
+    return userRepository.findAllByConditions(request, pageable);
   }
 
   private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {

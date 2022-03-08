@@ -1,5 +1,6 @@
 package com.labate.mentoringme.dto.model;
 
+import com.labate.mentoringme.constant.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
@@ -17,7 +18,7 @@ public class UserInfo {
   private final String email;
   private final String phoneNumber;
   private final String imageUrl;
-  private final Boolean gender;
+  private final Gender gender;
   private final Date dob;
   private final String provider;
   private final Integer status;

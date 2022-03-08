@@ -1,5 +1,6 @@
 package com.labate.mentoringme.dto.request;
 
+import com.labate.mentoringme.constant.Gender;
 import com.labate.mentoringme.validator.ValidPhoneNumber;
 import lombok.Data;
 
@@ -13,12 +14,13 @@ public class UpdateUserProfileRequest {
   // private String email;
   @ValidPhoneNumber private String phoneNumber;
   private String imageUrl;
-  private Boolean gender;
+  private Gender gender;
   private Date dob;
   private String school;
   private Long addressId;
   private String detailAddress;
   private String bio;
+  private Float price;
   private Boolean isOnlineStudy;
   private Boolean isOfflineStudy;
   private List<Long> categoryIds;

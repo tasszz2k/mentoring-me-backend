@@ -1,6 +1,7 @@
 package com.labate.mentoringme.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.labate.mentoringme.constant.Gender;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,7 +24,12 @@ public class UserProfile {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private Boolean gender;
+  @Column(name = "gender")
+  @Basic
+  private Integer genderValue;
+
+  @Transient private Gender gender;
+
   private Date dob;
   private Float rating;
   private String detailAddress;
@@ -34,6 +40,8 @@ public class UserProfile {
 
   private String bio;
   private String school;
+
+  private Float price;
 
   private Integer status;
 
@@ -68,4 +76,18 @@ public class UserProfile {
       joinColumns = {@JoinColumn(name = "profile_id")},
       inverseJoinColumns = {@JoinColumn(name = "category_id")})
   private Set<Category> categories;
+
+  @PostLoad
+  void fillTransient() {
+    if (genderValue != null) {
+      this.gender = Gender.of(genderValue);
+    }
+  }
+
+  @PrePersist
+  void fillPersistent() {
+    if (gender != null) {
+      this.genderValue = gender.getValue();
+    }
+  }
 }

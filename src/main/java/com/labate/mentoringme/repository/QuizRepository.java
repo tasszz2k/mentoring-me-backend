@@ -11,14 +11,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.labate.mentoringme.dto.request.quiz.FindQuizRequest;
 import com.labate.mentoringme.model.quiz.Quiz;
-import com.labate.mentoringme.projection.QuizProjection;
+import com.labate.mentoringme.projection.QuizOverviewProjection;
 import com.labate.mentoringme.projection.QuizTakingHistoryProjection;
 
 @Repository
 public interface QuizRepository extends JpaRepository<Quiz, Long> {
 
   @Query(
-      value = " SELECT DISTINCT(A.id), title, number_of_question, B.category_id, A.created "
+      value = " SELECT DISTINCT(A.id), title, time, number_of_question, B.category_id, A.created "
           + " FROM quizzes A join quizzes_categories B ON A.id = B.quiz_id WHERE A.is_deleted = 0 "
           + " AND (:#{#cond.categoryId} IS NULL OR B.category_id = :#{#cond.categoryId})"
           + " AND (:#{#cond.userId} IS NULL OR A.created_by = :#{#cond.userId})"
@@ -28,7 +28,7 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
           + " AND (:#{#cond.categoryId} IS NULL OR B.category_id = :#{#cond.categoryId})"
           + "	AND (:#{#cond.userId} IS NULL OR A.created_by = :#{#cond.userId}) ",
       nativeQuery = true)
-  Page<QuizProjection> findAllByConditions(@Param("cond") FindQuizRequest request,
+  Page<QuizOverviewProjection> findAllByConditions(@Param("cond") FindQuizRequest request,
       Pageable pageable);
 
   List<Quiz> findAllByCreatedByAndIsDraft(Long createdBy, Boolean isDraft);

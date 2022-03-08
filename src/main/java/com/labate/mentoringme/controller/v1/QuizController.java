@@ -31,6 +31,24 @@ public class QuizController {
 
   private final QuizService quizService;
 
+  @GetMapping("/overview/{quizId}")
+  public ResponseEntity<?> getQuizOverview(@PathVariable Long quizId) {
+    var quiz = quizService.findById(quizId);
+    if (quiz == null) {
+      throw new QuizNotFoundException("id = " + quizId);
+    }
+    return BaseResponseEntity.ok(quizService.getQuizOverview(quizId));
+  }
+
+  // @GetMapping("/overview")
+  // public ResponseEntity<?> updateQuizOverview(@PathVariable Long quizId) {
+  // var quiz = quizService.findById(quizId);
+  // if (quiz == null) {
+  // throw new QuizNotFoundException("id = " + quizId);
+  // }
+  // return BaseResponseEntity.ok(quizService.getQuizOverview(quizId));
+  // }
+
   @GetMapping()
   public ResponseEntity<?> getAllQuiz(@Valid PageCriteria pageCriteria,
       FindQuizRequest quizRequest) {

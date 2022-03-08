@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.validation.constraints.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,12 +16,14 @@ import com.labate.mentoringme.dto.QuizResultCheckingDto;
 import com.labate.mentoringme.dto.UserSelectionDto;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
+import com.labate.mentoringme.dto.model.QuizCategoryDto;
 import com.labate.mentoringme.dto.model.QuizDto;
 import com.labate.mentoringme.dto.model.QuizOverviewDto;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.CreateQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.FindQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.ResultQuizCheckingRequest;
+import com.labate.mentoringme.dto.request.quiz.UpdateQuizOverviewRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizRequest;
 import com.labate.mentoringme.dto.response.QuizResultResponse;
 import com.labate.mentoringme.dto.response.QuizTakingHistoryResponse;
@@ -211,4 +214,14 @@ public class QuizServiceImpl implements QuizService {
       return quizOverviewDto;
     }).collect(Collectors.toList());
   }
+
+//  public UpdateQuizOverviewRequest getQuizOverview(UpdateQuizOverviewRequest request) {
+//    var quiz = quizRepository.findById(request.getId()).get();
+//    quiz.setModifiedDate(new Date());
+//    quiz.setTime(request.getTime());
+//    quiz.setTitle(request.getTitle());
+//    quiz.setIsDraft(request.getIsDraft());
+//    quiz.setCategories(request.getCategories());
+//    
+//  }
 }

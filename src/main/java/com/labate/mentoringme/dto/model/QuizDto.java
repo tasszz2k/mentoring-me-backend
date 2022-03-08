@@ -1,12 +1,11 @@
 package com.labate.mentoringme.dto.model;
 
+import java.util.List;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @Builder
@@ -15,11 +14,10 @@ import java.util.List;
 @AllArgsConstructor
 public class QuizDto {
   private Long id;
-  private Long userId;
   private String title;
-  private String description;
   private Integer numberOfQuestion;
-  @Builder.Default private Boolean isDeleted = false;
+  @Builder.Default
+  private Boolean isDeleted = false;
   private Integer time;
   private Long createdBy;
   private Long modifiedBy;

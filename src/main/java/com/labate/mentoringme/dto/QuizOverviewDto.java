@@ -1,7 +1,5 @@
-package com.labate.mentoringme.dto.model;
+package com.labate.mentoringme.dto;
 
-import java.util.List;
-import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -9,8 +7,10 @@ public class QuizOverviewDto {
   private Long id;
   private String title;
   private Integer numberOfQuestion;
+  private Boolean isDeleted;
   private Integer time;
+  private Long createdBy;
+  private Long modifiedBy;
   private Boolean isDraft;
-  @NotNull
-  private List<QuizCategoryDto> categories;
+  private String author;
 }

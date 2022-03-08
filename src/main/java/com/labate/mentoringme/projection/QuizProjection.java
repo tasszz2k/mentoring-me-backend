@@ -5,15 +5,7 @@ public interface QuizProjection {
 
   String getTitle();
 
-  String getDescription();
-
   Integer getNumberOfQuestion();
-
-  Boolean getVisibleStatus();
-
-  Boolean getEditableStatus();
-
-  Integer getType();
 
   Integer getTime();
 

@@ -2,9 +2,9 @@ package com.labate.mentoringme.service.quizz;
 
 import com.labate.mentoringme.dto.model.QuizDto;
 import com.labate.mentoringme.dto.model.QuizOverviewDto;
-import com.labate.mentoringme.dto.request.FindQuizRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.CreateQuizRequest;
+import com.labate.mentoringme.dto.request.quiz.FindQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.ResultQuizCheckingRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizRequest;
 import com.labate.mentoringme.dto.response.QuizResultResponse;

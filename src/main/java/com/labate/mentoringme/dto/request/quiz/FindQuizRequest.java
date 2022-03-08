@@ -1,4 +1,4 @@
-package com.labate.mentoringme.dto.request;
+package com.labate.mentoringme.dto.request.quiz;
 
 import lombok.Data;
 

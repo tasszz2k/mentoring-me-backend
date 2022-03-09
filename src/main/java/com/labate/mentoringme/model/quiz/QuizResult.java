@@ -47,7 +47,7 @@ public class QuizResult {
   private Integer numberOfFalse;
 
   @Column(name = "is_deleted", columnDefinition = "BIT", length = 1)
-  private Boolean isDeleted;
+  private Boolean isDeleted = false;
 
   @CreatedDate
   @Column(name = "created", nullable = false, updatable = false)

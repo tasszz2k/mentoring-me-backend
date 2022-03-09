@@ -2,7 +2,6 @@ package com.labate.mentoringme.dto.request.quiz;
 
 import java.util.List;
 import javax.validation.constraints.NotNull;
-import com.labate.mentoringme.dto.model.QuizCategoryDto;
 import lombok.Data;
 
 @Data
@@ -16,5 +15,5 @@ public class UpdateQuizOverviewRequest {
   @NotNull
   private Boolean isDraft;
   @NotNull
-  private List<QuizCategoryDto> categories;
+  private List<Long> categoryIds;
 }

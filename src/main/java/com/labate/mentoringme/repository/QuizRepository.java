@@ -1,6 +1,5 @@
 package com.labate.mentoringme.repository;
 
-import java.util.List;
 import javax.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +17,7 @@ import com.labate.mentoringme.projection.QuizTakingHistoryProjection;
 public interface QuizRepository extends JpaRepository<Quiz, Long> {
 
   @Query(
-      value = " SELECT DISTINCT(A.id), title, time, number_of_question, B.category_id, A.created "
+      value = " SELECT DISTINCT(A.id), title, time, number_of_question AS numberOfQuestion, author, A.created "
           + " FROM quizzes A join quizzes_categories B ON A.id = B.quiz_id WHERE A.is_deleted = 0 "
           + " AND (:#{#cond.categoryId} IS NULL OR B.category_id = :#{#cond.categoryId})"
           + " AND (:#{#cond.userId} IS NULL OR A.created_by = :#{#cond.userId})"
@@ -31,7 +30,7 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
   Page<QuizOverviewProjection> findAllByConditions(@Param("cond") FindQuizRequest request,
       Pageable pageable);
 
-  List<Quiz> findAllByCreatedByAndIsDraft(Long createdBy, Boolean isDraft);
+  Page<Quiz> findAllByCreatedByAndIsDraft(Long createdBy, Boolean isDraft, Pageable pageable);
 
   @Transactional
   @Modifying
@@ -41,5 +40,6 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
   @Query(
       value = "SELECT A.title, A.number_of_question, B.score, B.created FROM quizzes A join quiz_results B on A.id = B.quiz_id WHERE B.user_id = :userId",
       nativeQuery = true)
-  List<QuizTakingHistoryProjection> getQuizTakingHistory(@Param("userId") Long userId);
+  Page<QuizTakingHistoryProjection> getQuizTakingHistory(@Param("userId") Long userId,
+      Pageable pageable);
 }

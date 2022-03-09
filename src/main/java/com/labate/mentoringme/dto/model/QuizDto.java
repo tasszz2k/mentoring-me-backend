@@ -16,11 +16,7 @@ public class QuizDto {
   private Long id;
   private String title;
   private Integer numberOfQuestion;
-  @Builder.Default
-  private Boolean isDeleted = false;
   private Integer time;
-  private Long createdBy;
-  private Long modifiedBy;
   private Boolean isDraft;
   private String author;
   private List<QuestionDto> questions;

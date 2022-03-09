@@ -12,6 +12,8 @@ public interface CategoryService {
 
   Page<Category> findAllCategories(PageCriteria pageCriteria, GetCategoriesRequest request);
 
+  List<Category> findAllCategories();
+
   Category saveCategory(Category category);
 
   void deleteCategory(Long id);

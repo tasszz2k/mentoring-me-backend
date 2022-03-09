@@ -48,9 +48,28 @@ public class CategoryMapper {
   }
 
   public static List<CategoryDto> toDtos(Collection<Category> entities) {
-    return entities == null
-        ? null
-        : entities.stream().map(CategoryMapper::toDto).collect(Collectors.toList());
+
+    List<CategoryDto> dtos;
+    if (entities == null) {
+      dtos = null;
+    } else {
+      // Filter to remove duplicate entity inside sub-categories
+      var entityMap =
+          entities.stream().collect(Collectors.toMap(Category::getId, category -> category));
+      var filteredEntities =
+          entities.stream()
+              .filter(
+                  entity -> {
+                    var parentCategoryId =
+                        entity.getParentCategory() == null
+                            ? null
+                            : entity.getParentCategory().getId();
+                    return parentCategoryId == null || !entityMap.containsKey(parentCategoryId);
+                  })
+              .collect(Collectors.toList());
+      dtos = filteredEntities.stream().map(CategoryMapper::toDto).collect(Collectors.toList());
+    }
+    return dtos;
   }
 
   public static List<Category> toEntities(Collection<CategoryDto> dtos) {

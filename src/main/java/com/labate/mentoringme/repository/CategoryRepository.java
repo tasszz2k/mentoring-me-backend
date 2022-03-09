@@ -20,6 +20,13 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
               + "  AND (:#{#request.parentCategoryId} IS NULL OR parent_category_id = :#{#request.parentCategoryId})\n"
               + "    AND (:#{#request.isParent} IS NULL OR\n"
               + "    CASE WHEN :#{#request.isParent} THEN parent_category_id IS NULL ELSE  parent_category_id IS NOT NULL END)",
+      countQuery =
+          "SELECT COUNT(*)\n"
+              + "FROM categories\n"
+              + "WHERE is_deleted = 0\n"
+              + "  AND (:#{#request.parentCategoryId} IS NULL OR parent_category_id = :#{#request.parentCategoryId})\n"
+              + "    AND (:#{#request.isParent} IS NULL OR\n"
+              + "    CASE WHEN :#{#request.isParent} THEN parent_category_id IS NULL ELSE  parent_category_id IS NOT NULL END)",
       nativeQuery = true)
   Page<Category> findAllByConditions(GetCategoriesRequest request, Pageable pageable);
 }

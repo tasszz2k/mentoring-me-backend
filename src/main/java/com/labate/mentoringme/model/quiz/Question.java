@@ -1,19 +1,31 @@
 package com.labate.mentoringme.model.quiz;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.Date;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import javax.persistence.*;
-import java.util.Date;
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @EntityListeners(AuditingEntityListener.class)
 @Entity
@@ -42,7 +54,7 @@ public class Question {
   private Boolean isMultipleChoice;
 
   @Column(name = "is_deleted", columnDefinition = "BIT", length = 1)
-  private Boolean isDeleted;
+  private Boolean isDeleted = false;
 
   @CreatedDate
   @Column(name = "created", nullable = false, updatable = false)
@@ -54,10 +66,7 @@ public class Question {
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
 
-  @OneToMany(
-      mappedBy = "question",
-      cascade = CascadeType.ALL,
-      orphanRemoval = true,
+  @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true,
       fetch = FetchType.EAGER)
   private Set<Answer> answers;
 }

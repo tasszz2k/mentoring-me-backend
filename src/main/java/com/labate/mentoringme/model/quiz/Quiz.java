@@ -75,7 +75,7 @@ public class Quiz {
   private Set<Question> questions;
 
   @JsonIgnore
-  @ManyToMany(cascade = CascadeType.MERGE)
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(name = "quizzes_categories", joinColumns = {@JoinColumn(name = "quiz_id")},
       inverseJoinColumns = {@JoinColumn(name = "category_id")})
   private Set<Category> categories;

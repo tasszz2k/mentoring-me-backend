@@ -5,5 +5,4 @@ import lombok.Data;
 @Data
 public class QuizCategoryDto {
   private Long categoryId;
-  private Boolean isDeleted = false;
 }

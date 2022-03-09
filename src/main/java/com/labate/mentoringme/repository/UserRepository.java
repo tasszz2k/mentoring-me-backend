@@ -17,7 +17,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   @Query(
       value =
-          "SELECT user "
+          "SELECT DISTINCT user "
+              + "FROM User user "
+              + "JOIN user.roles role "
+              + "JOIN user.userProfile userProfile "
+              + "LEFT JOIN userProfile.categories category "
+              + "LEFT JOIN userProfile.address address "
+              + "WHERE (:#{#request.getRoleName()} IS NULL OR role.name = :#{#request.getRoleName()}) "
+              + "AND (COALESCE(:#{#request.categoryIds}, NULL) IS NULL OR category.id IN (:#{#request.categoryIds})) "
+              + "AND (COALESCE(:#{#request.addressIds}, NULL) IS NULL OR address.id IN (:#{#request.addressIds})) ",
+      countQuery =
+          "SELECT COUNT (DISTINCT user) "
               + "FROM User user "
               + "JOIN user.roles role "
               + "JOIN user.userProfile userProfile "

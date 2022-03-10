@@ -21,4 +21,5 @@ public interface MentorshipRequestService {
   Class updateMentorshipRequest(CreateMentorshipRequestRq request, LocalUser localUser);
 
   void deleteMentorshipRequest(Long id, LocalUser localUser);
+
 }

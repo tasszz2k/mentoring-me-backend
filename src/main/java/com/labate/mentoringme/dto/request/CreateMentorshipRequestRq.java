@@ -1,5 +1,6 @@
 package com.labate.mentoringme.dto.request;
 
+import com.labate.mentoringme.dto.model.ShiftDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -27,6 +28,6 @@ public class CreateMentorshipRequestRq {
   private String detailAddress;
   private Long addressId;
 
-  private Set<Long> shiftIds;
+  private Set<ShiftDto> shifts;
   private Set<Integer> studentIds;
 }

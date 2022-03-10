@@ -6,13 +6,14 @@ import com.labate.mentoringme.model.Class;
 import com.labate.mentoringme.service.address.AddressService;
 import com.labate.mentoringme.service.category.CategoryService;
 import com.labate.mentoringme.service.mentorshiprequest.MentorshipRequestService;
-import com.labate.mentoringme.service.mentorshiprequest.StaticShiftService;
+import com.labate.mentoringme.service.mentorshiprequest.ShiftService;
 import com.labate.mentoringme.util.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,18 +23,18 @@ public class MentorshipRequestMapper {
   private static MentorshipRequestService mentorshipRequestService;
   private static CategoryService categoryService;
   private static AddressService addressService;
-  private static StaticShiftService staticShiftService;
+  private static ShiftService shiftService;
 
   @Autowired
   public MentorshipRequestMapper(
       MentorshipRequestService mentorshipRequestService,
       CategoryService categoryService,
       AddressService addressService,
-      StaticShiftService staticShiftService) {
+      ShiftService shiftService) {
     MentorshipRequestMapper.mentorshipRequestService = mentorshipRequestService;
     MentorshipRequestMapper.categoryService = categoryService;
     MentorshipRequestMapper.addressService = addressService;
-    MentorshipRequestMapper.staticShiftService = staticShiftService;
+    MentorshipRequestMapper.shiftService = shiftService;
   }
 
   public static MentorshipRequestDto toDto(Class entity) {
@@ -62,9 +63,9 @@ public class MentorshipRequestMapper {
       var address = addressService.findById(dto.getAddressId());
       entity.setAddress(address);
     }
-    if (!CollectionUtils.isEmpty(dto.getShiftIds())) {
-      var shifts = staticShiftService.findAllByIds(dto.getShiftIds());
-      entity.setShifts(shifts);
+    if (!CollectionUtils.isEmpty(dto.getShifts())) {
+      var shifts = ShiftMapper.toEntities(dto.getShifts());
+      entity.setShifts(new HashSet<>(shifts));
     }
     return entity;
   }

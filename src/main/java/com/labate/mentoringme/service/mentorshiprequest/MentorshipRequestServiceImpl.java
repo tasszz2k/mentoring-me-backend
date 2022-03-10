@@ -9,18 +9,23 @@ import com.labate.mentoringme.dto.request.GetMentorshipRequestRq;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.exception.MentorshipRequestNotFoundException;
 import com.labate.mentoringme.model.Class;
+import com.labate.mentoringme.model.Shift;
 import com.labate.mentoringme.repository.ClassRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Slf4j
 @Service
 public class MentorshipRequestServiceImpl implements MentorshipRequestService {
   private final ClassRepository classRepository;
+  private final ShiftService shiftService;
 
   @Override
   public Class findById(Long id) {
@@ -31,14 +36,22 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
   }
 
   @Override
-  public Page<Class> findAllClassesByConditions(PageCriteria pageCriteria, GetMentorshipRequestRq request) {
+  public Page<Class> findAllClassesByConditions(
+      PageCriteria pageCriteria, GetMentorshipRequestRq request) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     return classRepository.findAllByConditions(request, pageable);
   }
 
+  @Transactional
   @Override
   public Class saveMentorshipRequest(Class entity) {
-    return classRepository.save(entity);
+    var shifts = entity.getShifts();
+    entity.setShifts(null);
+    var savedClass = classRepository.save(entity);
+
+    Set<Shift> savedShifts = shiftService.saveAllShifts(savedClass.getId(), shifts);
+    savedClass.setShifts(savedShifts);
+    return savedClass;
   }
 
   public void checkPermissionToUpdate(Class entity, LocalUser localUser) {
@@ -57,6 +70,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     classRepository.deleteById(id);
   }
 
+  @Transactional
   @Override
   public Class updateMentorshipRequest(CreateMentorshipRequestRq request, LocalUser localUser) {
     var id = request.getId();
@@ -68,6 +82,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     var entity = MentorshipRequestMapper.toEntity(request);
     // TODO: change to fields can update instead of all fields except (id, createdBy,...)
     entity.setCreatedBy(oldMentorshipRequest.getCreatedBy());
+
     return saveMentorshipRequest(entity);
   }
 
@@ -81,4 +96,5 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     checkPermissionToUpdate(oldMentorshipRequest, localUser);
     deleteMentorshipRequest(id);
   }
+
 }

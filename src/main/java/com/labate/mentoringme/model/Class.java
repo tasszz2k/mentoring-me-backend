@@ -1,5 +1,6 @@
 package com.labate.mentoringme.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,8 +30,9 @@ public class Class {
 
   private Long mentorId;
 
-  @ManyToOne
-  @MapsId("id")
+  @JsonIgnore
+  @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @JoinColumn(name = "category_id", referencedColumnName = "id")
   private Category category;
 
   private Long createdBy;
@@ -44,7 +46,8 @@ public class Class {
 
   private String detailAddress;
 
-  @ManyToOne
+  @JsonIgnore
+  @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   @JoinColumn(name = "address_id", referencedColumnName = "id")
   private Address address;
 
@@ -61,7 +64,7 @@ public class Class {
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
 
-  @ManyToMany
+  @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   @JoinTable(
       name = "classes_shifts",
       joinColumns = {@JoinColumn(name = "class_id")},

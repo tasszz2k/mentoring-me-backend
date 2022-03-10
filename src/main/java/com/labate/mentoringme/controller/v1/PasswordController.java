@@ -11,7 +11,6 @@ import com.labate.mentoringme.service.password.PasswordService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +27,6 @@ import javax.validation.Valid;
 public class PasswordController {
 
   private final PasswordService passwordService;
-  private final MessageSource messageSource;
 
   @ApiImplicitParam(
       name = "Authorization",

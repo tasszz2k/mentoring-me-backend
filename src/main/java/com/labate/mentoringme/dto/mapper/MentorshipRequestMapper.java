@@ -1,11 +1,16 @@
 package com.labate.mentoringme.dto.mapper;
 
 import com.labate.mentoringme.dto.model.MentorshipRequestDto;
+import com.labate.mentoringme.dto.request.CreateMentorshipRequestRq;
 import com.labate.mentoringme.model.Class;
+import com.labate.mentoringme.service.address.AddressService;
+import com.labate.mentoringme.service.category.CategoryService;
 import com.labate.mentoringme.service.mentorshiprequest.MentorshipRequestService;
+import com.labate.mentoringme.service.mentorshiprequest.StaticShiftService;
 import com.labate.mentoringme.util.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -15,10 +20,20 @@ import java.util.stream.Collectors;
 public class MentorshipRequestMapper {
 
   private static MentorshipRequestService mentorshipRequestService;
+  private static CategoryService categoryService;
+  private static AddressService addressService;
+  private static StaticShiftService staticShiftService;
 
   @Autowired
-  public MentorshipRequestMapper(MentorshipRequestService mentorshipRequestService) {
+  public MentorshipRequestMapper(
+      MentorshipRequestService mentorshipRequestService,
+      CategoryService categoryService,
+      AddressService addressService,
+      StaticShiftService staticShiftService) {
     MentorshipRequestMapper.mentorshipRequestService = mentorshipRequestService;
+    MentorshipRequestMapper.categoryService = categoryService;
+    MentorshipRequestMapper.addressService = addressService;
+    MentorshipRequestMapper.staticShiftService = staticShiftService;
   }
 
   public static MentorshipRequestDto toDto(Class entity) {
@@ -26,24 +41,34 @@ public class MentorshipRequestMapper {
       return null;
     }
     var dto = ObjectMapperUtils.map(entity, MentorshipRequestDto.class);
+
+    if (entity.getAddress() != null) {
+      var address = AddressMapper.toDto(entity.getAddress());
+      dto.setAddress(address);
+    }
     return dto;
   }
 
-  // public static Class toEntity(MentorshipRequestDto dto) {
-  //   if (dto == null) {
-  //     return null;
-  //   }
-  //   var entity = ObjectMapperUtils.map(dto, Class.class);
-  //   var parentClassId = dto.getParentClassId();
-  //
-  //   var parentClass = mentorshipRequestService.findById(parentClassId);
-  //   if (parentClass != null) {
-  //     entity.setParentClass(parentClass);
-  //   }
-  //
-  //   return entity;
-  // }
-  //
+  public static Class toEntity(CreateMentorshipRequestRq dto) {
+    if (dto == null) {
+      return null;
+    }
+    var entity = ObjectMapperUtils.map(dto, Class.class);
+    if (dto.getCategoryId() != null) {
+      var category = categoryService.findById(dto.getCategoryId());
+      entity.setCategory(category);
+    }
+    if (dto.getAddressId() != null) {
+      var address = addressService.findById(dto.getAddressId());
+      entity.setAddress(address);
+    }
+    if (!CollectionUtils.isEmpty(dto.getShiftIds())) {
+      var shifts = staticShiftService.findAllByIds(dto.getShiftIds());
+      entity.setShifts(shifts);
+    }
+    return entity;
+  }
+
   public static List<MentorshipRequestDto> toDtos(Collection<Class> entities) {
 
     List<MentorshipRequestDto> dtos;

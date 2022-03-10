@@ -1,6 +1,7 @@
 package com.labate.mentoringme.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.labate.mentoringme.constant.UserRole;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -81,4 +82,8 @@ public class User implements Serializable {
   // @JsonIgnore
   // @OneToMany(mappedBy = "user")
   // private Set<SecureToken> tokens;
+
+  public UserRole getRole() {
+    return roles.stream().findFirst().map(Role::getName).map(UserRole::valueOf).orElse(null);
+  }
 }

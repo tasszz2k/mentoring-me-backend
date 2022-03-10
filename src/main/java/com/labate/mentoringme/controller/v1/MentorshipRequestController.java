@@ -1,20 +1,22 @@
 package com.labate.mentoringme.controller.v1;
 
+import com.labate.mentoringme.config.CurrentUser;
 import com.labate.mentoringme.dto.mapper.MentorshipRequestMapper;
-import com.labate.mentoringme.dto.request.GetMentorshipRequestRequest;
+import com.labate.mentoringme.dto.model.LocalUser;
+import com.labate.mentoringme.dto.request.CreateMentorshipRequestRq;
+import com.labate.mentoringme.dto.request.GetMentorshipRequestRq;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
 import com.labate.mentoringme.exception.MentorshipRequestNotFoundException;
 import com.labate.mentoringme.service.mentorshiprequest.MentorshipRequestService;
+import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -36,7 +38,7 @@ public class MentorshipRequestController {
 
   @GetMapping("")
   public ResponseEntity<?> findAllMentorshipRequests(
-      @Valid PageCriteria pageCriteria, @Valid GetMentorshipRequestRequest request) {
+      @Valid PageCriteria pageCriteria, @Valid GetMentorshipRequestRq request) {
     var page = mentorshipRequestService.findAllClasses(pageCriteria, request);
     var classes = page.getContent();
 
@@ -50,66 +52,57 @@ public class MentorshipRequestController {
     return BaseResponseEntity.ok(response);
   }
 
-  // @ApiImplicitParam(
-  //         name = "Authorization",
-  //         value = "Access Token",
-  //         required = true,
-  //         paramType = "header",
-  //         dataTypeClass = String.class,
-  //         example = "Bearer access_token")
-  // @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
-  // @PostMapping("")
-  // public ResponseEntity<?> addNewMentorshipRequest(@Valid @RequestBody MentorshipRequestDto
-  // categoryDto) {
-  //
-  //   var category = MentorshipRequestMapper.toEntity(categoryDto);
-  //   category.setId(null);
-  //   category = categoryService.saveMentorshipRequest(category);
-  //
-  //   return BaseResponseEntity.ok(MentorshipRequestMapper.toDto(category));
-  // }
-  //
-  // @ApiImplicitParam(
-  //         name = "Authorization",
-  //         value = "Access Token",
-  //         required = true,
-  //         paramType = "header",
-  //         dataTypeClass = String.class,
-  //         example = "Bearer access_token")
-  // @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
-  // @PutMapping("/{categoryId}")
-  // public ResponseEntity<?> updateMentorshipRequest(
-  //         @PathVariable Long categoryId, @Valid @RequestBody MentorshipRequestDto categoryDto) {
-  //
-  //   var oldMentorshipRequest = categoryService.findById(categoryId);
-  //   if (oldMentorshipRequest == null) {
-  //     throw new MentorshipRequestNotFoundException("id = " + categoryId);
-  //   }
-  //
-  //   categoryDto.setId(categoryId);
-  //   var category = MentorshipRequestMapper.toEntity(categoryDto);
-  //   category = categoryService.saveMentorshipRequest(category);
-  //
-  //   return BaseResponseEntity.ok(MentorshipRequestMapper.toDto(category));
-  // }
-  //
-  // @ApiImplicitParam(
-  //         name = "Authorization",
-  //         value = "Access Token",
-  //         required = true,
-  //         paramType = "header",
-  //         dataTypeClass = String.class,
-  //         example = "Bearer access_token")
-  // @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
-  // @DeleteMapping("/{categoryId}")
-  // public ResponseEntity<?> deleteMentorshipRequest(@PathVariable Long categoryId) {
-  //   var oldMentorshipRequest = categoryService.findById(categoryId);
-  //   if (oldMentorshipRequest == null) {
-  //     throw new MentorshipRequestNotFoundException("id = " + categoryId);
-  //   }
-  //
-  //   categoryService.deleteMentorshipRequest(categoryId);
-  //
-  //   return BaseResponseEntity.ok(null, "MentorshipRequest deleted successfully");
-  // }
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  @PostMapping("")
+  public ResponseEntity<?> addNewMentorshipRequest(
+      @Valid @RequestBody CreateMentorshipRequestRq request, @CurrentUser LocalUser localUser) {
+    request.setCreatedBy(localUser.getUser().getId());
+    var entity = MentorshipRequestMapper.toEntity(request);
+    entity.setId(null);
+    var classX = mentorshipRequestService.saveMentorshipRequest(entity);
+
+    return BaseResponseEntity.ok(MentorshipRequestMapper.toDto(classX));
+  }
+
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  @PutMapping("/{id}")
+  public ResponseEntity<?> updateMentorshipRequest(
+      @PathVariable Long id,
+      @Valid @RequestBody CreateMentorshipRequestRq request,
+      @CurrentUser LocalUser localUser) {
+
+    request.setId(id);
+    mentorshipRequestService.updateMentorshipRequest(request, localUser);
+    return BaseResponseEntity.ok(null, "Mentorship request updated successfully");
+  }
+
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> deleteMentorshipRequest(
+      @PathVariable Long id, @CurrentUser LocalUser localUser) {
+    mentorshipRequestService.deleteMentorshipRequest(id, localUser);
+
+    return BaseResponseEntity.ok(null, "MentorshipRequest deleted successfully");
+  }
 }

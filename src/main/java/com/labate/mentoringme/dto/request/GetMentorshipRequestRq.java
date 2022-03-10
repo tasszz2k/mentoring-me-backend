@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 @Value
-public class GetMentorshipRequestRequest {
+public class GetMentorshipRequestRq {
   Long mentorId;
   List<Long> categoryIds;
   List<Long> addressIds;

@@ -27,7 +27,7 @@ public class StaticShift {
   private Long id;
 
   private String code;
-  private Integer day;
+  private Integer dayOfWeek;
   private Time startTime;
 
   @Column(columnDefinition = "BIT", length = 1, nullable = false)

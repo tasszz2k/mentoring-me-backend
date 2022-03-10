@@ -28,7 +28,11 @@ public class Class {
   private Long id;
 
   private Long mentorId;
-  private Long categoryId;
+
+  @ManyToOne
+  @MapsId("id")
+  private Category category;
+
   private Long createdBy;
   private String title;
   private Date startDate;
@@ -41,7 +45,7 @@ public class Class {
   private String detailAddress;
 
   @ManyToOne
-  @JoinColumn(name = "address_id")
+  @JoinColumn(name = "address_id", referencedColumnName = "id")
   private Address address;
 
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
@@ -63,4 +67,11 @@ public class Class {
       joinColumns = {@JoinColumn(name = "class_id")},
       inverseJoinColumns = {@JoinColumn(name = "shift_id")})
   private Set<StaticShift> shifts = new HashSet<>();
+
+  // @ManyToMany
+  // @JoinTable(
+  //     name = "students_classes",
+  //     joinColumns = {@JoinColumn(name = "class_id")},
+  //     inverseJoinColumns = {@JoinColumn(name = "student_id")})
+  // private Set<User> students = new HashSet<>();
 }

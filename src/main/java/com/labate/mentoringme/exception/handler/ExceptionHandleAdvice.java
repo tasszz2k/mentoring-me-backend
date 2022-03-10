@@ -91,6 +91,34 @@ public class ExceptionHandleAdvice {
                 errors));
   }
 
+  @ExceptionHandler(ClassHasBegunException.class)
+  public ResponseEntity<ErrorResponse<Void>> handleClassHasBegunException(
+      ClassHasBegunException e, HttpServletRequest request) {
+    ResponseError error = BadRequestError.CLASS_HAS_BEGUN;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            ErrorResponse.<Void>builder()
+                .code(error.getCode())
+                .error(error.getName())
+                .message(MessageFormat.format(error.getMessage(), e.getMessage()))
+                .build());
+  }
+
+  @ExceptionHandler(CanNotReEnrollException.class)
+  public ResponseEntity<ErrorResponse<Void>> handleCanNotReEnrollException(
+      CanNotReEnrollException e, HttpServletRequest request) {
+    ResponseError error = BadRequestError.CANNOT_RE_ENROLL;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            ErrorResponse.<Void>builder()
+                .code(error.getCode())
+                .error(error.getName())
+                .message(MessageFormat.format(error.getMessage(), e.getMessage()))
+                .build());
+  }
+
   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
   public ResponseEntity<ErrorResponse<Void>> handleRequestMethodNotSupportedException(
       HttpRequestMethodNotSupportedException e, HttpServletRequest request) {

@@ -10,6 +10,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @EntityListeners(AuditingEntityListener.class)
@@ -17,18 +19,21 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "students_classes")
-@SQLDelete(sql = "update students_classes set is_deleted = true where id=?")
+@Table(name = "shifts")
+@SQLDelete(sql = "update shifts set is_deleted = true where id=?")
 @Where(clause = "is_deleted = false")
-public class StudentClass {
-  @EmbeddedId private StudentClassId id = new StudentClassId();
+public class Shift {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-  @ManyToOne
-  @MapsId("classId")
-  private Class classX;
+  private Long classId;
 
-  private Date enrollDate;
-  private Integer status;
+  @Enumerated(EnumType.STRING)
+  private DayOfWeek dayOfWeek;
+
+  private LocalDateTime startTime;
+  private LocalDateTime endTime;
 
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
   private Boolean isDeleted = false;
@@ -42,4 +47,9 @@ public class StudentClass {
   @Column(name = "modified")
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
+
+  public void setStartTime(LocalDateTime startTime) {
+    this.startTime = startTime;
+    this.dayOfWeek = startTime.getDayOfWeek();
+  }
 }

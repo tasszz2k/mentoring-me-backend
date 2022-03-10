@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 @Component
@@ -119,7 +119,7 @@ public class UserMapper {
     profile.setIsOfflineStudy(request.getIsOfflineStudy());
     profile.setIsOnlineStudy(request.getIsOnlineStudy());
     profile.setAddress(address);
-    profile.setCategories(Set.copyOf(categories));
+    profile.setCategories(new HashSet<>(categories));
     profile.setPrice(request.getPrice());
 
     return user;

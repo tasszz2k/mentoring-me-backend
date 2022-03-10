@@ -5,6 +5,7 @@ import com.labate.mentoringme.validator.ValidPhoneNumber;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,5 +24,5 @@ public class UpdateUserProfileRequest {
   private Float price;
   private Boolean isOnlineStudy;
   private Boolean isOfflineStudy;
-  private List<Long> categoryIds;
+  private List<Long> categoryIds = new ArrayList<>();
 }

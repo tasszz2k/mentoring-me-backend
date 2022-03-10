@@ -2,7 +2,7 @@ package com.labate.mentoringme.constant;
 
 public enum MentorStatus {
   REGISTERED("Registered"),
-  IN_PROGESS("In Progress"),
+  IN_PROGRESS("In Progress"),
   ACCEPTED("Accepted"),
   REJECTED("Rejected");
 

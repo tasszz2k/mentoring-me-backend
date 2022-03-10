@@ -73,12 +73,12 @@ public class User implements Serializable {
   private Set<Role> roles;
 
   @JsonIgnore
-  @OneToOne
+  @OneToOne(fetch = FetchType.LAZY)
   @MapsId
   @JoinColumn(name = "profile_id")
   private UserProfile userProfile;
 
-  @JsonIgnore
-  @OneToMany(mappedBy = "user")
-  private Set<SecureToken> tokens;
+  // @JsonIgnore
+  // @OneToMany(mappedBy = "user")
+  // private Set<SecureToken> tokens;
 }

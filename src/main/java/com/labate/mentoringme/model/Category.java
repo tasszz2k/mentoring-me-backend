@@ -41,7 +41,7 @@ public class Category {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @JoinColumn(name = "parent_category_id")
   private Category parentCategory;
 
@@ -68,9 +68,9 @@ public class Category {
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
 
-  @ManyToMany(mappedBy = "categories", fetch = FetchType.EAGER)
-  private Set<UserProfile> userProfiles;
+  // @ManyToMany(mappedBy = "categories", fetch = FetchType.EAGER)
+  // private Set<UserProfile> userProfiles;
 
-  @ManyToMany(mappedBy = "categories", fetch = FetchType.EAGER)
-  private Set<Quiz> quizzes;
+  // @ManyToMany(mappedBy = "categories", fetch = FetchType.EAGER)
+  // private Set<Quiz> quizzes;
 }

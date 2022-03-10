@@ -12,7 +12,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,6 +62,6 @@ public class PasswordController {
     passwordService.forgottenPassword(forgotPasswordRequest);
     return BaseResponseEntity.ok(
         null,
-        messageSource.getMessage("user.forgotpwd.msg", null, LocaleContextHolder.getLocale()));
+        "If the email address entered matches your account, you will receive an email with a link to reset your password.");
   }
 }

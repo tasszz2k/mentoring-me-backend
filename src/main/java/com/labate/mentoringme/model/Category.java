@@ -32,7 +32,7 @@ public class Category {
   private Category parentCategory;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<Category> subCategories;
 
   @Column(name = "name", length = 50)

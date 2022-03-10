@@ -74,7 +74,7 @@ public class User implements Serializable {
   private Set<Role> roles;
 
   @JsonIgnore
-  @OneToOne(fetch = FetchType.LAZY)
+  @OneToOne
   @MapsId
   @JoinColumn(name = "profile_id")
   private UserProfile userProfile;

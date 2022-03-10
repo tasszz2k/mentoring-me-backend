@@ -3,7 +3,6 @@ package com.labate.mentoringme.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
@@ -11,35 +10,25 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.sql.Time;
 import java.util.Date;
-import java.util.Set;
 
 @EntityListeners(AuditingEntityListener.class)
 @Entity
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "categories")
-@SQLDelete(sql = "update categories set is_deleted = true where id=?")
+@Table(name = "static_shifts")
+@SQLDelete(sql = "update static_shifts set is_deleted = true where id=?")
 @Where(clause = "is_deleted = false")
-public class Category {
+public class StaticShift {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne
-  @JoinColumn(name = "parent_category_id")
-  private Category parentCategory;
-
-  @JsonIgnore
-  @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  private Set<Category> subCategories;
-
-  @Column(name = "name", length = 50)
-  private String name;
-
-  @Column(name = "code", length = 10)
   private String code;
+  private Integer dayOfWeek;
+  private Time startTime;
 
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
   private Boolean isDeleted = false;
@@ -53,10 +42,4 @@ public class Category {
   @Column(name = "modified")
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
-
-  // @ManyToMany(mappedBy = "categories", fetch = FetchType.EAGER)
-  // private Set<UserProfile> userProfiles;
-
-  // @ManyToMany(mappedBy = "categories", fetch = FetchType.EAGER)
-  // private Set<Quiz> quizzes;
 }

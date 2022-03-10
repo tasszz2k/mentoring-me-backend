@@ -370,6 +370,20 @@ public class ExceptionHandleAdvice {
                 .build());
   }
 
+  @ExceptionHandler(MentorshipRequestNotFoundException.class)
+  public ResponseEntity<ErrorResponse<Void>> handleMentorshipRequestNotFoundException(
+      MentorshipRequestNotFoundException e, HttpServletRequest request) {
+    ResponseError error = NotFoundError.MENTORSHIP_REQUEST_NOT_FOUND;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            ErrorResponse.<Void>builder()
+                .code(error.getCode())
+                .error(error.getName())
+                .message(MessageFormat.format(error.getMessage(), e.getMessage()))
+                .build());
+  }
+
   @ExceptionHandler(QuizNotFoundException.class)
   public ResponseEntity<ErrorResponse<Void>> handleQuizNotFoundException(
       QuizNotFoundException e, HttpServletRequest request) {

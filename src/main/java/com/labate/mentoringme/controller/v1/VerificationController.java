@@ -9,8 +9,6 @@ import com.labate.mentoringme.service.verification.AccountVerificationService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
@@ -25,7 +23,6 @@ import javax.validation.Valid;
 public class VerificationController {
   private static final String REDIRECT_LOGIN = "redirect:/signin";
 
-  private final MessageSource messageSource;
   private final AccountVerificationService accountVerificationService;
 
   @GetMapping("/email")
@@ -34,8 +31,7 @@ public class VerificationController {
       throw new InvalidTokenException("Token is empty");
     }
     accountVerificationService.verifyUser(token);
-    return messageSource.getMessage(
-        "user.registration.verification.success", null, LocaleContextHolder.getLocale());
+    return "Thanks for the account verification. You can now login to your account.";
   }
 
   @ApiImplicitParam(
@@ -57,7 +53,6 @@ public class VerificationController {
   public ResponseEntity<?> verifyToken(@RequestBody @Valid VerifyTokenRequest request)
       throws InvalidTokenException {
     accountVerificationService.verifyToken(request);
-    return BaseResponseEntity.ok(
-        null, messageSource.getMessage("token.valid", null, LocaleContextHolder.getLocale()));
+    return BaseResponseEntity.ok(null, "Token is valid. You can now use for verification request.");
   }
 }

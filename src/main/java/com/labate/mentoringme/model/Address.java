@@ -63,9 +63,9 @@ public class Address {
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
 
-  @JsonIgnore
-  @OneToMany(mappedBy = "address")
-  private Set<UserProfile> userProfiles;
+  // @JsonIgnore
+  // @OneToMany(mappedBy = "address")
+  // private Set<UserProfile> userProfiles;
 
   @PostLoad
   void fillTransient() {

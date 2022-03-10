@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 public interface MentorshipRequestService {
   Class findById(Long id);
 
-  Page<Class> findAllClasses(PageCriteria pageCriteria, GetMentorshipRequestRq request);
+  Page<Class> findAllClassesByConditions(PageCriteria pageCriteria, GetMentorshipRequestRq request);
 
   Class saveMentorshipRequest(Class entity);
 

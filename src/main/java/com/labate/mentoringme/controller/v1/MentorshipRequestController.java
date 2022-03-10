@@ -39,7 +39,7 @@ public class MentorshipRequestController {
   @GetMapping("")
   public ResponseEntity<?> findAllMentorshipRequests(
       @Valid PageCriteria pageCriteria, @Valid GetMentorshipRequestRq request) {
-    var page = mentorshipRequestService.findAllClasses(pageCriteria, request);
+    var page = mentorshipRequestService.findAllClassesByConditions(pageCriteria, request);
     var classes = page.getContent();
 
     var paging =
@@ -66,9 +66,9 @@ public class MentorshipRequestController {
     request.setCreatedBy(localUser.getUser().getId());
     var entity = MentorshipRequestMapper.toEntity(request);
     entity.setId(null);
-    var classX = mentorshipRequestService.saveMentorshipRequest(entity);
+    mentorshipRequestService.saveMentorshipRequest(entity);
 
-    return BaseResponseEntity.ok(MentorshipRequestMapper.toDto(classX));
+    return BaseResponseEntity.ok(null, "Mentorship request created successfully");
   }
 
   @ApiImplicitParam(

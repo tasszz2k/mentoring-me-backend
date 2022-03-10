@@ -31,7 +31,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
   }
 
   @Override
-  public Page<Class> findAllClasses(PageCriteria pageCriteria, GetMentorshipRequestRq request) {
+  public Page<Class> findAllClassesByConditions(PageCriteria pageCriteria, GetMentorshipRequestRq request) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     return classRepository.findAllByConditions(request, pageable);
   }

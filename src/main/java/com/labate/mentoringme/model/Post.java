@@ -1,7 +1,9 @@
 package com.labate.mentoringme.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
@@ -10,43 +12,47 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @EntityListeners(AuditingEntityListener.class)
 @Entity
-@AllArgsConstructor
-@Builder
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "class_enrollments")
-@SQLDelete(sql = "update class_enrollments set is_deleted = true where id=?")
+@Table(name = "posts")
+@SQLDelete(sql = "update posts set is_deleted = true where id=?")
 @Where(clause = "is_deleted = false")
-public class ClassEnrollment {
+public class Post {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @JoinColumn(name = "class_id", referencedColumnName = "id")
-  private Class classEntity;
-
-  @Column(name = "requester_id")
-  private Long requesterId;
-
-  @Column(name = "assignee_id")
-  private Long assigneeId;
+  private String title;
+  private Long createdBy;
+  private String content;
 
   @JsonIgnore
   @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @JoinColumn(name = "requester_role_id", referencedColumnName = "id")
-  private Role RequesterRole;
+  @JoinColumn(name = "category_id", referencedColumnName = "id")
+  private Category category;
 
-  private Date enrollDate;
+  private Date startDate;
+  private Date endDate;
+  private Integer type;
 
   @Enumerated(EnumType.ORDINAL)
   private Status status;
 
-  @Builder.Default
+  private Float price;
+
+  private String detailAddress;
+
+  @JsonIgnore
+  @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @JoinColumn(name = "address_id", referencedColumnName = "id")
+  private Address address;
+
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
   private Boolean isDeleted = false;
 
@@ -60,10 +66,16 @@ public class ClassEnrollment {
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
 
+  // @ManyToMany
+  // @JoinTable(
+  //     name = "users_like_posts",
+  //     joinColumns = {@JoinColumn(name = "post_id")},
+  //     inverseJoinColumns = {@JoinColumn(name = "user_id")})
+  // private Set<User> users = new HashSet<>();
+
   public enum Status {
     ON_GOING,
-    ACCEPTED,
-    REJECTED,
+    COMPLETED,
     CANCELED,
     EXPIRED;
   }

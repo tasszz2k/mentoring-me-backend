@@ -106,9 +106,23 @@ public class ExceptionHandleAdvice {
   }
 
   @ExceptionHandler(CanNotReEnrollException.class)
-  public ResponseEntity<ErrorResponse<Void>> handleCanNotReEnrollException(
+  public ResponseEntity<ErrorResponse<Void>> handleCannotReEnrollException(
       CanNotReEnrollException e, HttpServletRequest request) {
     ResponseError error = BadRequestError.CANNOT_RE_ENROLL;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            ErrorResponse.<Void>builder()
+                .code(error.getCode())
+                .error(error.getName())
+                .message(MessageFormat.format(error.getMessage(), e.getMessage()))
+                .build());
+  }
+
+  @ExceptionHandler(CannotLikeOrUnlikeException.class)
+  public ResponseEntity<ErrorResponse<Void>> handleLikeOrUnlikeException(
+      CannotLikeOrUnlikeException e, HttpServletRequest request) {
+    ResponseError error = BadRequestError.CANNOT_LIKE_OR_UNLIKE;
     log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
     return ResponseEntity.status(error.getStatus())
         .body(
@@ -402,6 +416,20 @@ public class ExceptionHandleAdvice {
   public ResponseEntity<ErrorResponse<Void>> handleMentorshipRequestNotFoundException(
       MentorshipRequestNotFoundException e, HttpServletRequest request) {
     ResponseError error = NotFoundError.MENTORSHIP_REQUEST_NOT_FOUND;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            ErrorResponse.<Void>builder()
+                .code(error.getCode())
+                .error(error.getName())
+                .message(MessageFormat.format(error.getMessage(), e.getMessage()))
+                .build());
+  }
+
+  @ExceptionHandler(PostNotFoundException.class)
+  public ResponseEntity<ErrorResponse<Void>> handlePostNotFoundException(
+      PostNotFoundException e, HttpServletRequest request) {
+    ResponseError error = NotFoundError.POST_NOT_FOUND;
     log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
     return ResponseEntity.status(error.getStatus())
         .body(

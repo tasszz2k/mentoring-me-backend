@@ -60,8 +60,7 @@ public class MentorshipRequestController {
 
     var sort = List.of("-createdDate");
     PageCriteria pageCriteria = PageCriteria.builder().limit(10).page(1).sort(sort).build();
-    GetMentorshipRequestRq request =
-        new GetMentorshipRequestRq(null, null, null, null, null, null, null, null);
+    GetMentorshipRequestRq request = GetMentorshipRequestRq.builder().build();
     return findAllMentorshipRequests(pageCriteria, request);
   }
 

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.labate.mentoringme.exception.http.ResponseError;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-
 ;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
@@ -15,6 +14,8 @@ public enum BadRequestError implements ResponseError {
   MISSING_PATH_VARIABLE(4000002, "Missing path variable"), // MissingPathVariable
   CLASS_HAS_BEGUN(4000003, "Class has begun: {0}"),
   CANNOT_RE_ENROLL(4000004, "You cannot re-enroll in this class: {0}"),
+  CANNOT_LIKE_OR_UNLIKE(
+      4000005, "You already liked/unliked this. Can not do this action than once: {0}"),
   ;
 
   private final Integer code;

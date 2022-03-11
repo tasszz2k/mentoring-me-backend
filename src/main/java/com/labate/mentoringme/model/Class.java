@@ -1,7 +1,6 @@
 package com.labate.mentoringme.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.labate.mentoringme.constant.MentorshipRequestStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -44,7 +43,7 @@ public class Class {
   private Long type;
 
   @Enumerated(EnumType.ORDINAL)
-  private MentorshipRequestStatus status;
+  private Status status;
 
   private Float price;
 
@@ -77,4 +76,12 @@ public class Class {
       joinColumns = {@JoinColumn(name = "class_id")},
       inverseJoinColumns = {@JoinColumn(name = "requester_id")})
   private Set<User> users = new HashSet<>();
+
+  public enum Status {
+    ON_GOING,
+    FOUND,
+    COMPLETED,
+    CANCELED,
+    EXPIRED;
+  }
 }

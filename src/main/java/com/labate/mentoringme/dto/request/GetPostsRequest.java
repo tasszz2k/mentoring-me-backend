@@ -10,9 +10,8 @@ import java.util.List;
 
 @Builder
 @Value
-public class GetMentorshipRequestRq {
+public class GetPostsRequest {
   Long createdBy;
-  Long mentorId;
   List<Long> categoryIds;
   List<Long> addressIds;
 

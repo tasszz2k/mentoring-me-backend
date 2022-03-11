@@ -75,6 +75,6 @@ public class Class {
   @JoinTable(
       name = "class_enrollments",
       joinColumns = {@JoinColumn(name = "class_id")},
-      inverseJoinColumns = {@JoinColumn(name = "user_id")})
+      inverseJoinColumns = {@JoinColumn(name = "requester_id")})
   private Set<User> users = new HashSet<>();
 }

@@ -1,6 +1,7 @@
 package com.labate.mentoringme.controller.v1;
 
 import com.labate.mentoringme.config.CurrentUser;
+import com.labate.mentoringme.constant.UserRole;
 import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.FindUsersRequest;
@@ -9,7 +10,6 @@ import com.labate.mentoringme.dto.request.UpdateUserProfileRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
-import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.service.user.UserService;
 import com.labate.mentoringme.service.userprofile.UserProfileService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -74,19 +74,29 @@ public class UserProfileController {
 
   @GetMapping("")
   public ResponseEntity<?> findAllUserProfiles(
-          @Valid PageCriteria pageCriteria, @Valid FindUsersRequest request) {
+      @Valid PageCriteria pageCriteria, @Valid FindUsersRequest request) {
     var page = userService.findAllUsers(pageCriteria, request);
     var users = page.getContent();
     var paging =
-            Paging.builder()
-                    .limit(pageCriteria.getLimit())
-                    .page(pageCriteria.getPage())
-                    .total(page.getTotalElements())
-                    .build();
+        Paging.builder()
+            .limit(pageCriteria.getLimit())
+            .page(pageCriteria.getPage())
+            .total(page.getTotalElements())
+            .build();
 
     var userDtos = users.stream().map(UserMapper::buildUserDetails).collect(Collectors.toList());
 
     var response = new PageResponse(userDtos, paging);
     return BaseResponseEntity.ok(response);
+  }
+
+  @GetMapping("/top-mentors")
+  public ResponseEntity<?> findTop10MentorProfiles() {
+
+    FindUsersRequest request = new FindUsersRequest(UserRole.ROLE_MENTOR, null, null);
+    // TODO: build sort by ranking
+    PageCriteria pageCriteria = PageCriteria.builder().page(1).limit(10).build();
+
+    return findAllUserProfiles(pageCriteria, request);
   }
 }

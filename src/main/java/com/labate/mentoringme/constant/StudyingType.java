@@ -1,5 +1,7 @@
 package com.labate.mentoringme.constant;
 
-public class StudyingType {
+public enum StudyingType {
+  OFFLINE,
+  ONLINE;
 
 }

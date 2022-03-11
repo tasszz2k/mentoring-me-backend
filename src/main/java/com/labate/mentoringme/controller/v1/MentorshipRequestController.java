@@ -20,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -52,6 +53,16 @@ public class MentorshipRequestController {
             .build();
     var response = new PageResponse(MentorshipRequestMapper.toDtos(classes), paging);
     return BaseResponseEntity.ok(response);
+  }
+
+  @GetMapping("/top-requests")
+  public ResponseEntity<?> findTop10MentorshipRequests() {
+
+    var sort = List.of("-createdDate");
+    PageCriteria pageCriteria = PageCriteria.builder().limit(10).page(1).sort(sort).build();
+    GetMentorshipRequestRq request =
+        new GetMentorshipRequestRq(null, null, null, null, null, null, null, null);
+    return findAllMentorshipRequests(pageCriteria, request);
   }
 
   @ApiImplicitParam(

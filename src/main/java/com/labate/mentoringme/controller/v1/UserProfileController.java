@@ -20,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -92,10 +93,10 @@ public class UserProfileController {
 
   @GetMapping("/top-mentors")
   public ResponseEntity<?> findTop10MentorProfiles() {
-
-    FindUsersRequest request = new FindUsersRequest(UserRole.ROLE_MENTOR, null, null);
+    var sort = List.of("+createdDate");
     // TODO: build sort by ranking
-    PageCriteria pageCriteria = PageCriteria.builder().page(1).limit(10).build();
+    PageCriteria pageCriteria = PageCriteria.builder().limit(10).page(1).sort(sort).build();
+    FindUsersRequest request = new FindUsersRequest(UserRole.ROLE_MENTOR, null, null);
 
     return findAllUserProfiles(pageCriteria, request);
   }

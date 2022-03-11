@@ -13,6 +13,7 @@ public interface ClassRepository extends JpaRepository<Class, Long> {
           + " (:#{#request.mentorId} is null or c.mentorId = :#{#request.mentorId}) "
           + "AND (COALESCE(:#{#request.categoryIds}, NULL) IS NULL OR c.category.id IN (:#{#request.categoryIds})) "
           + "AND (COALESCE(:#{#request.addressIds}, NULL) IS NULL OR c.address.id IN (:#{#request.addressIds})) "
+          + "and (:#{#request.status} is null or c.status >= :#{#request.status}) "
           + "and (:#{#request.minPrice} is null or c.price >= :#{#request.minPrice}) "
           + "and (:#{#request.maxPrice} is null or c.price <= :#{#request.maxPrice}) "
           + "and (:#{#request.fromDate} is null or c.startDate >= :#{#request.fromDate}) "

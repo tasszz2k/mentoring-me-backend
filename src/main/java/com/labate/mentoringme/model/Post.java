@@ -20,26 +20,25 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "classes")
-@SQLDelete(sql = "update classes set is_deleted = true where id=?")
+@Table(name = "posts")
+@SQLDelete(sql = "update posts set is_deleted = true where id=?")
 @Where(clause = "is_deleted = false")
-public class Class {
+public class Post {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private Long mentorId;
+  private String title;
+  private Long createdBy;
+  private String content;
 
   @JsonIgnore
   @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   @JoinColumn(name = "category_id", referencedColumnName = "id")
   private Category category;
 
-  private Long createdBy;
-  private String title;
   private Date startDate;
   private Date endDate;
-  private Integer duration;
   private Long type;
 
   @Enumerated(EnumType.ORDINAL)
@@ -67,19 +66,15 @@ public class Class {
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
 
-  @OneToMany(mappedBy = "classId", cascade = CascadeType.REMOVE)
-  private Set<Shift> shifts = new HashSet<>();
-
-  @ManyToMany
-  @JoinTable(
-      name = "class_enrollments",
-      joinColumns = {@JoinColumn(name = "class_id")},
-      inverseJoinColumns = {@JoinColumn(name = "requester_id")})
-  private Set<User> users = new HashSet<>();
+  // @ManyToMany
+  // @JoinTable(
+  //     name = "users_like_posts",
+  //     joinColumns = {@JoinColumn(name = "post_id")},
+  //     inverseJoinColumns = {@JoinColumn(name = "user_id")})
+  // private Set<User> users = new HashSet<>();
 
   public enum Status {
     ON_GOING,
-    FOUND,
     COMPLETED,
     CANCELED,
     EXPIRED;

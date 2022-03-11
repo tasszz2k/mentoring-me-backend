@@ -32,14 +32,14 @@ public class ClassEnrollmentServiceImpl implements ClassEnrollmentService {
       throw new ClassHasBegunException("id = " + classId);
     }
 
-    var classEnrollment = classEnrollmentRepository.findByClassIdAndUserId(classId, studentId);
+    var classEnrollment = classEnrollmentRepository.findByClassIdAndRequesterId(classId, studentId);
     if (classEnrollment == null) {
       var roleUser = roleRepository.findByName(UserRole.ROLE_USER.name());
       var newClassEnrollment =
           ClassEnrollment.builder()
               .classEntity(classEntity)
-              .userId(studentId)
-              .userRole(roleUser)
+              .requesterId(studentId)
+              .RequesterRole(roleUser)
               .build();
       classEnrollmentRepository.save(newClassEnrollment);
     } else {

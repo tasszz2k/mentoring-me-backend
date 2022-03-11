@@ -1,6 +1,7 @@
 package com.labate.mentoringme.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.labate.mentoringme.constant.MentorshipRequestStatus;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -30,16 +31,21 @@ public class ClassEnrollment {
   @JoinColumn(name = "class_id", referencedColumnName = "id")
   private Class classEntity;
 
-  @Column(name = "user_id")
-  private Long userId;
+  @Column(name = "requester_id")
+  private Long requesterId;
+
+  @Column(name = "assignee_id")
+  private Long assigneeId;
 
   @JsonIgnore
   @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @JoinColumn(name = "user_role_id", referencedColumnName = "id")
-  private Role userRole;
+  @JoinColumn(name = "requester_role_id", referencedColumnName = "id")
+  private Role RequesterRole;
 
   private Date enrollDate;
-  private Integer status;
+
+  @Enumerated(EnumType.ORDINAL)
+  private MentorshipRequestStatus status;
 
   @Builder.Default
   @Column(columnDefinition = "BIT", length = 1, nullable = false)

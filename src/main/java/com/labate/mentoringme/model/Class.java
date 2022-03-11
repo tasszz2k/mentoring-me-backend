@@ -1,6 +1,7 @@
 package com.labate.mentoringme.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.labate.mentoringme.constant.MentorshipRequestStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -41,7 +42,10 @@ public class Class {
   private Date endDate;
   private Integer duration;
   private Long type;
-  private Long status;
+
+  @Enumerated(EnumType.ORDINAL)
+  private MentorshipRequestStatus status;
+
   private Float price;
 
   private String detailAddress;

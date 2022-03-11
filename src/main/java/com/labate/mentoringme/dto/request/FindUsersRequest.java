@@ -2,10 +2,12 @@ package com.labate.mentoringme.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.labate.mentoringme.constant.UserRole;
+import lombok.Builder;
 import lombok.Value;
 
 import java.util.List;
 
+@Builder
 @Value
 public class FindUsersRequest {
   UserRole role;

@@ -2,6 +2,7 @@ package com.labate.mentoringme.controller.v1;
 
 import com.labate.mentoringme.config.CurrentUser;
 import com.labate.mentoringme.dto.mapper.PostMapper;
+import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreatePostRequest;
 import com.labate.mentoringme.dto.request.GetPostsRequest;
@@ -114,5 +115,39 @@ public class PostController {
       @CurrentUser LocalUser localUser) {
     postService.updateStatus(id, request.getStatus(), localUser);
     return BaseResponseEntity.ok(null, "Post status updated successfully");
+  }
+
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  @PostMapping("/{id}/like")
+  public ResponseEntity<?> likePost(@PathVariable Long id, @CurrentUser LocalUser localUser) {
+    postService.likePost(id, localUser.getUser().getId());
+    return BaseResponseEntity.ok(null, "Post liked successfully");
+  }
+
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  @PostMapping("/{id}/unlike")
+  public ResponseEntity<?> unlikePost(@PathVariable Long id, @CurrentUser LocalUser localUser) {
+    postService.unlikePost(id, localUser.getUser().getId());
+    return BaseResponseEntity.ok(null, "Post unliked successfully");
+  }
+
+  @GetMapping("/{id}/like")
+  public ResponseEntity<?> getAllUsersLikePost(@PathVariable Long id) {
+    var users = postService.getAllUserLikePost(id);
+    return BaseResponseEntity.ok(UserMapper.toUserInfos(users));
   }
 }

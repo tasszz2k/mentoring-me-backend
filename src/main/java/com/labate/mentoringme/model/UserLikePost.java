@@ -39,7 +39,7 @@ public class UserLikePost {
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
 
-  // @Data
+  @Data
   @NoArgsConstructor
   @AllArgsConstructor
   @Embeddable

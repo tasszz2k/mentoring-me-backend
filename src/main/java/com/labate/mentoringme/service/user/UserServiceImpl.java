@@ -28,9 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -146,6 +144,11 @@ public class UserServiceImpl implements UserService {
     // var sort = pageable.getSort().;
     // System.out.println(sort);
     return userRepository.findAllByConditions(request, pageable);
+  }
+
+  @Override
+  public List<User> findAllByIds(Collection<Long> ids) {
+    return userRepository.findAllByIdInAndEnabledIsTrue(ids);
   }
 
   private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {

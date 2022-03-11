@@ -16,7 +16,7 @@ public class MentorshipRequestDto {
   private Date startDate;
   private Date endDate;
   private Integer duration;
-  private Long type;
+  private Integer type;
   private Class.Status status;
   private Float price;
   private String detailAddress;

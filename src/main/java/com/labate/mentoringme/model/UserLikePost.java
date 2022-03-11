@@ -1,8 +1,6 @@
 package com.labate.mentoringme.model;
 
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -18,18 +16,14 @@ import java.util.Date;
 @Getter
 @Setter
 @Table(name = "users_like_posts")
-@SQLDelete(sql = "update users_like_posts set is_deleted = true where id=?")
-@Where(clause = "is_deleted = false")
+// @SQLDelete(sql = "update users_like_posts set is_deleted = true where id=?")
+// @Where(clause = "is_deleted = false")
 public class UserLikePost {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "post_id")
-  private Long postId;
-
-  @Column(name = "user_id")
-  private Long userId;
+  @Embedded private Key key;
 
   @Builder.Default
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
@@ -44,4 +38,13 @@ public class UserLikePost {
   @Column(name = "modified")
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
+
+  // @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Embeddable
+  public static class Key {
+    private Long postId;
+    private Long userId;
+  }
 }

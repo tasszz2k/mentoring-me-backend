@@ -39,7 +39,7 @@ public class Post {
 
   private Date startDate;
   private Date endDate;
-  private Long type;
+  private Integer type;
 
   @Enumerated(EnumType.ORDINAL)
   private Status status;

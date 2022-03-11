@@ -40,7 +40,7 @@ public class Class {
   private Date startDate;
   private Date endDate;
   private Integer duration;
-  private Long type;
+  private Integer type;
 
   @Enumerated(EnumType.ORDINAL)
   private Status status;

@@ -43,7 +43,7 @@ public class Class {
   private Long type;
 
   @Enumerated(EnumType.ORDINAL)
-  private MentorshipRequestStatus status;
+  private Status status;
 
   private Float price;
 

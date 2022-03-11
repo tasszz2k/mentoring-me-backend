@@ -96,7 +96,7 @@ public class UserProfileController {
     var sort = List.of("+createdDate");
     // TODO: build sort by ranking
     PageCriteria pageCriteria = PageCriteria.builder().limit(10).page(1).sort(sort).build();
-    FindUsersRequest request = new FindUsersRequest(UserRole.ROLE_MENTOR, null, null);
+    FindUsersRequest request = FindUsersRequest.builder().role(UserRole.ROLE_MENTOR).build();
 
     return findAllUserProfiles(pageCriteria, request);
   }

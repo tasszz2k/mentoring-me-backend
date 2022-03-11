@@ -1,7 +1,6 @@
 package com.labate.mentoringme.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.labate.mentoringme.constant.MentorshipRequestStatus;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -45,7 +44,7 @@ public class ClassEnrollment {
   private Date enrollDate;
 
   @Enumerated(EnumType.ORDINAL)
-  private MentorshipRequestStatus status;
+  private Status status;
 
   @Builder.Default
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
@@ -60,4 +59,12 @@ public class ClassEnrollment {
   @Column(name = "modified")
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
+
+  public enum Status {
+    ON_GOING,
+    ACCEPTED,
+    REJECTED,
+    CANCELED,
+    EXPIRED;
+  }
 }

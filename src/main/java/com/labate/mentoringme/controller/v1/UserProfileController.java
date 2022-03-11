@@ -1,6 +1,7 @@
 package com.labate.mentoringme.controller.v1;
 
 import com.labate.mentoringme.config.CurrentUser;
+import com.labate.mentoringme.constant.UserRole;
 import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.FindUsersRequest;
@@ -9,7 +10,6 @@ import com.labate.mentoringme.dto.request.UpdateUserProfileRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
-import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.service.user.UserService;
 import com.labate.mentoringme.service.userprofile.UserProfileService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -20,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -72,29 +73,31 @@ public class UserProfileController {
     return BaseResponseEntity.ok(null, "User profile updated successfully!");
   }
 
-  @ApiImplicitParam(
-          name = "Authorization",
-          value = "Access Token",
-          required = true,
-          paramType = "header",
-          dataTypeClass = String.class,
-          example = "Bearer access_token")
   @GetMapping("")
-  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   public ResponseEntity<?> findAllUserProfiles(
-          @Valid PageCriteria pageCriteria, @Valid FindUsersRequest request) {
+      @Valid PageCriteria pageCriteria, @Valid FindUsersRequest request) {
     var page = userService.findAllUsers(pageCriteria, request);
     var users = page.getContent();
     var paging =
-            Paging.builder()
-                    .limit(pageCriteria.getLimit())
-                    .page(pageCriteria.getPage())
-                    .total(page.getTotalElements())
-                    .build();
+        Paging.builder()
+            .limit(pageCriteria.getLimit())
+            .page(pageCriteria.getPage())
+            .total(page.getTotalElements())
+            .build();
 
     var userDtos = users.stream().map(UserMapper::buildUserDetails).collect(Collectors.toList());
 
     var response = new PageResponse(userDtos, paging);
     return BaseResponseEntity.ok(response);
+  }
+
+  @GetMapping("/top-mentors")
+  public ResponseEntity<?> findTop10MentorProfiles() {
+    var sort = List.of("+createdDate");
+    // TODO: build sort by ranking
+    PageCriteria pageCriteria = PageCriteria.builder().limit(10).page(1).sort(sort).build();
+    FindUsersRequest request = new FindUsersRequest(UserRole.ROLE_MENTOR, null, null);
+
+    return findAllUserProfiles(pageCriteria, request);
   }
 }

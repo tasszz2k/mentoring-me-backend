@@ -1,6 +1,7 @@
 package com.labate.mentoringme.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.labate.mentoringme.constant.MentorshipRequestStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -41,7 +42,10 @@ public class Class {
   private Date endDate;
   private Integer duration;
   private Long type;
-  private Long status;
+
+  @Enumerated(EnumType.ORDINAL)
+  private MentorshipRequestStatus status;
+
   private Float price;
 
   private String detailAddress;
@@ -64,17 +68,13 @@ public class Class {
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
 
-  @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @JoinTable(
-      name = "classes_shifts",
-      joinColumns = {@JoinColumn(name = "class_id")},
-      inverseJoinColumns = {@JoinColumn(name = "shift_id")})
-  private Set<StaticShift> shifts = new HashSet<>();
+  @OneToMany(mappedBy = "classId", cascade = CascadeType.REMOVE)
+  private Set<Shift> shifts = new HashSet<>();
 
-  // @ManyToMany
-  // @JoinTable(
-  //     name = "students_classes",
-  //     joinColumns = {@JoinColumn(name = "class_id")},
-  //     inverseJoinColumns = {@JoinColumn(name = "student_id")})
-  // private Set<User> students = new HashSet<>();
+  @ManyToMany
+  @JoinTable(
+      name = "class_enrollments",
+      joinColumns = {@JoinColumn(name = "class_id")},
+      inverseJoinColumns = {@JoinColumn(name = "requester_id")})
+  private Set<User> users = new HashSet<>();
 }

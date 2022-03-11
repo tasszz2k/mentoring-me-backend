@@ -1,5 +1,7 @@
 package com.labate.mentoringme.dto.model;
 
+import com.labate.mentoringme.constant.MentorshipRequestStatus;
+import com.labate.mentoringme.dto.mapper.MentorshipRequestMapper;
 import com.labate.mentoringme.model.Category;
 import lombok.Data;
 
@@ -17,7 +19,7 @@ public class MentorshipRequestDto {
   private Date endDate;
   private Integer duration;
   private Long type;
-  private Long status;
+  private MentorshipRequestStatus status;
   private Float price;
   private String detailAddress;
   private AddressDto address;

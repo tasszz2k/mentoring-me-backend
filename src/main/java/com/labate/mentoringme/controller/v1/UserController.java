@@ -71,15 +71,7 @@ public class UserController {
     return BaseResponseEntity.ok("User enabled");
   }
 
-  @ApiImplicitParam(
-      name = "Authorization",
-      value = "Access Token",
-      required = true,
-      paramType = "header",
-      dataTypeClass = String.class,
-      example = "Bearer access_token")
   @GetMapping("")
-  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   public ResponseEntity<?> findAllUsers(
       @Valid PageCriteria pageCriteria, @Valid FindUsersRequest request) {
     var page = userService.findAllUsers(pageCriteria, request);

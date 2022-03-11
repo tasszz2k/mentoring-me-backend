@@ -72,15 +72,7 @@ public class UserProfileController {
     return BaseResponseEntity.ok(null, "User profile updated successfully!");
   }
 
-  @ApiImplicitParam(
-          name = "Authorization",
-          value = "Access Token",
-          required = true,
-          paramType = "header",
-          dataTypeClass = String.class,
-          example = "Bearer access_token")
   @GetMapping("")
-  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   public ResponseEntity<?> findAllUserProfiles(
           @Valid PageCriteria pageCriteria, @Valid FindUsersRequest request) {
     var page = userService.findAllUsers(pageCriteria, request);

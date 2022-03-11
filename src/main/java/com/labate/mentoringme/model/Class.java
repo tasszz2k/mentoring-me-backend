@@ -40,10 +40,10 @@ public class Class {
   private Date startDate;
   private Date endDate;
   private Integer duration;
-  private Integer type;
+  private Long type;
 
   @Enumerated(EnumType.ORDINAL)
-  private Status status;
+  private MentorshipRequestStatus status;
 
   private Float price;
 

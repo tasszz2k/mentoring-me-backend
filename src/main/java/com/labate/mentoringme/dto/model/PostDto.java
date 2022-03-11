@@ -22,7 +22,7 @@ public class PostDto {
   private Float price;
   private String detailAddress;
   private AddressDto address;
-
+  private int likeCount;
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private Long createdBy;
 

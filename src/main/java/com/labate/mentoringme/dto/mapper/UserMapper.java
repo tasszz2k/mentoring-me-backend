@@ -15,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -47,6 +48,10 @@ public class UserMapper {
     System.out.println("user : " + user.getId());
     var localUser = localUserDetailService.createLocalUser(user);
     return buildUserInfo(localUser);
+  }
+
+  public static List<UserInfo> toUserInfos(List<User> users) {
+    return users.stream().map(UserMapper::buildUserInfo).collect(Collectors.toList());
   }
 
   public static UserDetails buildUserDetails(User user) {

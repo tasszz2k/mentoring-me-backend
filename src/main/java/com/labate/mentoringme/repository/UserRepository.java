@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.List;
+
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
@@ -37,4 +40,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
               + "AND (COALESCE(:#{#request.categoryIds}, NULL) IS NULL OR category.id IN (:#{#request.categoryIds})) "
               + "AND (COALESCE(:#{#request.addressIds}, NULL) IS NULL OR address.id IN (:#{#request.addressIds})) ")
   Page<User> findAllByConditions(FindUsersRequest request, Pageable pageable);
+
+  List<User> findAllByIdInAndEnabledIsTrue(Collection<Long> userIds);
 }

@@ -10,19 +10,26 @@ import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.exception.CannotLikeOrUnlikeException;
 import com.labate.mentoringme.exception.PostNotFoundException;
 import com.labate.mentoringme.model.Post;
+import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.model.UserLikePost;
 import com.labate.mentoringme.repository.PostRepository;
 import com.labate.mentoringme.repository.UserLikePostRepository;
+import com.labate.mentoringme.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 public class PostServiceImpl implements PostService {
   private final PostRepository postRepository;
   private final UserLikePostRepository userLikePostRepository;
+  private final UserService userService;
 
   @Override
   public Post savePost(Post post) {
@@ -62,27 +69,40 @@ public class PostServiceImpl implements PostService {
     postRepository.deleteById(id);
   }
 
+  @Transactional
   @Override
   public void likePost(Long postId, Long userId) {
+    var post = findPostById(postId);
+    if (post == null) {
+      throw new PostNotFoundException("id = " + postId);
+    }
+
     var userLikePostKey = new UserLikePost.Key(postId, userId);
     var userLikePost = userLikePostRepository.findByKey(userLikePostKey);
     if (userLikePost == null) {
       var newUserLikePost = new UserLikePost();
       newUserLikePost.setKey(userLikePostKey);
       userLikePostRepository.save(newUserLikePost);
-      return;
-    }
-
-    if (userLikePost.getIsDeleted()) {
-      userLikePost.setIsDeleted(false);
-      userLikePostRepository.save(userLikePost);
     } else {
-      throw new CannotLikeOrUnlikeException("You already liked this post");
+      if (userLikePost.getIsDeleted()) {
+        userLikePost.setIsDeleted(false);
+        userLikePostRepository.save(userLikePost);
+      } else {
+        throw new CannotLikeOrUnlikeException("You already liked this post");
+      }
     }
+    post.increaseLikeCount();
+    savePost(post);
   }
 
+  @Transactional
   @Override
   public void unlikePost(Long postId, Long userId) {
+    var post = findPostById(postId);
+    if (post == null) {
+      throw new PostNotFoundException("id = " + postId);
+    }
+
     var userLikePostKey = new UserLikePost.Key(postId, userId);
     var userLikePost = userLikePostRepository.findByKey(userLikePostKey);
     if (userLikePost == null || userLikePost.getIsDeleted()) {
@@ -91,6 +111,9 @@ public class PostServiceImpl implements PostService {
 
     userLikePost.setIsDeleted(true);
     userLikePostRepository.save(userLikePost);
+
+    post.decreaseLikeCount();
+    savePost(post);
   }
 
   @Override
@@ -103,6 +126,16 @@ public class PostServiceImpl implements PostService {
     checkPermissionToUpdate(post, localUser);
     post.setStatus(status);
     return savePost(post);
+  }
+
+  @Override
+  public List<User> getAllUserLikePost(Long id) {
+    var userLikePosts = userLikePostRepository.findAllByKeyPostIdAndIsDeletedIsFalse(id);
+    var userIds =
+        userLikePosts.stream()
+            .map(userLikePost -> userLikePost.getKey().getUserId())
+            .collect(Collectors.toSet());
+    return userService.findAllByIds(userIds);
   }
 
   public void checkPermissionToUpdate(Post entity, LocalUser localUser) {

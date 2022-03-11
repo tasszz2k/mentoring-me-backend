@@ -12,8 +12,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 @EntityListeners(AuditingEntityListener.class)
 @Entity
@@ -53,6 +51,8 @@ public class Post {
   @JoinColumn(name = "address_id", referencedColumnName = "id")
   private Address address;
 
+  private int likeCount;
+
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
   private Boolean isDeleted = false;
 
@@ -72,6 +72,14 @@ public class Post {
   //     joinColumns = {@JoinColumn(name = "post_id")},
   //     inverseJoinColumns = {@JoinColumn(name = "user_id")})
   // private Set<User> users = new HashSet<>();
+
+  public void increaseLikeCount() {
+    this.likeCount++;
+  }
+
+  public void decreaseLikeCount() {
+    this.likeCount--;
+  }
 
   public enum Status {
     ON_GOING,

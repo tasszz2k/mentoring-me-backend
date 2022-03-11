@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -35,4 +37,6 @@ public interface UserService {
   void updateUserEnableStatus(Long userId, boolean enable) throws UserNotFoundException;
 
   Page<User> findAllUsers(PageCriteria pageCriteria, FindUsersRequest request);
+
+  List<User> findAllByIds(Collection<Long> ids);
 }

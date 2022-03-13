@@ -51,7 +51,7 @@ public class MentorshipRequestController {
             .page(pageCriteria.getPage())
             .total(page.getTotalElements())
             .build();
-    var response = new PageResponse(MentorshipRequestMapper.toDtos(classes), paging);
+    var response = new PageResponse(MentorshipRequestMapper.toBasicDtos(classes), paging);
     return BaseResponseEntity.ok(response);
   }
 

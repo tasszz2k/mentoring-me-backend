@@ -1,29 +1,24 @@
 package com.labate.mentoringme.dto.model;
 
-import com.labate.mentoringme.model.Class;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class MentorshipRequestDto {
-  private Long id;
-  private Long mentorId;
-  private CategoryDto category;
-  private Long createdBy;
-  private String title;
+public class MentorshipRequestDto extends BasicMentorshipRequestDto {
   private Date startDate;
   private Date endDate;
   private Integer duration;
   private Integer type;
-  private Class.Status status;
   private Float price;
   private String detailAddress;
   private AddressDto address;
 
   private Set<ShiftDto> shifts;
-  private Set<Integer> studentIds;
+  private Set<UserInfo> students;
 
   private Date createdDate;
   private Date modifiedDate;

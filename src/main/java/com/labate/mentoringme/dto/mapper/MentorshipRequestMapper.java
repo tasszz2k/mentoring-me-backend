@@ -1,12 +1,13 @@
 package com.labate.mentoringme.dto.mapper;
 
+import com.labate.mentoringme.dto.model.BasicMentorshipRequestDto;
 import com.labate.mentoringme.dto.model.MentorshipRequestDto;
 import com.labate.mentoringme.dto.request.CreateMentorshipRequestRq;
 import com.labate.mentoringme.model.Class;
 import com.labate.mentoringme.service.address.AddressService;
 import com.labate.mentoringme.service.category.CategoryService;
 import com.labate.mentoringme.service.mentorshiprequest.MentorshipRequestService;
-import com.labate.mentoringme.service.mentorshiprequest.ShiftService;
+import com.labate.mentoringme.service.user.UserService;
 import com.labate.mentoringme.util.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,18 +24,18 @@ public class MentorshipRequestMapper {
   private static MentorshipRequestService mentorshipRequestService;
   private static CategoryService categoryService;
   private static AddressService addressService;
-  private static ShiftService shiftService;
+  private static UserService userService;
 
   @Autowired
   public MentorshipRequestMapper(
       MentorshipRequestService mentorshipRequestService,
       CategoryService categoryService,
       AddressService addressService,
-      ShiftService shiftService) {
+      UserService userService) {
     MentorshipRequestMapper.mentorshipRequestService = mentorshipRequestService;
     MentorshipRequestMapper.categoryService = categoryService;
     MentorshipRequestMapper.addressService = addressService;
-    MentorshipRequestMapper.shiftService = shiftService;
+    MentorshipRequestMapper.userService = userService;
   }
 
   public static MentorshipRequestDto toDto(Class entity) {
@@ -47,7 +48,21 @@ public class MentorshipRequestMapper {
       var address = AddressMapper.toDto(entity.getAddress());
       dto.setAddress(address);
     }
+    if (entity.getMentorId() != null) {
+      var mentor = userService.findUserById(entity.getMentorId()).orElseGet(null);
+      if (mentor != null) {
+        dto.setMentor(UserMapper.buildUserInfo(mentor));
+      }
+    }
     return dto;
+  }
+
+  public static BasicMentorshipRequestDto toBasicDto(Class entity) {
+    if (entity == null) {
+      return null;
+    }
+
+    return ObjectMapperUtils.map(entity, BasicMentorshipRequestDto.class);
   }
 
   public static Class toEntity(CreateMentorshipRequestRq dto) {
@@ -77,6 +92,18 @@ public class MentorshipRequestMapper {
       dtos = null;
     } else {
       dtos = entities.stream().map(MentorshipRequestMapper::toDto).collect(Collectors.toList());
+    }
+    return dtos;
+  }
+
+  public static List<BasicMentorshipRequestDto> toBasicDtos(Collection<Class> entities) {
+
+    List<BasicMentorshipRequestDto> dtos;
+    if (entities == null) {
+      dtos = null;
+    } else {
+      dtos =
+          entities.stream().map(MentorshipRequestMapper::toBasicDto).collect(Collectors.toList());
     }
     return dtos;
   }

@@ -90,4 +90,9 @@ public class UserProfile {
       this.genderValue = gender.getValue();
     }
   }
+
+  public void setGender(Gender gender) {
+    this.gender = gender;
+    this.genderValue = gender != null ? gender.getValue() : null;
+  }
 }

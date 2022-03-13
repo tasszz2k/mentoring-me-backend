@@ -116,7 +116,7 @@ public class UserMapper {
     user.setPhoneNumber(request.getPhoneNumber());
     user.setImageUrl(request.getImageUrl());
     profile.setGender(gender);
-    profile.setGenderValue(gender != null ? gender.getValue() : null);
+    // profile.setGenderValue(gender != null ? gender.getValue() : null);
     profile.setDob(request.getDob());
     profile.setSchool(request.getSchool());
     profile.setDetailAddress(request.getDetailAddress());

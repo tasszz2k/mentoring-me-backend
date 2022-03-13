@@ -5,17 +5,15 @@ import com.labate.mentoringme.constant.Gender;
 import com.labate.mentoringme.validator.ValidPhoneNumber;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Data
-public class UpdateUserProfileRequest {
+public class PartialUpdateUserProfileRequest {
   @JsonIgnore private Long id;
 
-  @NotBlank private String fullName;
-  // private String email;
+  private String fullName;
   @ValidPhoneNumber private String phoneNumber;
   private String imageUrl;
   private Gender gender;

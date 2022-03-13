@@ -6,6 +6,7 @@ import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.FindUsersRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
+import com.labate.mentoringme.dto.request.PartialUpdateUserProfileRequest;
 import com.labate.mentoringme.dto.request.UpdateUserProfileRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.PageResponse;
@@ -70,6 +71,25 @@ public class UserProfileController {
     var user = UserMapper.toEntity(localUser, request);
 
     userService.save(user);
+    return BaseResponseEntity.ok(null, "User profile updated successfully!");
+  }
+
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PatchMapping("/{userId}")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  public ResponseEntity<?> partialUpdateProfile(
+      @PathVariable Long userId,
+      @RequestBody @Valid PartialUpdateUserProfileRequest request,
+      @CurrentUser LocalUser localUser) {
+
+    request.setId(userId);
+    userProfileService.partialUpdateProfile(localUser, request);
     return BaseResponseEntity.ok(null, "User profile updated successfully!");
   }
 

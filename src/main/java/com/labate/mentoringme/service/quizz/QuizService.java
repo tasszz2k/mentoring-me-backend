@@ -33,4 +33,6 @@ public interface QuizService {
   Page<QuizTakingHistoryResponse> getQuizTakingHistory(PageCriteria pageCriteria);
 
   QuizResultResponse getQuizResult(ResultQuizCheckingRequest request);
+
+  void publishQuiz(Long quizId);
 }

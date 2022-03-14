@@ -35,10 +35,11 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
   @Transactional
   @Modifying
   @Query("UPDATE Quiz q SET q.isDraft = 0 WHERE q.id = :id")
-  void saveDraftQuiz(@Param("id") Long id);
+  void publishQuiz(@Param("id") Long id);
 
   @Query(
-      value = "SELECT A.title, A.number_of_question, B.score, B.created FROM quizzes A join quiz_results B on A.id = B.quiz_id WHERE B.user_id = :userId",
+      value = "SELECT A.title, A.number_of_question, B.score, B.number_of_false, B.number_of_true, B.created FROM quizzes A join quiz_results B on A.id = B.quiz_id WHERE B.user_id = :userId",
+      countQuery = "SELECT COUNT(B.id) FROM quizzes A join quiz_results B on A.id = B.quiz_id WHERE B.user_id = :userId",
       nativeQuery = true)
   Page<QuizTakingHistoryProjection> getQuizTakingHistory(@Param("userId") Long userId,
       Pageable pageable);

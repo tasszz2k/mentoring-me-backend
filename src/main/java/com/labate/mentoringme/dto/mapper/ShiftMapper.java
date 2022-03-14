@@ -27,7 +27,6 @@ public class ShiftMapper {
     }
 
     Shift entity = ObjectMapperUtils.map(dto, Shift.class);
-    // entity.setDayOfWeek(dto.getStartTime().getDayOfWeek());
     return entity;
   }
 

@@ -84,7 +84,6 @@ public class Post {
   public enum Status {
     ON_GOING,
     COMPLETED,
-    CANCELED,
-    EXPIRED;
+    CANCELED;
   }
 }

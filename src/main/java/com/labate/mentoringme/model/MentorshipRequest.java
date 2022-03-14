@@ -1,9 +1,7 @@
 package com.labate.mentoringme.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,48 +10,43 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 @EntityListeners(AuditingEntityListener.class)
 @Entity
+@AllArgsConstructor
+@Builder
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "classes")
-@SQLDelete(sql = "update classes set is_deleted = true where id=?")
+@Table(name = "mentorship_requests")
+@SQLDelete(sql = "update mentorship_requests set is_deleted = true where id=?")
 @Where(clause = "is_deleted = false")
-public class Class {
+public class MentorshipRequest {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private Long mentorId;
+  @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @JoinColumn(name = "mentorship_id", referencedColumnName = "id")
+  private Mentorship mentorship;
+
+  @Column(name = "requester_id")
+  private Long requesterId;
+
+  @Column(name = "assignee_id")
+  private Long assigneeId;
 
   @JsonIgnore
   @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @JoinColumn(name = "category_id", referencedColumnName = "id")
-  private Category category;
+  @JoinColumn(name = "requester_role_id", referencedColumnName = "id")
+  private Role RequesterRole;
 
-  private Long createdBy;
-  private String title;
-  private Date startDate;
-  private Date endDate;
-  private Integer duration;
-  private Long type;
+  private Date enrollDate;
 
   @Enumerated(EnumType.ORDINAL)
   private Status status;
 
-  private Float price;
-
-  private String detailAddress;
-
-  @JsonIgnore
-  @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @JoinColumn(name = "address_id", referencedColumnName = "id")
-  private Address address;
-
+  @Builder.Default
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
   private Boolean isDeleted = false;
 
@@ -67,21 +60,10 @@ public class Class {
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
 
-  @OneToMany(mappedBy = "classId", cascade = CascadeType.REMOVE)
-  private Set<Shift> shifts = new HashSet<>();
-
-  @ManyToMany
-  @JoinTable(
-      name = "class_enrollments",
-      joinColumns = {@JoinColumn(name = "class_id")},
-      inverseJoinColumns = {@JoinColumn(name = "requester_id")})
-  private Set<User> users = new HashSet<>();
-
   public enum Status {
     ON_GOING,
-    FOUND,
-    COMPLETED,
-    CANCELED,
-    EXPIRED;
+    APPROVED,
+    REJECTED,
+    CANCELED;
   }
 }

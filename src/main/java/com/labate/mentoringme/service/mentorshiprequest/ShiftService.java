@@ -7,5 +7,5 @@ import java.util.Set;
 public interface ShiftService {
     Shift findById(Long id);
     Set<Shift> findAllByIds(Set<Long> ids);
-    Set<Shift> saveAllShifts(Long classId, Set<Shift> shifts);
+    Set<Shift> saveAllShifts(Long mentorshipId, Set<Shift> shifts);
 }

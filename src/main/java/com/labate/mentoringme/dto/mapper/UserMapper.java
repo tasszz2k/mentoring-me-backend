@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,6 +69,8 @@ public class UserMapper {
     var user = localUser.getUser();
     var profile = user.getUserProfile();
 
+    Date dob = profile.getDob();
+
     return UserInfo.builder()
         .id(user.getId())
         .fullName(user.getFullName())
@@ -81,7 +84,7 @@ public class UserMapper {
         .provider(user.getProvider())
         .status(user.getStatus())
         .gender(profile.getGender())
-        .dob(profile.getDob())
+        .dob(dob)
         .build();
   }
 

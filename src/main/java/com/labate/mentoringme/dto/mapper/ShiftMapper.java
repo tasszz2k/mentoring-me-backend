@@ -39,7 +39,7 @@ public class ShiftMapper {
     } else {
       var sortedEntities =
           entities.stream().sorted(Comparator.comparing(Shift::getId)).collect(Collectors.toList());
-      dtos = entities.stream().map(ShiftMapper::toDto).collect(Collectors.toList());
+      dtos = sortedEntities.stream().map(ShiftMapper::toDto).collect(Collectors.toList());
     }
     return dtos;
   }

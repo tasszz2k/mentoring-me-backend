@@ -1,6 +1,6 @@
 package com.labate.mentoringme.dto.model;
 
-import java.util.List;
+import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +19,6 @@ public class QuizDto {
   private Integer time;
   private Boolean isDraft;
   private String author;
-  private List<QuestionDto> questions;
-  private List<QuizCategoryDto> categories;
+  private Set<QuestionDto> questions;
+  private Set<QuizCategoryDto> categories;
 }

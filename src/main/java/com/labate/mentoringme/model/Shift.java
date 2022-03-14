@@ -10,8 +10,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.sql.Time;
 import java.time.DayOfWeek;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @EntityListeners(AuditingEntityListener.class)
@@ -27,13 +27,13 @@ public class Shift {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private Long classId;
+  private Long mentorshipId;
 
   @Enumerated(EnumType.STRING)
   private DayOfWeek dayOfWeek;
 
-  private LocalDateTime startTime;
-  private LocalDateTime endTime;
+  private Time startTime;
+  private Time endTime;
 
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
   private Boolean isDeleted = false;
@@ -47,9 +47,4 @@ public class Shift {
   @Column(name = "modified")
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
-
-  public void setStartTime(LocalDateTime startTime) {
-    this.startTime = startTime;
-    this.dayOfWeek = startTime.getDayOfWeek();
-  }
 }

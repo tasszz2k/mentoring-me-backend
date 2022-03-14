@@ -1,100 +1,67 @@
 package com.labate.mentoringme.service.mentorshiprequest;
 
 import com.labate.mentoringme.constant.UserRole;
-import com.labate.mentoringme.dto.mapper.MentorshipRequestMapper;
-import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
-import com.labate.mentoringme.dto.model.LocalUser;
-import com.labate.mentoringme.dto.request.CreateMentorshipRequestRq;
-import com.labate.mentoringme.dto.request.GetMentorshipRequestRq;
-import com.labate.mentoringme.dto.request.PageCriteria;
+import com.labate.mentoringme.exception.CanNotReEnrollException;
+import com.labate.mentoringme.exception.ClassHasBegunException;
 import com.labate.mentoringme.exception.MentorshipRequestNotFoundException;
-import com.labate.mentoringme.model.Class;
-import com.labate.mentoringme.model.Shift;
-import com.labate.mentoringme.repository.ClassRepository;
+import com.labate.mentoringme.model.MentorshipRequest;
+import com.labate.mentoringme.model.Mentorship;
+import com.labate.mentoringme.repository.MentorshipRequestRepository;
+import com.labate.mentoringme.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
+import java.util.Date;
 
 @RequiredArgsConstructor
 @Slf4j
 @Service
 public class MentorshipRequestServiceImpl implements MentorshipRequestService {
-  private final ClassRepository classRepository;
-  private final ShiftService shiftService;
+  private final MentorshipRequestRepository mentorshipRequestRepository;
+  private final MentorshipService mentorshipService;
+  private final RoleRepository roleRepository;
 
   @Override
-  public Class findById(Long id) {
-    if (id == null) {
-      return null;
+  public void bookMentor(Long mentorshipId, Long studentId) {
+    var classEntity = mentorshipService.findById(mentorshipId);
+    if (classEntity == null) {
+      throw new MentorshipRequestNotFoundException("id = " + mentorshipId);
     }
-    return classRepository.findById(id).orElse(null);
-  }
+    boolean canEnroll = canRequest(classEntity);
+    if (!canEnroll) {
+      throw new ClassHasBegunException("id = " + mentorshipId);
+    }
 
-  @Override
-  public Page<Class> findAllClassesByConditions(
-      PageCriteria pageCriteria, GetMentorshipRequestRq request) {
-    var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
-    return classRepository.findAllByConditions(request, pageable);
-  }
-
-  @Transactional
-  @Override
-  public Class saveMentorshipRequest(Class entity) {
-    var shifts = entity.getShifts();
-    entity.setShifts(null);
-    var savedClass = classRepository.save(entity);
-
-    Set<Shift> savedShifts = shiftService.saveAllShifts(savedClass.getId(), shifts);
-    savedClass.setShifts(savedShifts);
-    return savedClass;
-  }
-
-  public void checkPermissionToUpdate(Class entity, LocalUser localUser) {
-    var userId = localUser.getUser().getId();
-    var role = localUser.getUser().getRole();
-
-    if (!userId.equals(entity.getCreatedBy())
-        && !userId.equals(entity.getMentorId())
-        && !UserRole.MANAGER_ROLES.contains(role)) {
-      throw new AccessDeniedException("You are not allowed to update this mentorship entity");
+    var classEnrollment = mentorshipRequestRepository.findByMentorshipIdAndRequesterId(mentorshipId, studentId);
+    if (classEnrollment == null) {
+      var roleUser = roleRepository.findByName(UserRole.ROLE_USER.name());
+      var newClassEnrollment =
+          MentorshipRequest.builder()
+              .mentorship(classEntity)
+              .requesterId(studentId)
+              .RequesterRole(roleUser)
+              .build();
+      mentorshipRequestRepository.save(newClassEnrollment);
+    } else {
+      throw new CanNotReEnrollException("id = " + mentorshipId);
     }
   }
 
-  @Override
-  public void deleteMentorshipRequest(Long id) {
-    classRepository.deleteById(id);
-  }
-
-  @Transactional
-  @Override
-  public Class updateMentorshipRequest(CreateMentorshipRequestRq request, LocalUser localUser) {
-    var id = request.getId();
-    var oldMentorshipRequest = findById(id);
-    if (oldMentorshipRequest == null) {
-      throw new MentorshipRequestNotFoundException("id = " + id);
+  private boolean canRequest(Mentorship mentorship) {
+    boolean canEnroll = true;
+    var now = new Date();
+    var startDate = mentorship.getStartDate();
+    // Check if class status is started -> Return error ClassHasBegunException
+    if (startDate != null && now.after(startDate)) {
+      canEnroll = false;
     }
-    checkPermissionToUpdate(oldMentorshipRequest, localUser);
-    var entity = MentorshipRequestMapper.toEntity(request);
-    // TODO: change to fields can update instead of all fields except (id, createdBy,...)
-    entity.setCreatedBy(oldMentorshipRequest.getCreatedBy());
-
-    return saveMentorshipRequest(entity);
+    // TODO: Check status
+    return canEnroll;
   }
 
   @Override
-  public void deleteMentorshipRequest(Long id, LocalUser localUser) {
-
-    var oldMentorshipRequest = findById(id);
-    if (oldMentorshipRequest == null) {
-      throw new MentorshipRequestNotFoundException("id = " + id);
-    }
-    checkPermissionToUpdate(oldMentorshipRequest, localUser);
-    deleteMentorshipRequest(id);
+  public void request(Long mentorshipId, Long userId, UserRole userRole) {
+    log.info("Enrolling student {} to class {}", userId, mentorshipId);
   }
-
 }

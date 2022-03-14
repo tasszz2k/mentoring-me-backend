@@ -2,14 +2,14 @@ package com.labate.mentoringme.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.labate.mentoringme.dto.model.ShiftDto;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.Set;
 
 @Data
-public class CreateMentorshipRequestRq {
+public class CreateMentorshipRequest {
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private Long id;
 
@@ -29,6 +29,6 @@ public class CreateMentorshipRequestRq {
   private String detailAddress;
   private Long addressId;
 
-  private Set<ShiftDto> shifts;
+  @Valid private Set<ShiftDto> shifts;
   // private Set<Integer> studentIds;
 }

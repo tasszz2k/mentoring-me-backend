@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,10 +55,15 @@ public class CategoryMapper {
       dtos = null;
     } else {
       // Filter to remove duplicate entity inside sub-categories
-      var entityMap =
-          entities.stream().collect(Collectors.toMap(Category::getId, category -> category));
-      var filteredEntities =
+      var sortedEntities =
           entities.stream()
+              .sorted(Comparator.comparing(Category::getId))
+              .collect(Collectors.toList());
+
+      var entityMap =
+          sortedEntities.stream().collect(Collectors.toMap(Category::getId, category -> category));
+      var filteredEntities =
+          sortedEntities.stream()
               .filter(
                   entity -> {
                     var parentCategoryId =

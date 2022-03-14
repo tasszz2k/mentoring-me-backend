@@ -3,7 +3,9 @@ package com.labate.mentoringme.dto.mapper;
 import com.labate.mentoringme.dto.model.MentorshipRequestDto;
 import com.labate.mentoringme.dto.request.CreateMentorshipRequestRq;
 import com.labate.mentoringme.model.MentorshipRequest;
+import com.labate.mentoringme.service.user.UserService;
 import com.labate.mentoringme.util.ObjectMapperUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -13,12 +15,44 @@ import java.util.stream.Collectors;
 @Component
 public class MentorshipRequestMapper {
 
+  private static UserService userService;
+
+  @Autowired
+  public MentorshipRequestMapper(UserService userService) {
+    MentorshipRequestMapper.userService = userService;
+  }
+
   public static MentorshipRequestDto toDto(MentorshipRequest entity) {
     if (entity == null) {
       return null;
     }
 
-    return ObjectMapperUtils.map(entity, MentorshipRequestDto.class);
+    var dto = ObjectMapperUtils.map(entity, MentorshipRequestDto.class);
+
+    if (entity.getMentorship() != null) {
+      var mentorShipDto = MentorshipMapper.toDto(entity.getMentorship());
+      dto.setMentorship(mentorShipDto);
+    }
+
+    if (entity.getRequesterId() != null) {
+      var user = userService.findUserById(entity.getRequesterId()).orElse(null);
+      if (user != null) {
+        var userInfo = UserMapper.buildUserInfo(user);
+        dto.setRequester(userInfo);
+      }
+    }
+
+    if (entity.getAssigneeId() != null) {
+      var user = userService.findUserById(entity.getAssigneeId()).orElse(null);
+      if (user != null) {
+        var userInfo = UserMapper.buildUserInfo(user);
+        dto.setAssignee(userInfo);
+      }
+    }
+
+    dto.setRequesterRole(entity.getRequesterRole().getUserRole());
+
+    return dto;
   }
 
   public static MentorshipRequest toEntity(MentorshipRequestDto dto) {

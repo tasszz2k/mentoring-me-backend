@@ -56,7 +56,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
 
   @Override
   public MentorshipRequest findById(Long id) {
-    return null;
+    return mentorshipRequestRepository.findById(id).orElse(null);
   }
 
   @Override

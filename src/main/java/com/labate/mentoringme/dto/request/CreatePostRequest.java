@@ -1,9 +1,11 @@
 package com.labate.mentoringme.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.labate.mentoringme.model.Post;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -17,7 +19,11 @@ public class CreatePostRequest {
   private Long categoryId;
   private String content;
   private Date startDate;
+
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+  @DateTimeFormat(pattern = "yyyy-MM-dd")
   private Date endDate;
+
   private Integer type;
   private Post.Status status;
   private Float price;

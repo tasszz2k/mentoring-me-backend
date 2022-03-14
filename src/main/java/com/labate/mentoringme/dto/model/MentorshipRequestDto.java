@@ -1,8 +1,8 @@
 package com.labate.mentoringme.dto.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.labate.mentoringme.constant.UserRole;
 import com.labate.mentoringme.model.MentorshipRequest;
-import com.labate.mentoringme.model.Role;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -12,16 +12,15 @@ import java.util.Date;
 public class MentorshipRequestDto {
 
   private Long id;
+  private UserInfo requester;
+  private UserInfo assignee;
+  private UserRole requesterRole;
+  private MentorshipRequest.Status status;
   private MentorshipDto mentorship;
-  private Long requesterId;
-  private Long assigneeId;
-  private Role RequesterRole;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
   @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
   private Date enrollDate;
-
-  private MentorshipRequest.Status status;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
   @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")

@@ -54,12 +54,12 @@ public class CategoryMapper {
     if (entities == null) {
       dtos = null;
     } else {
-      // Filter to remove duplicate entity inside sub-categories
       var sortedEntities =
           entities.stream()
               .sorted(Comparator.comparing(Category::getId))
               .collect(Collectors.toList());
 
+      // Filter to remove duplicate entity inside sub-categories
       var entityMap =
           sortedEntities.stream().collect(Collectors.toMap(Category::getId, category -> category));
       var filteredEntities =

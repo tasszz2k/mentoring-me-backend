@@ -15,8 +15,9 @@ public enum NotFoundError implements ResponseError {
   RESOURCE_SCOPE_NOT_FOUND(4040008, "Resource scope not found: {0}"),
   CATEGORY_NOT_FOUND(4040009, "Category not found: {0}"),
   QUIZ_NOT_FOUND(4040010, "Quiz not found: {0}"),
-  MENTORSHIP_REQUEST_NOT_FOUND(4040011, "Mentorship request not found: {0}"),
+  MENTORSHIP_NOT_FOUND(4040011, "Mentorship not found: {0}"),
   POST_NOT_FOUND(4040012, "Post not found: {0}"),
+  MENTORSHIP_REQUEST_NOT_FOUND(4040013, "Mentorship request not found: {0}"),
   ;
 
   private final Integer code;

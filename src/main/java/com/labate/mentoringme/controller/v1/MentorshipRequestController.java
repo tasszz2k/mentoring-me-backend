@@ -1,16 +1,16 @@
 package com.labate.mentoringme.controller.v1;
 
 import com.labate.mentoringme.config.CurrentUser;
-import com.labate.mentoringme.dto.mapper.MentorshipMapper;
+import com.labate.mentoringme.dto.mapper.MentorshipRequestMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
-import com.labate.mentoringme.dto.request.CreateMentorshipRequest;
+import com.labate.mentoringme.dto.request.CreateMentorshipRequestRq;
 import com.labate.mentoringme.dto.request.GetMentorshipRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
-import com.labate.mentoringme.exception.MentorshipNotFoundException;
-import com.labate.mentoringme.service.mentorshiprequest.MentorshipService;
+import com.labate.mentoringme.exception.MentorshipRequestNotFoundException;
+import com.labate.mentoringme.service.mentorshiprequest.MentorshipRequestService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,24 +24,24 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/mentorship")
-public class MentorshipController {
-  private final MentorshipService mentorshipService;
+@RequestMapping("/api/v1/mentorship-requests")
+public class MentorshipRequestController {
+  private final MentorshipRequestService mentorshipRequestService;
 
   @GetMapping("/{id}")
-  public ResponseEntity<?> findMentorshipById(@PathVariable Long id) {
-    var classEntity = mentorshipService.findById(id);
-    if (classEntity == null) {
-      throw new MentorshipNotFoundException("id = " + id);
+  public ResponseEntity<?> findMentorshipRequestById(@PathVariable Long id) {
+    var mentorshipRequest = mentorshipRequestService.findById(id);
+    if (mentorshipRequest == null) {
+      throw new MentorshipRequestNotFoundException("id = " + id);
     }
-    return BaseResponseEntity.ok(MentorshipMapper.toDto(classEntity));
+    return BaseResponseEntity.ok(MentorshipRequestMapper.toDto(mentorshipRequest));
   }
 
   @GetMapping("")
   public ResponseEntity<?> findAllMentorship(
       @Valid PageCriteria pageCriteria, @Valid GetMentorshipRequest request) {
-    var page = mentorshipService.findAllMentorshipByConditions(pageCriteria, request);
-    var classes = page.getContent();
+    var page = mentorshipRequestService.findAllMentorshipRequestByConditions(pageCriteria, request);
+    var mentorshipRequests = page.getContent();
 
     var paging =
         Paging.builder()
@@ -49,12 +49,12 @@ public class MentorshipController {
             .page(pageCriteria.getPage())
             .total(page.getTotalElements())
             .build();
-    var response = new PageResponse(MentorshipMapper.toBasicDtos(classes), paging);
+    var response = new PageResponse(MentorshipRequestMapper.toDtos(mentorshipRequests), paging);
     return BaseResponseEntity.ok(response);
   }
 
-  @GetMapping("/top-mentorship")
-  public ResponseEntity<?> findTop10Mentorship() {
+  @GetMapping("/top-mentorship-requests")
+  public ResponseEntity<?> findTop10MentorshipRequests() {
 
     var sort = List.of("-createdDate");
     PageCriteria pageCriteria = PageCriteria.builder().limit(10).page(1).sort(sort).build();
@@ -71,15 +71,14 @@ public class MentorshipController {
       example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   @PostMapping("")
-  public ResponseEntity<?> addNewMentorship(
-      @Valid @RequestBody CreateMentorshipRequest request, @CurrentUser LocalUser localUser) {
-    request.setCreatedBy(localUser.getUser().getId());
-    var entity = MentorshipMapper.toEntity(request);
+  public ResponseEntity<?> addNewMentorshipRequest(
+      @Valid @RequestBody CreateMentorshipRequestRq request, @CurrentUser LocalUser localUser) {
+    var entity = MentorshipRequestMapper.toEntity(request);
     entity.setId(null);
-    var savedEntity = mentorshipService.saveMentorship(entity);
+    var savedEntity = mentorshipRequestService.saveMentorshipRequest(entity);
 
     return BaseResponseEntity.ok(
-        MentorshipMapper.toDto(savedEntity), "Mentorship request created successfully");
+        MentorshipRequestMapper.toDto(savedEntity), "Mentorship request created successfully");
   }
 
   @ApiImplicitParam(
@@ -93,12 +92,11 @@ public class MentorshipController {
   @PutMapping("/{id}")
   public ResponseEntity<?> updateMentorship(
       @PathVariable Long id,
-      @Valid @RequestBody CreateMentorshipRequest request,
+      @Valid @RequestBody CreateMentorshipRequestRq request,
       @CurrentUser LocalUser localUser) {
 
     request.setId(id);
-    mentorshipService.updateMentorship(request, localUser);
+    mentorshipRequestService.updateMentorshipRequest(request, localUser);
     return BaseResponseEntity.ok(null, "Mentorship request updated successfully");
   }
-
 }

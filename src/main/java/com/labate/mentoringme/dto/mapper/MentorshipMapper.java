@@ -102,8 +102,7 @@ public class MentorshipMapper {
     if (entities == null) {
       dtos = null;
     } else {
-      dtos =
-          entities.stream().map(MentorshipMapper::toBasicDto).collect(Collectors.toList());
+      dtos = entities.stream().map(MentorshipMapper::toBasicDto).collect(Collectors.toList());
     }
     return dtos;
   }

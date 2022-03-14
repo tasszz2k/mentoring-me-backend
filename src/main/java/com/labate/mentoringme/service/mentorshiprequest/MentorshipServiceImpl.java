@@ -7,7 +7,7 @@ import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreateMentorshipRequest;
 import com.labate.mentoringme.dto.request.GetMentorshipRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
-import com.labate.mentoringme.exception.MentorshipRequestNotFoundException;
+import com.labate.mentoringme.exception.MentorshipNotFoundException;
 import com.labate.mentoringme.model.Mentorship;
 import com.labate.mentoringme.model.Shift;
 import com.labate.mentoringme.repository.MentorshipRepository;
@@ -76,7 +76,7 @@ public class MentorshipServiceImpl implements MentorshipService {
     var id = request.getId();
     var oldMentorshipRequest = findById(id);
     if (oldMentorshipRequest == null) {
-      throw new MentorshipRequestNotFoundException("id = " + id);
+      throw new MentorshipNotFoundException("id = " + id);
     }
     checkPermissionToUpdate(oldMentorshipRequest, localUser);
     var entity = MentorshipMapper.toEntity(request);
@@ -91,7 +91,7 @@ public class MentorshipServiceImpl implements MentorshipService {
 
     var oldMentorshipRequest = findById(id);
     if (oldMentorshipRequest == null) {
-      throw new MentorshipRequestNotFoundException("id = " + id);
+      throw new MentorshipNotFoundException("id = " + id);
     }
     checkPermissionToUpdate(oldMentorshipRequest, localUser);
     deleteMentorship(id);

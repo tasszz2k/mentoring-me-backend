@@ -88,8 +88,6 @@ public class QuizServiceImpl implements QuizService {
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var quiz = modelMapper.map(createQuizRequest, Quiz.class);
     quiz.setCreatedBy(localUser.getUser().getId());
-    quiz.setCreatedDate(new Date());
-    quiz.setModifiedDate(new Date());
     quiz.setAuthor(localUser.getUser().getFullName());
     quiz.getQuestions().forEach(question -> {
       question.setQuiz(quiz);
@@ -105,7 +103,6 @@ public class QuizServiceImpl implements QuizService {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var quiz = modelMapper.map(updateQuizRequest, Quiz.class);
-    quiz.setModifiedDate(new Date());
     quiz.setModifiedBy(localUser.getUser().getId());
     quiz.getQuestions().forEach(question -> {
       question.setQuiz(quiz);
@@ -127,11 +124,11 @@ public class QuizServiceImpl implements QuizService {
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     var userId = localUser.getUser().getId();
-    log.info(userId + "AAAAAAAAAAAAAAAAAAAAAAAAA");
-    return quizRepository.getQuizTakingHistory(userId, pageable).map(item -> {
+    var response = quizRepository.getQuizTakingHistory(userId, pageable).map(item -> {
       var quizTakingHistoryResponse = modelMapper.map(item, QuizTakingHistoryResponse.class);
       return quizTakingHistoryResponse;
     });
+    return response;
   }
 
   @Override
@@ -149,12 +146,9 @@ public class QuizServiceImpl implements QuizService {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var quizResult = modelMapper.map(response, QuizResult.class);
-    quizResult.setCreatedDate(new Date());
     quizResult.setQuizId(quizId);
     quizResult.setUserId(localUser.getUser().getId());
     quizResult.setIsDeleted(false);
-    System.out.println(response.toString());
-    System.out.println(quizResult.toString());
     quizResultRepository.save(quizResult);
   }
 
@@ -173,15 +167,21 @@ public class QuizServiceImpl implements QuizService {
         answers.put(questionId, answer);
         break;
       }
-      while (results.get(i).getQuestionId() == results.get(i + 1).getQuestionId()
-          && i < results.size()) {
+      while (i < results.size()) {
         i++;
-        answer = answer + results.get(i).getAnswerId() + "-";
+        if (i == results.size()) {
+          answers.put(questionId, answer);
+          break;
+        }
+        if (results.get(i).getQuestionId() == questionId) {
+          answer = answer + results.get(i).getAnswerId() + "-";
+        } else {
+          answers.put(questionId, answer);
+          break;
+        }
       }
-      if (i < results.size()) {
-        answers.put(questionId, answer);
-        i++;
-      }
+      if (i == results.size())
+        break;
     }
     var numberOfFalse = numberOfQuestion - request.getUserSelection().size();
     for (UserSelectionDto userSelection : request.getUserSelection()) {

@@ -1,5 +1,7 @@
 package com.labate.mentoringme.controller.v1;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +23,7 @@ import com.labate.mentoringme.dto.request.quiz.UpdateQuizRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
+import com.labate.mentoringme.dto.response.QuizTakingHistoryResponse;
 import com.labate.mentoringme.exception.QuizNotFoundException;
 import com.labate.mentoringme.service.quizz.QuizService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -123,7 +126,10 @@ public class QuizController {
     var pageData = quizService.getQuizTakingHistory(pageCriteria);
     var paging = Paging.builder().limit(pageCriteria.getLimit()).page(pageCriteria.getPage())
         .total(pageData.getTotalElements()).build();
-    var pageResponse = new PageResponse(pageData.getContent(), paging);
+    var content = new ArrayList<QuizTakingHistoryResponse>();
+    pageData.getContent().forEach(item -> content.add(item));
+    content.sort(Comparator.comparing(QuizTakingHistoryResponse::getCreated).reversed());
+    var pageResponse = new PageResponse(content, paging);
     return BaseResponseEntity.ok(pageResponse);
   }
 

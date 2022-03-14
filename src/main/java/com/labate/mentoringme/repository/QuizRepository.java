@@ -38,7 +38,7 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
   void publishQuiz(@Param("id") Long id);
 
   @Query(
-      value = "SELECT A.title, A.number_of_question, B.score, B.number_of_false, B.number_of_true, B.created FROM quizzes A join quiz_results B on A.id = B.quiz_id WHERE B.user_id = :userId",
+      value = "SELECT A.title, A.number_of_question AS numberOfQuestion, B.score, B.number_of_false AS numberOfFalse, B.number_of_true AS numberOfTrue, B.created, author FROM quizzes A join quiz_results B on A.id = B.quiz_id WHERE B.user_id = :userId",
       countQuery = "SELECT COUNT(B.id) FROM quizzes A join quiz_results B on A.id = B.quiz_id WHERE B.user_id = :userId",
       nativeQuery = true)
   Page<QuizTakingHistoryProjection> getQuizTakingHistory(@Param("userId") Long userId,

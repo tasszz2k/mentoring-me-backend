@@ -30,5 +30,5 @@ public class CreateMentorshipRequestRq {
   private Long addressId;
 
   private Set<ShiftDto> shifts;
-  private Set<Integer> studentIds;
+  // private Set<Integer> studentIds;
 }

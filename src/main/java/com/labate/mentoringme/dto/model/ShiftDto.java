@@ -1,5 +1,6 @@
 package com.labate.mentoringme.dto.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,8 +16,11 @@ public class ShiftDto {
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private DayOfWeek dayOfWeek;
 
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime startTime;
+
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm")
   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
   private LocalDateTime endTime;
 }

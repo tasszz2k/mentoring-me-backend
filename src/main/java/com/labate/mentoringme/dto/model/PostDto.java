@@ -1,8 +1,10 @@
 package com.labate.mentoringme.dto.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.labate.mentoringme.model.Post;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.Set;
@@ -15,23 +17,33 @@ public class PostDto {
   private String title;
   private CategoryDto category;
   private String content;
+
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+  @DateTimeFormat(pattern = "yyyy-MM-dd")
   private Date startDate;
+
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+  @DateTimeFormat(pattern = "yyyy-MM-dd")
   private Date endDate;
+
   private Integer type;
   private Post.Status status;
   private Float price;
   private String detailAddress;
   private AddressDto address;
   private int likeCount;
+
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private Long createdBy;
 
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private Set<Integer> likedUserIds;
 
-  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+  @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
   private Date createdDate;
 
-  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+  @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
   private Date modifiedDate;
 }

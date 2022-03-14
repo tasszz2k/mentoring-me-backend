@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +37,9 @@ public class ShiftMapper {
     if (entities == null) {
       dtos = Collections.emptyList();
     } else {
-      dtos = entities.stream().map(ShiftMapper::toDto).collect(Collectors.toList());
+      var sortedEntities =
+          entities.stream().sorted(Comparator.comparing(Shift::getId)).collect(Collectors.toList());
+      dtos = sortedEntities.stream().map(ShiftMapper::toDto).collect(Collectors.toList());
     }
     return dtos;
   }

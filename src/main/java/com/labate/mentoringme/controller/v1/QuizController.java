@@ -134,4 +134,13 @@ public class QuizController {
   public ResponseEntity<?> getQuizTakingResult(@RequestBody ResultQuizCheckingRequest request) {
     return BaseResponseEntity.ok(quizService.getQuizResult(request));
   }
+
+  @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true,
+      paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('MENTOR', 'ADMIN', 'MODERATOR')")
+  @PatchMapping("/{quizId}")
+  public ResponseEntity<?> publishQuiz(@PathVariable Long quizId) {
+    quizService.publishQuiz(quizId);
+    return BaseResponseEntity.ok("Publish quiz successfully");
+  }
 }

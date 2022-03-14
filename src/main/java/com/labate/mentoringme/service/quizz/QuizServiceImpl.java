@@ -35,9 +35,11 @@ import com.labate.mentoringme.repository.QuizRepository;
 import com.labate.mentoringme.repository.QuizResultRepository;
 import com.labate.mentoringme.util.ObjectMapperUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class QuizServiceImpl implements QuizService {
 
   private final QuizRepository quizRepository;
@@ -125,6 +127,7 @@ public class QuizServiceImpl implements QuizService {
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     var userId = localUser.getUser().getId();
+    log.info(userId + "AAAAAAAAAAAAAAAAAAAAAAAAA");
     return quizRepository.getQuizTakingHistory(userId, pageable).map(item -> {
       var quizTakingHistoryResponse = modelMapper.map(item, QuizTakingHistoryResponse.class);
       return quizTakingHistoryResponse;
@@ -147,9 +150,11 @@ public class QuizServiceImpl implements QuizService {
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var quizResult = modelMapper.map(response, QuizResult.class);
     quizResult.setCreatedDate(new Date());
-    quizResult.setQuizId(localUser.getUser().getId());
-    quizResult.setUserId(quizId);
+    quizResult.setQuizId(quizId);
+    quizResult.setUserId(localUser.getUser().getId());
     quizResult.setIsDeleted(false);
+    System.out.println(response.toString());
+    System.out.println(quizResult.toString());
     quizResultRepository.save(quizResult);
   }
 
@@ -232,6 +237,11 @@ public class QuizServiceImpl implements QuizService {
     var mutableCategorySet = new HashSet<>(categories);
     quiz.setCategories(mutableCategorySet);
     return modelMapper.map(quizRepository.save(quiz), QuizOverviewDto.class);
+  }
+
+  @Override
+  public void publishQuiz(Long quizId) {
+    quizRepository.publishQuiz(quizId);
   }
 
 }

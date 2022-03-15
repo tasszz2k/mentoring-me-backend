@@ -10,8 +10,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.labate.mentoringme.dto.request.quiz.FindQuizRequest;
 import com.labate.mentoringme.model.quiz.Quiz;
-import com.labate.mentoringme.projection.QuizOverviewProjection;
-import com.labate.mentoringme.projection.QuizTakingHistoryProjection;
+import com.labate.mentoringme.dto.projection.QuizOverviewProjection;
+import com.labate.mentoringme.dto.projection.QuizTakingHistoryProjection;
 
 @Repository
 public interface QuizRepository extends JpaRepository<Quiz, Long> {

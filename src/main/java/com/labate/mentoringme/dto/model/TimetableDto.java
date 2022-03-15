@@ -15,12 +15,18 @@ public class TimetableDto {
   private UserInfo user;
   private String name;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
-  @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(
+      shape = JsonFormat.Shape.STRING,
+      pattern = "yyyy-MM-dd HH:mm:ss",
+      timezone = "Asia/Bangkok")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private Date createdDate;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
-  @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(
+      shape = JsonFormat.Shape.STRING,
+      pattern = "yyyy-MM-dd HH:mm:ss",
+      timezone = "Asia/Bangkok")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private Date modifiedDate;
 
   private Set<EventDto> events = new HashSet<>();

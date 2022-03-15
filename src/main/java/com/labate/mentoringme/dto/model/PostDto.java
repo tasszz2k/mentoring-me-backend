@@ -18,11 +18,11 @@ public class PostDto {
   private CategoryDto category;
   private String content;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Bangkok")
   @DateTimeFormat(pattern = "yyyy-MM-dd")
   private Date startDate;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Bangkok")
   @DateTimeFormat(pattern = "yyyy-MM-dd")
   private Date endDate;
 
@@ -39,11 +39,17 @@ public class PostDto {
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private Set<Integer> likedUserIds;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
-  @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+  @JsonFormat(
+      shape = JsonFormat.Shape.STRING,
+      pattern = "yyyy-MM-dd HH:mm:ss",
+      timezone = "Asia/Bangkok")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private Date createdDate;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
-  @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+  @JsonFormat(
+      shape = JsonFormat.Shape.STRING,
+      pattern = "yyyy-MM-dd HH:mm:ss",
+      timezone = "Asia/Bangkok")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private Date modifiedDate;
 }

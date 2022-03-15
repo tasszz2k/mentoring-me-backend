@@ -10,8 +10,11 @@ import lombok.Setter;
 @Setter
 public class QuizTakingHistoryResponse {
   private String title;
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
-  @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(
+      shape = JsonFormat.Shape.STRING,
+      pattern = "yyyy-MM-dd HH:mm:ss",
+      timezone = "Asia/Bangkok")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private Date created;
   private Integer score;
   private Integer numberOfTrue;

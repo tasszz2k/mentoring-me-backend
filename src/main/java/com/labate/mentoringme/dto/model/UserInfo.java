@@ -22,7 +22,7 @@ public class UserInfo {
   private final String imageUrl;
   private final Gender gender;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Bangkok")
   @DateTimeFormat(pattern = "yyyy-MM-dd")
   private final Date dob;
 

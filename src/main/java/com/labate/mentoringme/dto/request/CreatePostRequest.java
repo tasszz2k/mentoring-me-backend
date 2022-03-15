@@ -20,7 +20,7 @@ public class CreatePostRequest {
   private String content;
   private Date startDate;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Bangkok")
   @DateTimeFormat(pattern = "yyyy-MM-dd")
   private Date endDate;
 

@@ -440,6 +440,20 @@ public class ExceptionHandleAdvice {
                 .build());
   }
 
+  @ExceptionHandler(TimetableNotFoundException.class)
+  public ResponseEntity<ErrorResponse<Void>> TimetableNotFoundException(
+      TimetableNotFoundException e, HttpServletRequest request) {
+    ResponseError error = NotFoundError.TIMETABLE_NOT_FOUND;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            ErrorResponse.<Void>builder()
+                .code(error.getCode())
+                .error(error.getName())
+                .message(MessageFormat.format(error.getMessage(), e.getMessage()))
+                .build());
+  }
+
   @ExceptionHandler(PostNotFoundException.class)
   public ResponseEntity<ErrorResponse<Void>> handlePostNotFoundException(
       PostNotFoundException e, HttpServletRequest request) {

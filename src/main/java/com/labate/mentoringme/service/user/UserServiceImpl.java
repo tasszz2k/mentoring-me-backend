@@ -17,6 +17,7 @@ import com.labate.mentoringme.repository.RoleRepository;
 import com.labate.mentoringme.repository.UserRepository;
 import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfo;
 import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfoFactory;
+import com.labate.mentoringme.service.timetable.TimetableService;
 import com.labate.mentoringme.service.userprofile.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,6 +39,7 @@ public class UserServiceImpl implements UserService {
   private final RoleRepository roleRepository;
   private final PasswordEncoder passwordEncoder;
   private final UserProfileService userProfileService;
+  private final TimetableService timetableService;
 
   @Value("${labate.secure.default-password}")
   private String defaultPassword;
@@ -50,11 +52,11 @@ public class UserServiceImpl implements UserService {
       throw new UserAlreadyExistAuthenticationException("email = " + signUpRequest.getEmail());
     }
     User user = buildUser(signUpRequest);
-    // Date now = Calendar.getInstance().getTime();
-    // user.setCreatedDate(now);
-    // user.setModifiedDate(now);
     user = userRepository.save(user);
     userRepository.flush();
+    timetableService.createNewTimetable(
+        user.getId(), String.format("Thời khóa biểu của %s", user.getFullName()));
+
     return user;
   }
 

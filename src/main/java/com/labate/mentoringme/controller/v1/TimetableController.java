@@ -3,6 +3,7 @@ package com.labate.mentoringme.controller.v1;
 import com.labate.mentoringme.config.CurrentUser;
 import com.labate.mentoringme.dto.mapper.TimetableMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
+import com.labate.mentoringme.dto.request.GetTimetableRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.exception.TimetableNotFoundException;
 import com.labate.mentoringme.service.timetable.TimetableService;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -24,8 +27,9 @@ public class TimetableController {
   private final TimetableService timetableService;
 
   @GetMapping("/users/{userId}")
-  public ResponseEntity<?> findTimetableById(@PathVariable Long userId) {
-    var timetable = timetableService.findByUserId(userId);
+  public ResponseEntity<?> findTimetableById(
+      @PathVariable Long userId, @Valid GetTimetableRequest request) {
+    var timetable = timetableService.findByUserId(userId, request);
     if (timetable == null) {
       throw new TimetableNotFoundException("userId = " + userId);
     }
@@ -41,9 +45,10 @@ public class TimetableController {
       example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   @GetMapping("/me")
-  public ResponseEntity<?> getMyTimetable(@CurrentUser LocalUser localUser) {
+  public ResponseEntity<?> getMyTimetable(
+      @CurrentUser LocalUser localUser, @Valid GetTimetableRequest request) {
     Long userId = localUser.getUser().getId();
-    return findTimetableById(userId);
+    return findTimetableById(userId, request);
   }
 
   // @ApiImplicitParam(

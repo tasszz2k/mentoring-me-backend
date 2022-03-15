@@ -46,10 +46,10 @@ public class Post {
 
   private String detailAddress;
 
-  @JsonIgnore
-  @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @JoinColumn(name = "address_id", referencedColumnName = "id")
-  private Address address;
+  // @JsonIgnore
+  // @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  // @JoinColumn(name = "address_id", referencedColumnName = "id")
+  // private Address address;
 
   private int likeCount;
 

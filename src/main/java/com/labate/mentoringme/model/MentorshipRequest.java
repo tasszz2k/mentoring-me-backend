@@ -26,7 +26,7 @@ public class MentorshipRequest {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @ManyToOne//(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   @JoinColumn(name = "mentorship_id", referencedColumnName = "id")
   private Mentorship mentorship;
 

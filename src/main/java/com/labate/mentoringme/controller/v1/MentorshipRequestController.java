@@ -3,9 +3,7 @@ package com.labate.mentoringme.controller.v1;
 import com.labate.mentoringme.config.CurrentUser;
 import com.labate.mentoringme.dto.mapper.MentorshipRequestMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
-import com.labate.mentoringme.dto.request.CreateMentorshipRequestRq;
-import com.labate.mentoringme.dto.request.GetMentorshipRequest;
-import com.labate.mentoringme.dto.request.PageCriteria;
+import com.labate.mentoringme.dto.request.*;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
@@ -39,7 +37,7 @@ public class MentorshipRequestController {
 
   @GetMapping("")
   public ResponseEntity<?> findAllMentorship(
-      @Valid PageCriteria pageCriteria, @Valid GetMentorshipRequest request) {
+      @Valid PageCriteria pageCriteria, @Valid GetMentorshipRequestRq request) {
     var page = mentorshipRequestService.findAllMentorshipRequestByConditions(pageCriteria, request);
     var mentorshipRequests = page.getContent();
 
@@ -58,7 +56,7 @@ public class MentorshipRequestController {
 
     var sort = List.of("-createdDate");
     PageCriteria pageCriteria = PageCriteria.builder().limit(10).page(1).sort(sort).build();
-    GetMentorshipRequest request = GetMentorshipRequest.builder().build();
+    GetMentorshipRequestRq request = GetMentorshipRequestRq.builder().build();
     return findAllMentorship(pageCriteria, request);
   }
 
@@ -69,13 +67,12 @@ public class MentorshipRequestController {
       paramType = "header",
       dataTypeClass = String.class,
       example = "Bearer access_token")
-  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'USER')")
   @PostMapping("")
-  public ResponseEntity<?> addNewMentorshipRequest(
+  public ResponseEntity<?> createNewMentorshipRequest(
       @Valid @RequestBody CreateMentorshipRequestRq request, @CurrentUser LocalUser localUser) {
-    var entity = MentorshipRequestMapper.toEntity(request);
-    entity.setId(null);
-    var savedEntity = mentorshipRequestService.saveMentorshipRequest(entity);
+    request.getMentorship().setCreatedBy(localUser.getUser().getId());
+    var savedEntity = mentorshipRequestService.createNewMentorshipRequest(request);
 
     return BaseResponseEntity.ok(
         MentorshipRequestMapper.toDto(savedEntity), "Mentorship request created successfully");
@@ -88,9 +85,9 @@ public class MentorshipRequestController {
       paramType = "header",
       dataTypeClass = String.class,
       example = "Bearer access_token")
-  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'USER')")
   @PutMapping("/{id}")
-  public ResponseEntity<?> updateMentorship(
+  public ResponseEntity<?> updateMentorshipRequest(
       @PathVariable Long id,
       @Valid @RequestBody CreateMentorshipRequestRq request,
       @CurrentUser LocalUser localUser) {
@@ -99,4 +96,22 @@ public class MentorshipRequestController {
     mentorshipRequestService.updateMentorshipRequest(request, localUser);
     return BaseResponseEntity.ok(null, "Mentorship request updated successfully");
   }
+
+  @ApiImplicitParam(
+          name = "Authorization",
+          value = "Access Token",
+          required = true,
+          paramType = "header",
+          dataTypeClass = String.class,
+          example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  @PatchMapping("/{id}/status")
+  public ResponseEntity<?> updateMentorshipRequestStatus(
+          @PathVariable Long id,
+          @Valid @RequestBody UpdateMentorshipRequestStatusRequest request,
+          @CurrentUser LocalUser localUser) {
+    mentorshipRequestService.updateStatus(id, request.getStatus(), localUser);
+    return BaseResponseEntity.ok(null, "Mentorship request status updated successfully");
+  }
+
 }

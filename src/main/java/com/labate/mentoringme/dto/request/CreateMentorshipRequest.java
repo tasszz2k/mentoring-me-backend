@@ -3,6 +3,7 @@ package com.labate.mentoringme.dto.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.labate.mentoringme.dto.model.ShiftDto;
+import com.labate.mentoringme.model.MentorshipRequest;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -32,12 +33,14 @@ public class CreateMentorshipRequest {
   private Date endDate;
 
   private Integer duration;
-  private Integer type;
-  // private Long status;
+  // private Integer type;
+
+  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+  private MentorshipRequest.Status status = MentorshipRequest.Status.ON_GOING;
+
   private Float price;
   private String detailAddress;
   private Long addressId;
 
   @Valid private Set<ShiftDto> shifts;
-  // private Set<Integer> studentIds;
 }

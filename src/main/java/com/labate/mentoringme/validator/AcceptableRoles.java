@@ -7,10 +7,10 @@ import javax.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = AcceptableRoleRegisterValidator.class)
+@Constraint(validatedBy = AcceptableRolesValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AcceptableRoleRegister {
+public @interface AcceptableRoles {
 
   String message() default "Invalid role";
 

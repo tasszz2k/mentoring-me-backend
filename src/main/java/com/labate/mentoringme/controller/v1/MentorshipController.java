@@ -71,7 +71,7 @@ public class MentorshipController {
       example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   @PostMapping("")
-  public ResponseEntity<?> addNewMentorship(
+  public ResponseEntity<?> createNewMentorship(
       @Valid @RequestBody CreateMentorshipRequest request, @CurrentUser LocalUser localUser) {
     request.setCreatedBy(localUser.getUser().getId());
     var entity = MentorshipMapper.toEntity(request);

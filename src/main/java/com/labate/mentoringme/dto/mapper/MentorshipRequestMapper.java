@@ -3,6 +3,7 @@ package com.labate.mentoringme.dto.mapper;
 import com.labate.mentoringme.dto.model.MentorshipRequestDto;
 import com.labate.mentoringme.dto.request.CreateMentorshipRequestRq;
 import com.labate.mentoringme.model.MentorshipRequest;
+import com.labate.mentoringme.repository.RoleRepository;
 import com.labate.mentoringme.service.user.UserService;
 import com.labate.mentoringme.util.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,12 @@ import java.util.stream.Collectors;
 public class MentorshipRequestMapper {
 
   private static UserService userService;
+  private static RoleRepository roleRepository;
 
   @Autowired
-  public MentorshipRequestMapper(UserService userService) {
+  public MentorshipRequestMapper(UserService userService, RoleRepository roleRepository) {
     MentorshipRequestMapper.userService = userService;
+    MentorshipRequestMapper.roleRepository = roleRepository;
   }
 
   public static MentorshipRequestDto toDto(MentorshipRequest entity) {
@@ -68,7 +71,11 @@ public class MentorshipRequestMapper {
       return null;
     }
 
-    MentorshipRequest entity = ObjectMapperUtils.map(dto, MentorshipRequest.class);
+    var entity = ObjectMapperUtils.map(dto, MentorshipRequest.class);
+    var mentorship = MentorshipMapper.toEntity(dto.getMentorship());
+    entity.setMentorship(mentorship);
+    entity.setRequesterRole(roleRepository.findByName(dto.getRequesterRole().name()));
+
     return entity;
   }
 

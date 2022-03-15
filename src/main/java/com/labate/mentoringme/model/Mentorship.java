@@ -49,10 +49,10 @@ public class Mentorship {
 
   private String detailAddress;
 
-  @JsonIgnore
-  @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @JoinColumn(name = "address_id", referencedColumnName = "id")
-  private Address address;
+  // @JsonIgnore
+  // @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  // @JoinColumn(name = "address_id", referencedColumnName = "id")
+  // private Address address;
 
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
   private Boolean isDeleted = false;
@@ -70,12 +70,12 @@ public class Mentorship {
   @OneToMany(mappedBy = "mentorshipId", cascade = CascadeType.REMOVE)
   private Set<Shift> shifts = new HashSet<>();
 
-  @ManyToMany
-  @JoinTable(
-      name = "mentorship_requests",
-      joinColumns = {@JoinColumn(name = "mentorship_id")},
-      inverseJoinColumns = {@JoinColumn(name = "requester_id")})
-  private Set<User> users = new HashSet<>();
+  // @ManyToMany
+  // @JoinTable(
+  //     name = "mentorship_requests",
+  //     joinColumns = {@JoinColumn(name = "mentorship_id")},
+  //     inverseJoinColumns = {@JoinColumn(name = "requester_id")})
+  // private Set<User> users = new HashSet<>();
 
   public enum Status {
     ON_GOING,

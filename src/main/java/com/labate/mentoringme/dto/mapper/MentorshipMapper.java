@@ -44,14 +44,20 @@ public class MentorshipMapper {
     }
     var dto = ObjectMapperUtils.map(entity, MentorshipDto.class);
 
-    if (entity.getAddress() != null) {
-      var address = AddressMapper.toDto(entity.getAddress());
-      dto.setAddress(address);
-    }
+    // if (entity.getAddress() != null) {
+    //   var address = AddressMapper.toDto(entity.getAddress());
+    //   dto.setAddress(address);
+    // }
     if (entity.getMentorId() != null) {
       var mentor = userService.findUserById(entity.getMentorId()).orElseGet(null);
       if (mentor != null) {
         dto.setMentor(UserMapper.buildUserInfo(mentor));
+      }
+    }
+    if (entity.getCreatedBy() != null) {
+      var createdBy = userService.findUserById(entity.getCreatedBy()).orElseGet(null);
+      if (createdBy != null) {
+        dto.setCreatedBy(UserMapper.buildUserInfo(createdBy));
       }
     }
     return dto;
@@ -74,10 +80,10 @@ public class MentorshipMapper {
       var category = categoryService.findById(dto.getCategoryId());
       entity.setCategory(category);
     }
-    if (dto.getAddressId() != null) {
-      var address = addressService.findById(dto.getAddressId());
-      entity.setAddress(address);
-    }
+    // if (dto.getAddressId() != null) {
+    //   var address = addressService.findById(dto.getAddressId());
+    //   entity.setAddress(address);
+    // }
     if (!CollectionUtils.isEmpty(dto.getShifts())) {
       var shifts = ShiftMapper.toEntities(dto.getShifts());
       entity.setShifts(new HashSet<>(shifts));

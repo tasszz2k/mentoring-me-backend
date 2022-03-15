@@ -152,6 +152,9 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     if (UserRole.MANAGER_ROLES.contains(localUser.getUser().getRole())) {
       return;
     }
+    if (MentorshipRequest.Status.COMPLETED_STATUSES.contains(entity.getStatus())) {
+      throw new AccessDeniedException("You are not allowed to update this mentorship request");
+    }
     // Status = APPROVED/REJECTED -> Check if user is assignee
     // Status = CANCELED -> Check if user is owner (createdBy)
     if (status == MentorshipRequest.Status.APPROVED

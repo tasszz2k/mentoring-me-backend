@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
 @EntityListeners(AuditingEntityListener.class)
 @Entity
@@ -26,7 +27,7 @@ public class MentorshipRequest {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne//(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @ManyToOne // (cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   @JoinColumn(name = "mentorship_id", referencedColumnName = "id")
   private Mentorship mentorship;
 
@@ -65,5 +66,7 @@ public class MentorshipRequest {
     APPROVED,
     REJECTED,
     CANCELED;
+
+    public static final Set<Status> COMPLETED_STATUSES = Set.of(APPROVED, REJECTED, CANCELED);
   }
 }

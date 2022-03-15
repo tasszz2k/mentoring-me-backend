@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
 @EntityListeners(AuditingEntityListener.class)
 @Entity
@@ -85,5 +86,7 @@ public class Post {
     ON_GOING,
     COMPLETED,
     CANCELED;
+
+    public static final Set<Status> COMPLETED_STATUSES = Set.of(COMPLETED, CANCELED);
   }
 }

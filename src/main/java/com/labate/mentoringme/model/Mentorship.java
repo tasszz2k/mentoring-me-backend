@@ -83,5 +83,7 @@ public class Mentorship {
     COMPLETED,
     CANCELED,
     EXPIRED;
+
+    public static final Set<Status> COMPLETED_STATUSES = Set.of(EXPIRED, COMPLETED, CANCELED);
   }
 }

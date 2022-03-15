@@ -9,8 +9,10 @@ import com.labate.mentoringme.dto.request.GetMentorshipRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.exception.MentorshipNotFoundException;
 import com.labate.mentoringme.model.Mentorship;
+import com.labate.mentoringme.model.MentorshipRequest;
 import com.labate.mentoringme.model.Shift;
 import com.labate.mentoringme.repository.MentorshipRepository;
+import com.labate.mentoringme.service.timetable.TimetableService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,6 +28,7 @@ import java.util.Set;
 public class MentorshipServiceImpl implements MentorshipService {
   private final MentorshipRepository mentorshipRepository;
   private final ShiftService shiftService;
+  private final TimetableService timetableService;
 
   @Override
   public Mentorship findById(Long id) {
@@ -97,4 +100,14 @@ public class MentorshipServiceImpl implements MentorshipService {
     deleteMentorship(id);
   }
 
+  @Transactional
+  @Override
+  public void bookMentor(MentorshipRequest mentorshipRequest, Long mentorId) {
+    var mentorship = mentorshipRequest.getMentorship();
+    mentorship.setMentorId(mentorId);
+    mentorship.setStatus(Mentorship.Status.COMPLETED);
+    var savedMentorship = mentorshipRepository.save(mentorship);
+    mentorshipRequest.setMentorship(savedMentorship);
+    timetableService.fillMentorshipEvents(mentorshipRequest);
+  }
 }

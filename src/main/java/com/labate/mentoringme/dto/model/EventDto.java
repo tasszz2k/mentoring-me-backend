@@ -1,15 +1,16 @@
 package com.labate.mentoringme.dto.model;
 
-import lombok.Value;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Data;
 
 import java.util.Date;
 
-@Value
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Data
 public class EventDto {
-  Long id;
-  String title;
-  String content;
-  Date fromTime;
-  Date toTime;
-  Integer type;
+  private Long id;
+  private String title;
+  private Date startTime;
+  private Date endTime;
+  private Integer type;
 }

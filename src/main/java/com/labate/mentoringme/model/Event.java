@@ -1,8 +1,6 @@
 package com.labate.mentoringme.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -10,8 +8,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.util.Date;
 
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 @Entity
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -24,14 +24,18 @@ public class Event {
   @Column(name = "timetable_id")
   private Long timetableId;
 
-  private String title;
-  private String content;
+  @Column(name = "mentorship_id")
+  private Long mentorshipId;
 
-  private Date fromTime;
-  private Date toTime;
+  private String title;
+  // private String content;
+
+  private Date startTime;
+  private Date endTime;
 
   private Integer type;
 
+  @Builder.Default
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
   private Boolean isDeleted = false;
 
@@ -44,4 +48,11 @@ public class Event {
   @Column(name = "modified")
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
+
+  @AllArgsConstructor
+  @Data
+  public static class Basic {
+    private Date startTime;
+    private Date endTime;
+  }
 }

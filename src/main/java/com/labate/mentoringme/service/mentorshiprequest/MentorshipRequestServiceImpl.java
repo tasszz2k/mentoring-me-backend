@@ -104,6 +104,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     return save(entity);
   }
 
+  @Transactional
   @Override
   public void updateStatus(Long id, MentorshipRequest.Status status, LocalUser localUser) {
     var oldMentorshipRequest = findById(id);
@@ -113,7 +114,14 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
 
     checkPermissionToUpdateStatus(oldMentorshipRequest, localUser, status);
     oldMentorshipRequest.setStatus(status);
-    mentorshipRequestRepository.save(oldMentorshipRequest);
+    var mentorshipRequest = mentorshipRequestRepository.save(oldMentorshipRequest);
+
+    if (MentorshipRequest.Status.APPROVED.equals(status)
+        && UserRole.ROLE_MENTOR.equals(mentorshipRequest.getRequesterRole().getUserRole())) {
+      // Update mentor into mentorship
+      var mentorId = localUser.getUser().getId();
+      mentorshipService.bookMentor(mentorshipRequest, mentorId);
+    }
   }
 
   private boolean canRequest(Mentorship mentorship) {

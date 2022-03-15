@@ -13,14 +13,14 @@ public class EventDto {
   private Long id;
   private String title;
 
-    @JsonFormat(
+  @JsonFormat(
       shape = JsonFormat.Shape.STRING,
       pattern = "yyyy-MM-dd HH:mm:ss",
       timezone = "Asia/Bangkok")
   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private Date startTime;
 
-    @JsonFormat(
+  @JsonFormat(
       shape = JsonFormat.Shape.STRING,
       pattern = "yyyy-MM-dd HH:mm:ss",
       timezone = "Asia/Bangkok")

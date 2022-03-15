@@ -3,7 +3,10 @@ package com.labate.mentoringme.controller.v1;
 import com.labate.mentoringme.config.CurrentUser;
 import com.labate.mentoringme.dto.mapper.MentorshipRequestMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
-import com.labate.mentoringme.dto.request.*;
+import com.labate.mentoringme.dto.request.CreateMentorshipRequestRq;
+import com.labate.mentoringme.dto.request.GetMentorshipRequestRq;
+import com.labate.mentoringme.dto.request.PageCriteria;
+import com.labate.mentoringme.dto.request.UpdateMentorshipRequestStatusRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
@@ -98,20 +101,19 @@ public class MentorshipRequestController {
   }
 
   @ApiImplicitParam(
-          name = "Authorization",
-          value = "Access Token",
-          required = true,
-          paramType = "header",
-          dataTypeClass = String.class,
-          example = "Bearer access_token")
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   @PatchMapping("/{id}/status")
   public ResponseEntity<?> updateMentorshipRequestStatus(
-          @PathVariable Long id,
-          @Valid @RequestBody UpdateMentorshipRequestStatusRequest request,
-          @CurrentUser LocalUser localUser) {
+      @PathVariable Long id,
+      @Valid @RequestBody UpdateMentorshipRequestStatusRequest request,
+      @CurrentUser LocalUser localUser) {
     mentorshipRequestService.updateStatus(id, request.getStatus(), localUser);
     return BaseResponseEntity.ok(null, "Mentorship request status updated successfully");
   }
-
 }

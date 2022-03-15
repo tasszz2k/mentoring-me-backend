@@ -5,8 +5,6 @@ import com.labate.mentoringme.exception.http.ResponseError;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-;
-
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @Getter
 public enum InternalServerError implements ResponseError {

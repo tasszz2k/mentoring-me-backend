@@ -15,14 +15,14 @@ public class TimetableDto {
   private UserInfo user;
   private String name;
 
-    @JsonFormat(
+  @JsonFormat(
       shape = JsonFormat.Shape.STRING,
       pattern = "yyyy-MM-dd HH:mm:ss",
       timezone = "Asia/Bangkok")
   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private Date createdDate;
 
-    @JsonFormat(
+  @JsonFormat(
       shape = JsonFormat.Shape.STRING,
       pattern = "yyyy-MM-dd HH:mm:ss",
       timezone = "Asia/Bangkok")

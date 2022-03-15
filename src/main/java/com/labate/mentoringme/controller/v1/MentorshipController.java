@@ -100,5 +100,4 @@ public class MentorshipController {
     mentorshipService.updateMentorship(request, localUser);
     return BaseResponseEntity.ok(null, "Mentorship request updated successfully");
   }
-
 }

@@ -11,5 +11,4 @@ public class BasicMentorshipDto {
   private UserInfo createdBy;
   private String title;
   private Mentorship.Status status;
-
 }

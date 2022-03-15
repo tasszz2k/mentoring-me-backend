@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ConfigurableError implements ResponseError {
-    private String name;
-    private String message;
-    private int status;
+  private String name;
+  private String message;
+  private int status;
 }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.labate.mentoringme.exception.http.ResponseError;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-;
 
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @Getter

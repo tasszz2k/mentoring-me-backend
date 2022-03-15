@@ -11,14 +11,7 @@ import java.util.List;
 
 @Builder
 @Value
-public class GetMentorshipRequest {
-  Long createdBy;
-  Long mentorId;
-  List<Long> categoryIds;
-  List<Long> addressIds;
-
-  Mentorship.Status status;
-
+public class GetTimetableRequest {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Bangkok")
   @DateTimeFormat(pattern = "yyyy-MM-dd")
   Date fromDate;
@@ -26,7 +19,4 @@ public class GetMentorshipRequest {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Bangkok")
   @DateTimeFormat(pattern = "yyyy-MM-dd")
   Date toDate;
-
-  Float minPrice;
-  Float maxPrice;
 }

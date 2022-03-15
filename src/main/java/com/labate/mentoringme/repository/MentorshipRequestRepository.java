@@ -1,6 +1,5 @@
 package com.labate.mentoringme.repository;
 
-import com.labate.mentoringme.dto.request.GetMentorshipRequest;
 import com.labate.mentoringme.dto.request.GetMentorshipRequestRq;
 import com.labate.mentoringme.model.MentorshipRequest;
 import org.springframework.data.domain.Page;

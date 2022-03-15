@@ -5,8 +5,7 @@ import com.labate.mentoringme.constant.UserRole;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class AcceptableRolesValidator
-    implements ConstraintValidator<AcceptableRoles, UserRole> {
+public class AcceptableRolesValidator implements ConstraintValidator<AcceptableRoles, UserRole> {
 
   UserRole[] acceptableRoles;
 

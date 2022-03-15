@@ -1,13 +1,13 @@
 package com.labate.mentoringme.exception.http;
 
 public interface ResponseError {
-    String getName();
+  String getName();
 
-    String getMessage();
+  String getMessage();
 
-    int getStatus();
+  int getStatus();
 
-    default Integer getCode() {
-        return 0;
-    }
+  default Integer getCode() {
+    return 0;
+  }
 }

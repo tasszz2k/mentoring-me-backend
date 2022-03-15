@@ -1,5 +1,6 @@
 package com.labate.mentoringme.service.timetable;
 
+import com.labate.mentoringme.dto.request.GetTimetableRequest;
 import com.labate.mentoringme.model.MentorshipRequest;
 import com.labate.mentoringme.model.Timetable;
 import com.labate.mentoringme.repository.TimetableRepository;
@@ -61,5 +62,11 @@ public class TimetableServiceImpl implements TimetableService {
         eventService.createEvents(basicEvents, timetableIds, mentorshipId, mentorshipTitle);
 
     eventService.saveAll(events);
+  }
+
+  @Override
+  public Timetable findByUserId(Long userId, GetTimetableRequest request) {
+    // TODO: find by userId and from date -> date
+    return timetableRepository.findByUserId(userId);
   }
 }

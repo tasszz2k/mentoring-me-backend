@@ -6,19 +6,17 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-/**
- * Represent http response body
- */
+/** Represent http response body */
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse<T> extends ServiceResponse<T> {
-    private String error;
+  private String error;
 
-    @Builder
-    public ErrorResponse(int code, T data, String message, String error) {
-        super(code, data, message);
-        this.error = error;
-    }
+  @Builder
+  public ErrorResponse(int code, T data, String message, String error) {
+    super(code, data, message);
+    this.error = error;
+  }
 }

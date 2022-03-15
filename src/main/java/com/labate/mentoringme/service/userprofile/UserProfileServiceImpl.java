@@ -4,7 +4,6 @@ import com.labate.mentoringme.constant.Gender;
 import com.labate.mentoringme.constant.UserRole;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.PartialUpdateUserProfileRequest;
-import com.labate.mentoringme.dto.request.UpdateUserProfileRequest;
 import com.labate.mentoringme.exception.UserNotFoundException;
 import com.labate.mentoringme.model.UserProfile;
 import com.labate.mentoringme.repository.UserProfileRepository;

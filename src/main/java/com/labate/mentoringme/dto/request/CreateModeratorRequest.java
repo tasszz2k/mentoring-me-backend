@@ -1,23 +1,19 @@
 package com.labate.mentoringme.dto.request;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
 import com.labate.mentoringme.validator.ValidPassword;
 import lombok.Data;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 
 @Data
 public class CreateModeratorRequest {
 
-  @NotEmpty
-  private String fullName;
+  @NotEmpty private String fullName;
 
-  @NotEmpty
-  @Email
-  private String email;
+  @NotEmpty @Email private String email;
 
   private String phone;
 
-  @ValidPassword
-  private String password;
-
+  @ValidPassword private String password;
 }

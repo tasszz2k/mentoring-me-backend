@@ -3,7 +3,7 @@ package com.labate.mentoringme.internationalization;
 import java.util.Locale;
 
 public interface LanguageService {
-    Locale getCurrentLocale();
+  Locale getCurrentLocale();
 
-    String getMessage(String messageCode, String defaultMessage, Object... params);
+  String getMessage(String messageCode, String defaultMessage, Object... params);
 }

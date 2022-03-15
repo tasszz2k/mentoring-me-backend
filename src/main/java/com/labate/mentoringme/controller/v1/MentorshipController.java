@@ -9,7 +9,7 @@ import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
-import com.labate.mentoringme.exception.MentorshipRequestNotFoundException;
+import com.labate.mentoringme.exception.MentorshipNotFoundException;
 import com.labate.mentoringme.service.mentorshiprequest.MentorshipService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class MentorshipController {
   public ResponseEntity<?> findMentorshipById(@PathVariable Long id) {
     var classEntity = mentorshipService.findById(id);
     if (classEntity == null) {
-      throw new MentorshipRequestNotFoundException("id = " + id);
+      throw new MentorshipNotFoundException("id = " + id);
     }
     return BaseResponseEntity.ok(MentorshipMapper.toDto(classEntity));
   }
@@ -71,7 +71,7 @@ public class MentorshipController {
       example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   @PostMapping("")
-  public ResponseEntity<?> addNewMentorship(
+  public ResponseEntity<?> createNewMentorship(
       @Valid @RequestBody CreateMentorshipRequest request, @CurrentUser LocalUser localUser) {
     request.setCreatedBy(localUser.getUser().getId());
     var entity = MentorshipMapper.toEntity(request);

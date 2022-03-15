@@ -23,10 +23,10 @@ public class MentorshipDto extends BasicMentorshipDto {
   private Integer type;
   private Float price;
   private String detailAddress;
-  private AddressDto address;
+  // private AddressDto address;
 
   private Set<ShiftDto> shifts;
-  private Set<UserInfo> students;
+  // private Set<UserInfo> students;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
   @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")

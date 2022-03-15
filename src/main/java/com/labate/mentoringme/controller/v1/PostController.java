@@ -7,6 +7,7 @@ import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreatePostRequest;
 import com.labate.mentoringme.dto.request.GetPostsRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
+import com.labate.mentoringme.dto.request.UpdatePostStatusRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
@@ -111,7 +112,7 @@ public class PostController {
   @PatchMapping("/{id}/status")
   public ResponseEntity<?> updatePostStatus(
       @PathVariable Long id,
-      @Valid @RequestBody CreatePostRequest request,
+      @Valid @RequestBody UpdatePostStatusRequest request,
       @CurrentUser LocalUser localUser) {
     postService.updateStatus(id, request.getStatus(), localUser);
     return BaseResponseEntity.ok(null, "Post status updated successfully");

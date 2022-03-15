@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
 @EntityListeners(AuditingEntityListener.class)
 @Entity
@@ -46,10 +47,10 @@ public class Post {
 
   private String detailAddress;
 
-  @JsonIgnore
-  @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @JoinColumn(name = "address_id", referencedColumnName = "id")
-  private Address address;
+  // @JsonIgnore
+  // @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  // @JoinColumn(name = "address_id", referencedColumnName = "id")
+  // private Address address;
 
   private int likeCount;
 
@@ -85,5 +86,7 @@ public class Post {
     ON_GOING,
     COMPLETED,
     CANCELED;
+
+    public static final Set<Status> COMPLETED_STATUSES = Set.of(COMPLETED, CANCELED);
   }
 }

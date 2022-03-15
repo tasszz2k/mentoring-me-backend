@@ -7,7 +7,7 @@ import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreateMentorshipRequest;
 import com.labate.mentoringme.dto.request.GetMentorshipRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
-import com.labate.mentoringme.exception.MentorshipRequestNotFoundException;
+import com.labate.mentoringme.exception.MentorshipNotFoundException;
 import com.labate.mentoringme.model.Mentorship;
 import com.labate.mentoringme.model.Shift;
 import com.labate.mentoringme.repository.MentorshipRepository;
@@ -24,7 +24,7 @@ import java.util.Set;
 @Slf4j
 @Service
 public class MentorshipServiceImpl implements MentorshipService {
-  private final MentorshipRepository classRepository;
+  private final MentorshipRepository mentorshipRepository;
   private final ShiftService shiftService;
 
   @Override
@@ -32,14 +32,14 @@ public class MentorshipServiceImpl implements MentorshipService {
     if (id == null) {
       return null;
     }
-    return classRepository.findById(id).orElse(null);
+    return mentorshipRepository.findById(id).orElse(null);
   }
 
   @Override
   public Page<Mentorship> findAllMentorshipByConditions(
       PageCriteria pageCriteria, GetMentorshipRequest request) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
-    return classRepository.findAllByConditions(request, pageable);
+    return mentorshipRepository.findAllByConditions(request, pageable);
   }
 
   @Transactional
@@ -47,11 +47,11 @@ public class MentorshipServiceImpl implements MentorshipService {
   public Mentorship saveMentorship(Mentorship entity) {
     var shifts = entity.getShifts();
     entity.setShifts(null);
-    var savedClass = classRepository.save(entity);
+    var savedMentorship = mentorshipRepository.save(entity);
 
-    Set<Shift> savedShifts = shiftService.saveAllShifts(savedClass.getId(), shifts);
-    savedClass.setShifts(savedShifts);
-    return savedClass;
+    Set<Shift> savedShifts = shiftService.saveAllShifts(savedMentorship.getId(), shifts);
+    savedMentorship.setShifts(savedShifts);
+    return savedMentorship;
   }
 
   public void checkPermissionToUpdate(Mentorship entity, LocalUser localUser) {
@@ -67,7 +67,7 @@ public class MentorshipServiceImpl implements MentorshipService {
 
   @Override
   public void deleteMentorship(Long id) {
-    classRepository.deleteById(id);
+    mentorshipRepository.deleteById(id);
   }
 
   @Transactional
@@ -76,7 +76,7 @@ public class MentorshipServiceImpl implements MentorshipService {
     var id = request.getId();
     var oldMentorshipRequest = findById(id);
     if (oldMentorshipRequest == null) {
-      throw new MentorshipRequestNotFoundException("id = " + id);
+      throw new MentorshipNotFoundException("id = " + id);
     }
     checkPermissionToUpdate(oldMentorshipRequest, localUser);
     var entity = MentorshipMapper.toEntity(request);
@@ -91,7 +91,7 @@ public class MentorshipServiceImpl implements MentorshipService {
 
     var oldMentorshipRequest = findById(id);
     if (oldMentorshipRequest == null) {
-      throw new MentorshipRequestNotFoundException("id = " + id);
+      throw new MentorshipNotFoundException("id = " + id);
     }
     checkPermissionToUpdate(oldMentorshipRequest, localUser);
     deleteMentorship(id);

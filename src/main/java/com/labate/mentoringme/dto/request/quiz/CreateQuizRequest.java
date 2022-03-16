@@ -1,10 +1,10 @@
 package com.labate.mentoringme.dto.request.quiz;
 
-import java.util.List;
+import java.util.Set;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import com.labate.mentoringme.dto.model.CategoryDto;
 import com.labate.mentoringme.dto.model.QuestionDto;
-import com.labate.mentoringme.dto.model.QuizCategoryDto;
 import lombok.Data;
 
 @Data
@@ -19,7 +19,7 @@ public class CreateQuizRequest {
   @NotNull
   private Boolean isDraft;
   @NotNull
-  private List<QuizCategoryDto> categories;
-  private List<QuestionDto> questions;
+  private Set<CategoryDto> categories;
+  private Set<QuestionDto> questions;
 
 }

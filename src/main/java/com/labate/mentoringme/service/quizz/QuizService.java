@@ -11,7 +11,6 @@ import com.labate.mentoringme.dto.request.quiz.UpdateQuizOverviewRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizRequest;
 import com.labate.mentoringme.dto.response.QuizResultResponse;
 import com.labate.mentoringme.dto.response.QuizTakingHistoryResponse;
-import com.labate.mentoringme.model.quiz.Quiz;
 
 public interface QuizService {
   Page<QuizOverviewDto> findAllQuiz(FindQuizRequest request, PageCriteria pageCriteria);
@@ -26,9 +25,9 @@ public interface QuizService {
 
   Page<QuizOverviewDto> getListDraftQuiz(PageCriteria pageCriteria);
 
-  Quiz addQuiz(CreateQuizRequest createQuizRequest);
+  QuizDto addQuiz(CreateQuizRequest createQuizRequest);
 
-  Quiz updateQuiz(UpdateQuizRequest updateQuizRequest);
+  QuizDto updateQuiz(UpdateQuizRequest updateQuizRequest);
 
   Page<QuizTakingHistoryResponse> getQuizTakingHistory(PageCriteria pageCriteria);
 

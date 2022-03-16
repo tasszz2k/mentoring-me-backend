@@ -83,7 +83,7 @@ public class QuizServiceImpl implements QuizService {
   }
 
   @Override
-  public Quiz addQuiz(CreateQuizRequest createQuizRequest) {
+  public QuizDto addQuiz(CreateQuizRequest createQuizRequest) {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var quiz = modelMapper.map(createQuizRequest, Quiz.class);
@@ -95,11 +95,11 @@ public class QuizServiceImpl implements QuizService {
     for (Question question : quiz.getQuestions()) {
       question.getAnswers().forEach(answer -> answer.setQuestion(question));
     }
-    return quizRepository.save(quiz);
+    return modelMapper.map(questionRepository.save(quiz), QuizDto.class);
   }
 
   @Override
-  public Quiz updateQuiz(UpdateQuizRequest updateQuizRequest) {
+  public QuizDto updateQuiz(UpdateQuizRequest updateQuizRequest) {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var quiz = modelMapper.map(updateQuizRequest, Quiz.class);
@@ -115,7 +115,7 @@ public class QuizServiceImpl implements QuizService {
     quiz.setCreatedBy(oldQuiz.get().getCreatedBy());
     quiz.setCreatedDate(oldQuiz.get().getCreatedDate());
     quiz.setAuthor(oldQuiz.get().getAuthor());
-    return quizRepository.save(quiz);
+    return modelMapper.map(questionRepository.save(quiz), QuizDto.class);
   }
 
   @Override
@@ -143,13 +143,17 @@ public class QuizServiceImpl implements QuizService {
   }
 
   private void saveToQuizResult(QuizResultResponse response, Long quizId) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    var quizResult = modelMapper.map(response, QuizResult.class);
-    quizResult.setQuizId(quizId);
-    quizResult.setUserId(localUser.getUser().getId());
-    quizResult.setIsDeleted(false);
-    quizResultRepository.save(quizResult);
+    try {
+      LocalUser localUser =
+          (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      var quizResult = modelMapper.map(response, QuizResult.class);
+      quizResult.setQuizId(quizId);
+      quizResult.setUserId(localUser.getUser().getId());
+      quizResult.setIsDeleted(false);
+      quizResultRepository.save(quizResult);
+    } catch (Exception ex) {
+      return;
+    }
   }
 
   private QuizResultResponse calculateUserResult(ResultQuizCheckingRequest request,

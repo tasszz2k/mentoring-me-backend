@@ -1,14 +1,13 @@
 package com.labate.mentoringme.dto.mapper;
 
-import com.labate.mentoringme.dto.request.PageCriteria;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.labate.mentoringme.dto.request.PageCriteria;
 
 public class PageCriteriaPageableMapper {
 
@@ -26,6 +25,7 @@ public class PageCriteriaPageableMapper {
         }
       }
     }
-    return PageRequest.of(criteria.getPage() - 1, criteria.getLimit(), Sort.by(orders));
+    return PageRequest.of(criteria.getPage() - 1, criteria.getLimit(),
+        Sort.by(orders).and(Sort.by("created").descending()));
   }
 }

@@ -1,22 +1,25 @@
 package com.labate.mentoringme.dto.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotNull;
+import java.sql.Time;
 import java.time.DayOfWeek;
-import java.time.LocalDateTime;
 
 @Data
 public class ShiftDto {
   private Long id;
-  private Long classId;
+  private Long mentorshipId;
 
-  @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-  private DayOfWeek dayOfWeek;
+  @NotNull private DayOfWeek dayOfWeek;
 
-  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-  private LocalDateTime startTime;
-  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-  private LocalDateTime endTime;
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
+  @DateTimeFormat(pattern = "HH:mm:ss")
+  private Time startTime;
+
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
+  @DateTimeFormat(pattern = "HH:mm:ss")
+  private Time endTime;
 }

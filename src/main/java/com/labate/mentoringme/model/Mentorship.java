@@ -20,10 +20,10 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "classes")
-@SQLDelete(sql = "update classes set is_deleted = true where id=?")
+@Table(name = "mentorship")
+@SQLDelete(sql = "update mentorship set is_deleted = true where id=?")
 @Where(clause = "is_deleted = false")
-public class Class {
+public class Mentorship {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -49,10 +49,10 @@ public class Class {
 
   private String detailAddress;
 
-  @JsonIgnore
-  @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @JoinColumn(name = "address_id", referencedColumnName = "id")
-  private Address address;
+  // @JsonIgnore
+  // @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  // @JoinColumn(name = "address_id", referencedColumnName = "id")
+  // private Address address;
 
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
   private Boolean isDeleted = false;
@@ -67,15 +67,15 @@ public class Class {
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
 
-  @OneToMany(mappedBy = "classId", cascade = CascadeType.REMOVE)
+  @OneToMany(mappedBy = "mentorshipId", cascade = CascadeType.REMOVE)
   private Set<Shift> shifts = new HashSet<>();
 
-  @ManyToMany
-  @JoinTable(
-      name = "class_enrollments",
-      joinColumns = {@JoinColumn(name = "class_id")},
-      inverseJoinColumns = {@JoinColumn(name = "requester_id")})
-  private Set<User> users = new HashSet<>();
+  // @ManyToMany
+  // @JoinTable(
+  //     name = "mentorship_requests",
+  //     joinColumns = {@JoinColumn(name = "mentorship_id")},
+  //     inverseJoinColumns = {@JoinColumn(name = "requester_id")})
+  // private Set<User> users = new HashSet<>();
 
   public enum Status {
     ON_GOING,
@@ -83,5 +83,7 @@ public class Class {
     COMPLETED,
     CANCELED,
     EXPIRED;
+
+    public static final Set<Status> COMPLETED_STATUSES = Set.of(EXPIRED, COMPLETED, CANCELED);
   }
 }

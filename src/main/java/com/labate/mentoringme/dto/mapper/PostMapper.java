@@ -54,10 +54,10 @@ public class PostMapper {
       post.setCategory(category);
     }
 
-    if (dto.getAddressId() != null) {
-      var address = addressService.findById(dto.getAddressId());
-      post.setAddress(address);
-    }
+    // if (dto.getAddressId() != null) {
+    //   var address = addressService.findById(dto.getAddressId());
+    //   post.setAddress(address);
+    // }
 
     return post;
   }

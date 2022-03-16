@@ -17,8 +17,7 @@ public enum Gender {
     return Stream.of(Gender.values())
         .filter(type -> type.getValue().equals(value))
         .findFirst()
-        .orElseThrow(
-            () -> new IllegalArgumentException("Invalid gender with value: " + value));
+        .orElseThrow(() -> new IllegalArgumentException("Invalid gender with value: " + value));
   }
 
   public Integer getValue() {

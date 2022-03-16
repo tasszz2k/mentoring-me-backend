@@ -9,7 +9,6 @@ import lombok.Data;
 
 @Data
 public class CreateQuizRequest {
-
   @NotBlank
   private String title;
   @NotNull
@@ -21,5 +20,4 @@ public class CreateQuizRequest {
   @NotNull
   private Set<CategoryDto> categories;
   private Set<QuestionDto> questions;
-
 }

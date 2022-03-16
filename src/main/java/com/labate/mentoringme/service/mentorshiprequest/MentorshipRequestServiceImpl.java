@@ -7,10 +7,14 @@ import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreateMentorshipRequestRq;
 import com.labate.mentoringme.dto.request.GetMentorshipRequestRq;
 import com.labate.mentoringme.dto.request.PageCriteria;
+import com.labate.mentoringme.exception.CanNotReEnrollException;
+import com.labate.mentoringme.exception.ClassHasBegunException;
+import com.labate.mentoringme.exception.MentorshipNotFoundException;
 import com.labate.mentoringme.exception.MentorshipRequestNotFoundException;
-import com.labate.mentoringme.model.Class;
-import com.labate.mentoringme.model.Shift;
-import com.labate.mentoringme.repository.ClassRepository;
+import com.labate.mentoringme.model.Mentorship;
+import com.labate.mentoringme.model.MentorshipRequest;
+import com.labate.mentoringme.repository.MentorshipRequestRepository;
+import com.labate.mentoringme.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -18,61 +22,68 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Set;
+import java.util.Date;
 
 @RequiredArgsConstructor
 @Slf4j
 @Service
 public class MentorshipRequestServiceImpl implements MentorshipRequestService {
-  private final ClassRepository classRepository;
-  private final ShiftService shiftService;
+  private final MentorshipRequestRepository mentorshipRequestRepository;
+  private final MentorshipService mentorshipService;
+  private final RoleRepository roleRepository;
 
   @Override
-  public Class findById(Long id) {
-    if (id == null) {
-      return null;
+  public void bookMentor(Long mentorshipId, Long studentId) {
+    var mentorship = mentorshipService.findById(mentorshipId);
+    if (mentorship == null) {
+      throw new MentorshipNotFoundException("id = " + mentorshipId);
     }
-    return classRepository.findById(id).orElse(null);
+    boolean canEnroll = canRequest(mentorship);
+    if (!canEnroll) {
+      throw new ClassHasBegunException("id = " + mentorshipId);
+    }
+
+    var mentorshipRequest =
+        mentorshipRequestRepository.findByMentorshipIdAndRequesterId(mentorshipId, studentId);
+    if (mentorshipRequest == null) {
+      var roleUser = roleRepository.findByName(UserRole.ROLE_USER.name());
+      var newMentorshipRequest =
+          MentorshipRequest.builder()
+              .mentorship(mentorship)
+              .requesterId(studentId)
+              .RequesterRole(roleUser)
+              .build();
+      save(newMentorshipRequest);
+    } else {
+      throw new CanNotReEnrollException("id = " + mentorshipId);
+    }
   }
 
   @Override
-  public Page<Class> findAllClassesByConditions(
+  public MentorshipRequest findById(Long id) {
+    return mentorshipRequestRepository.findById(id).orElse(null);
+  }
+
+  @Override
+  public Page<MentorshipRequest> findAllMentorshipRequestByConditions(
       PageCriteria pageCriteria, GetMentorshipRequestRq request) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
-    return classRepository.findAllByConditions(request, pageable);
+    return mentorshipRequestRepository.findAllByConditions(request, pageable);
   }
 
   @Transactional
   @Override
-  public Class saveMentorshipRequest(Class entity) {
-    var shifts = entity.getShifts();
-    entity.setShifts(null);
-    var savedClass = classRepository.save(entity);
+  public MentorshipRequest save(MentorshipRequest entity) {
+    var mentorship = mentorshipService.saveMentorship(entity.getMentorship());
+    entity.setMentorship(mentorship);
 
-    Set<Shift> savedShifts = shiftService.saveAllShifts(savedClass.getId(), shifts);
-    savedClass.setShifts(savedShifts);
-    return savedClass;
-  }
-
-  public void checkPermissionToUpdate(Class entity, LocalUser localUser) {
-    var userId = localUser.getUser().getId();
-    var role = localUser.getUser().getRole();
-
-    if (!userId.equals(entity.getCreatedBy())
-        && !userId.equals(entity.getMentorId())
-        && !UserRole.MANAGER_ROLES.contains(role)) {
-      throw new AccessDeniedException("You are not allowed to update this mentorship entity");
-    }
-  }
-
-  @Override
-  public void deleteMentorshipRequest(Long id) {
-    classRepository.deleteById(id);
+    return mentorshipRequestRepository.save(entity);
   }
 
   @Transactional
   @Override
-  public Class updateMentorshipRequest(CreateMentorshipRequestRq request, LocalUser localUser) {
+  public MentorshipRequest updateMentorshipRequest(
+      CreateMentorshipRequestRq request, LocalUser localUser) {
     var id = request.getId();
     var oldMentorshipRequest = findById(id);
     if (oldMentorshipRequest == null) {
@@ -80,21 +91,91 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     }
     checkPermissionToUpdate(oldMentorshipRequest, localUser);
     var entity = MentorshipRequestMapper.toEntity(request);
-    // TODO: change to fields can update instead of all fields except (id, createdBy,...)
-    entity.setCreatedBy(oldMentorshipRequest.getCreatedBy());
-
-    return saveMentorshipRequest(entity);
+    entity.getMentorship().setId(oldMentorshipRequest.getMentorship().getId());
+    entity.getMentorship().setCreatedBy(oldMentorshipRequest.getMentorship().getCreatedBy());
+    return save(entity);
   }
 
+  @Transactional
   @Override
-  public void deleteMentorshipRequest(Long id, LocalUser localUser) {
+  public MentorshipRequest createNewMentorshipRequest(CreateMentorshipRequestRq request) {
+    var entity = MentorshipRequestMapper.toEntity(request);
+    entity.setId(null);
+    return save(entity);
+  }
 
+  @Transactional
+  @Override
+  public void updateStatus(Long id, MentorshipRequest.Status status, LocalUser localUser) {
     var oldMentorshipRequest = findById(id);
     if (oldMentorshipRequest == null) {
       throw new MentorshipRequestNotFoundException("id = " + id);
     }
-    checkPermissionToUpdate(oldMentorshipRequest, localUser);
-    deleteMentorshipRequest(id);
+
+    checkPermissionToUpdateStatus(oldMentorshipRequest, localUser, status);
+    oldMentorshipRequest.setStatus(status);
+    var mentorshipRequest = mentorshipRequestRepository.save(oldMentorshipRequest);
+
+    if (MentorshipRequest.Status.APPROVED.equals(status)
+        && UserRole.ROLE_MENTOR.equals(mentorshipRequest.getRequesterRole().getUserRole())) {
+      // Update mentor into mentorship
+      var mentorId = localUser.getUser().getId();
+      mentorshipService.bookMentor(mentorshipRequest, mentorId);
+    }
   }
 
+  private boolean canRequest(Mentorship mentorship) {
+    boolean canEnroll = true;
+    var now = new Date();
+    var startDate = mentorship.getStartDate();
+    // Check if class status is started -> Return error ClassHasBegunException
+    if (startDate != null && now.after(startDate)) {
+      canEnroll = false;
+    }
+    // TODO: Check status
+    return canEnroll;
+  }
+
+  @Override
+  public void request(Long mentorshipId, Long userId, UserRole userRole) {
+    log.info("Enrolling student {} to class {}", userId, mentorshipId);
+  }
+
+  public void checkPermissionToUpdate(MentorshipRequest entity, LocalUser localUser) {
+    var userId = localUser.getUser().getId();
+    var role = localUser.getUser().getRole();
+
+    if (!userId.equals(entity.getMentorship().getCreatedBy())
+        && !userId.equals(entity.getMentorship().getMentorId())
+        && !userId.equals(entity.getAssigneeId())
+        && !UserRole.MANAGER_ROLES.contains(role)) {
+      throw new AccessDeniedException("You are not allowed to update this mentorship request");
+    }
+  }
+
+  public void checkPermissionToUpdateStatus(
+      MentorshipRequest entity, LocalUser localUser, MentorshipRequest.Status status) {
+    checkPermissionToUpdate(entity, localUser);
+
+    if (UserRole.MANAGER_ROLES.contains(localUser.getUser().getRole())) {
+      return;
+    }
+    if (MentorshipRequest.Status.COMPLETED_STATUSES.contains(entity.getStatus())) {
+      throw new AccessDeniedException("You are not allowed to update this mentorship request");
+    }
+    // Status = APPROVED/REJECTED -> Check if user is assignee
+    // Status = CANCELED -> Check if user is owner (createdBy)
+    if (status == MentorshipRequest.Status.APPROVED
+        || status == MentorshipRequest.Status.REJECTED) {
+      if (!entity.getAssigneeId().equals(localUser.getUser().getId())) {
+        throw new AccessDeniedException("You are not allowed to update this mentorship request");
+      }
+    } else if (status == MentorshipRequest.Status.CANCELED) {
+      if (!entity.getMentorship().getCreatedBy().equals(localUser.getUser().getId())) {
+        throw new AccessDeniedException("You are not allowed to update this mentorship request");
+      }
+    } else {
+      throw new AccessDeniedException("You are not allowed to update this mentorship request");
+    }
+  }
 }

@@ -1,34 +1,28 @@
 package com.labate.mentoringme.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.labate.mentoringme.dto.model.ShiftDto;
-import io.swagger.annotations.ApiModelProperty;
+import com.labate.mentoringme.constant.UserRole;
+import com.labate.mentoringme.model.MentorshipRequest;
+import com.labate.mentoringme.validator.AcceptableRoles;
 import lombok.Data;
 
-import java.util.Date;
-import java.util.Set;
+import javax.validation.constraints.NotNull;
 
 @Data
 public class CreateMentorshipRequestRq {
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private Long id;
 
-  private Long mentorId;
-  private Long categoryId;
+  @NotNull private CreateMentorshipRequest mentorship;
+  @NotNull private Long requesterId;
+  @NotNull private Long assigneeId;
+
+  @NotNull
+  @AcceptableRoles(
+      roles = {UserRole.ROLE_USER, UserRole.ROLE_MENTOR},
+      message = "Only users and mentors can be invited to mentorship")
+  private UserRole RequesterRole = UserRole.ROLE_MENTOR;
 
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-  private Long createdBy;
-
-  private String title;
-  private Date startDate;
-  private Date endDate;
-  private Integer duration;
-  private Integer type;
-  private Long status;
-  private Float price;
-  private String detailAddress;
-  private Long addressId;
-
-  private Set<ShiftDto> shifts;
-  private Set<Integer> studentIds;
+  private MentorshipRequest.Status status = MentorshipRequest.Status.ON_GOING;
 }

@@ -1,5 +1,6 @@
 package com.labate.mentoringme.model;
 
+import com.labate.mentoringme.constant.UserRole;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,7 +8,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Set;
 
 /** The persistent class for the role database table. */
 @EntityListeners(AuditingEntityListener.class)
@@ -60,5 +60,9 @@ public class Role implements Serializable {
   @Override
   public String toString() {
     return "Role [name=" + name + "]" + "[id=" + id + "]";
+  }
+
+  public UserRole getUserRole() {
+    return UserRole.of(name);
   }
 }

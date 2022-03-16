@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
 
 @EntityListeners(AuditingEntityListener.class)
 @Entity
@@ -18,17 +19,17 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "class_enrollments")
-@SQLDelete(sql = "update class_enrollments set is_deleted = true where id=?")
+@Table(name = "mentorship_requests")
+@SQLDelete(sql = "update mentorship_requests set is_deleted = true where id=?")
 @Where(clause = "is_deleted = false")
-public class ClassEnrollment {
+public class MentorshipRequest {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @JoinColumn(name = "class_id", referencedColumnName = "id")
-  private Class classEntity;
+  @ManyToOne // (cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @JoinColumn(name = "mentorship_id", referencedColumnName = "id")
+  private Mentorship mentorship;
 
   @Column(name = "requester_id")
   private Long requesterId;
@@ -62,9 +63,10 @@ public class ClassEnrollment {
 
   public enum Status {
     ON_GOING,
-    ACCEPTED,
+    APPROVED,
     REJECTED,
-    CANCELED,
-    EXPIRED;
+    CANCELED;
+
+    public static final Set<Status> COMPLETED_STATUSES = Set.of(APPROVED, REJECTED, CANCELED);
   }
 }

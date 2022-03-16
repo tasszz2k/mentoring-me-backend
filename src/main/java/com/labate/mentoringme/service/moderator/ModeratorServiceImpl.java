@@ -1,8 +1,5 @@
 package com.labate.mentoringme.service.moderator;
 
-import java.util.HashSet;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.constant.UserRole;
 import com.labate.mentoringme.dto.request.CreateModeratorRequest;
@@ -13,6 +10,10 @@ import com.labate.mentoringme.model.UserProfile;
 import com.labate.mentoringme.repository.RoleRepository;
 import com.labate.mentoringme.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
 
 @Service
 @RequiredArgsConstructor
@@ -32,8 +33,6 @@ public class ModeratorServiceImpl implements ModeratorService {
     userRepository.flush();
     return user;
   }
-
-
 
   private User buildUser(CreateModeratorRequest request) {
     var user = new User();
@@ -55,5 +54,4 @@ public class ModeratorServiceImpl implements ModeratorService {
     user.setUserProfile(userProfile);
     return user;
   }
-
 }

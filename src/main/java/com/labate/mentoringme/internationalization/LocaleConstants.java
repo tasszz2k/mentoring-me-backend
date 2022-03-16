@@ -6,10 +6,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class LocaleConstants {
-    public final static Locale DEFAULT_LOCALE = Locale.ENGLISH;
+  public static final Locale DEFAULT_LOCALE = Locale.ENGLISH;
 
-    public final static Map<String, Locale> SUPPORT_LOCALES = Stream.of(
-            DEFAULT_LOCALE,
-            new Locale("vi")
-    ).collect(Collectors.toMap(Locale::getLanguage, locale -> locale));
+  public static final Map<String, Locale> SUPPORT_LOCALES =
+      Stream.of(DEFAULT_LOCALE, new Locale("vi"))
+          .collect(Collectors.toMap(Locale::getLanguage, locale -> locale));
 }

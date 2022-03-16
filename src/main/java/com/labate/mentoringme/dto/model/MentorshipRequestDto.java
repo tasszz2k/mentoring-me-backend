@@ -1,30 +1,41 @@
 package com.labate.mentoringme.dto.model;
 
-import com.labate.mentoringme.model.Class;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.labate.mentoringme.constant.UserRole;
+import com.labate.mentoringme.model.MentorshipRequest;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
-import java.util.Set;
 
 @Data
 public class MentorshipRequestDto {
+
   private Long id;
-  private Long mentorId;
-  private CategoryDto category;
-  private Long createdBy;
-  private String title;
-  private Date startDate;
-  private Date endDate;
-  private Integer duration;
-  private Integer type;
-  private Class.Status status;
-  private Float price;
-  private String detailAddress;
-  private AddressDto address;
+  private UserInfo requester;
+  private UserInfo assignee;
+  private UserRole requesterRole;
+  private MentorshipRequest.Status status;
+  private MentorshipDto mentorship;
 
-  private Set<ShiftDto> shifts;
-  private Set<Integer> studentIds;
+  @JsonFormat(
+      shape = JsonFormat.Shape.STRING,
+      pattern = "yyyy-MM-dd HH:mm:ss",
+      timezone = "Asia/Bangkok")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  private Date enrollDate;
 
+  @JsonFormat(
+      shape = JsonFormat.Shape.STRING,
+      pattern = "yyyy-MM-dd HH:mm:ss",
+      timezone = "Asia/Bangkok")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private Date createdDate;
+
+  @JsonFormat(
+      shape = JsonFormat.Shape.STRING,
+      pattern = "yyyy-MM-dd HH:mm:ss",
+      timezone = "Asia/Bangkok")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private Date modifiedDate;
 }

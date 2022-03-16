@@ -1,7 +1,8 @@
 package com.labate.mentoringme.dto.model;
 
-import java.util.List;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class QuestionDto {

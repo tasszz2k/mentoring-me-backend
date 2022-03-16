@@ -1,25 +1,28 @@
 package com.labate.mentoringme.service.mentorshiprequest;
 
+import com.labate.mentoringme.constant.UserRole;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreateMentorshipRequestRq;
 import com.labate.mentoringme.dto.request.GetMentorshipRequestRq;
 import com.labate.mentoringme.dto.request.PageCriteria;
-import com.labate.mentoringme.model.Class;
+import com.labate.mentoringme.model.MentorshipRequest;
 import org.springframework.data.domain.Page;
 
 public interface MentorshipRequestService {
-  Class findById(Long id);
+  void request(Long mentorshipId, Long userId, UserRole userRole);
 
-  Page<Class> findAllClassesByConditions(PageCriteria pageCriteria, GetMentorshipRequestRq request);
+  void bookMentor(Long requestId, Long id);
 
-  Class saveMentorshipRequest(Class entity);
+  MentorshipRequest findById(Long id);
 
-  void checkPermissionToUpdate(Class entity, LocalUser localUser);
+  Page<MentorshipRequest> findAllMentorshipRequestByConditions(
+      PageCriteria pageCriteria, GetMentorshipRequestRq request);
 
-  void deleteMentorshipRequest(Long id);
+  MentorshipRequest save(MentorshipRequest entity);
 
-  Class updateMentorshipRequest(CreateMentorshipRequestRq request, LocalUser localUser);
+  MentorshipRequest updateMentorshipRequest(CreateMentorshipRequestRq request, LocalUser localUser);
 
-  void deleteMentorshipRequest(Long id, LocalUser localUser);
+  MentorshipRequest createNewMentorshipRequest(CreateMentorshipRequestRq request);
 
+  void updateStatus(Long id, MentorshipRequest.Status status, LocalUser localUser);
 }

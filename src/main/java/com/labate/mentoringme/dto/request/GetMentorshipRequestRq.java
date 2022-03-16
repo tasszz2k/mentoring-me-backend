@@ -1,6 +1,6 @@
 package com.labate.mentoringme.dto.request;
 
-import com.labate.mentoringme.model.Class;
+import com.labate.mentoringme.model.MentorshipRequest;
 import lombok.Builder;
 import lombok.Value;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -16,7 +16,7 @@ public class GetMentorshipRequestRq {
   List<Long> categoryIds;
   List<Long> addressIds;
 
-  Class.Status status;
+  MentorshipRequest.Status status;
 
   @DateTimeFormat(pattern = "yyyy-MM-dd")
   Date fromDate;

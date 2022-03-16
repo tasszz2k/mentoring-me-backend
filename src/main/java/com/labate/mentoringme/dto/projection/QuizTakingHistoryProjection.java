@@ -1,4 +1,4 @@
-package com.labate.mentoringme.projection;
+package com.labate.mentoringme.dto.projection;
 
 import java.util.Date;
 

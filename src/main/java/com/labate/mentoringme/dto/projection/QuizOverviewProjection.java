@@ -13,4 +13,6 @@ public interface QuizOverviewProjection {
   Boolean getIsDraft();
 
   String getAuthor();
+
+  Long getAuthorId();
 }

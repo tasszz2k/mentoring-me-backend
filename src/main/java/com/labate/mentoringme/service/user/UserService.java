@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -41,5 +42,5 @@ public interface UserService {
 
   List<User> findAllByIds(Collection<Long> ids);
 
-  void uploadAvatar(LocalUser localUser, MultipartFile image);
+  String uploadAvatar(LocalUser localUser, MultipartFile image) throws IOException;
 }

@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -101,10 +102,11 @@ public class UserController {
   @PostMapping("/avatar")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   public ResponseEntity<?> uploadAvatar(
-      @RequestParam("image") @NotNull(message = "Image cannot be null!") MultipartFile image,
-      @CurrentUser LocalUser localUser) {
+      @RequestParam("image") @NotNull(message = "image is required") MultipartFile image,
+      @CurrentUser LocalUser localUser)
+      throws IOException {
 
-    userService.uploadAvatar(localUser, image);
+    var url = userService.uploadAvatar(localUser, image);
     return BaseResponseEntity.ok(null, "Avatar uploaded");
   }
 }

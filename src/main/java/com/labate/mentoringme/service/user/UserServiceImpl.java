@@ -17,6 +17,7 @@ import com.labate.mentoringme.repository.RoleRepository;
 import com.labate.mentoringme.repository.UserRepository;
 import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfo;
 import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfoFactory;
+import com.labate.mentoringme.service.gcp.GoogleCloudFileUpload;
 import com.labate.mentoringme.service.timetable.TimetableService;
 import com.labate.mentoringme.service.userprofile.UserProfileService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -41,6 +43,7 @@ public class UserServiceImpl implements UserService {
   private final PasswordEncoder passwordEncoder;
   private final UserProfileService userProfileService;
   private final TimetableService timetableService;
+  private final GoogleCloudFileUpload googleCloudFileUpload;
 
   @Value("${labate.secure.default-password}")
   private String defaultPassword;
@@ -155,10 +158,12 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void uploadAvatar(LocalUser localUser, MultipartFile image) {
+  public String uploadAvatar(LocalUser localUser, MultipartFile image) throws IOException {
     var user = localUser.getUser();
-    var fileName = StringUtils.cleanPath(Objects.requireNonNull(image.getOriginalFilename()));
-    // userProfileService.save(userProfile);
+    String imageUrl = googleCloudFileUpload.upload(image);
+    user.setImageUrl(imageUrl);
+    save(user);
+    return imageUrl;
   }
 
   private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {

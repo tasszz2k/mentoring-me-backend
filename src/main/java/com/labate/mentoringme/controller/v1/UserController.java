@@ -107,6 +107,6 @@ public class UserController {
       throws IOException {
 
     var url = userService.uploadAvatar(localUser, image);
-    return BaseResponseEntity.ok(null, "Avatar uploaded");
+    return BaseResponseEntity.ok(null, "Avatar uploaded successfully");
   }
 }

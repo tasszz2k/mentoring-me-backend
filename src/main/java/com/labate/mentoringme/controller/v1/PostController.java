@@ -12,6 +12,7 @@ import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
 import com.labate.mentoringme.exception.PostNotFoundException;
+import com.labate.mentoringme.model.Post;
 import com.labate.mentoringme.service.post.PostService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
@@ -76,6 +77,7 @@ public class PostController {
   public ResponseEntity<?> addNewPost(
       @Valid @RequestBody CreatePostRequest request, @CurrentUser LocalUser localUser) {
     request.setId(null);
+    request.setStatus(Post.Status.ON_GOING);
     var entity = PostMapper.toEntity(request, localUser);
     var savedEntity = postService.savePost(entity);
 

@@ -25,7 +25,6 @@ public class PageCriteriaPageableMapper {
         }
       }
     }
-    return PageRequest.of(criteria.getPage() - 1, criteria.getLimit(),
-        Sort.by(orders).and(Sort.by("created").descending()));
+    return PageRequest.of(criteria.getPage() - 1, criteria.getLimit(), Sort.by(orders));
   }
 }

@@ -19,7 +19,7 @@ public class UpdateUserProfileRequest {
   @NotBlank private String fullName;
   // private String email;
   @ValidPhoneNumber private String phoneNumber;
-  private String imageUrl;
+  // private String imageUrl;
   private Gender gender;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Bangkok")

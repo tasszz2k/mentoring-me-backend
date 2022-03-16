@@ -21,7 +21,7 @@ public class CreateMentorshipRequestRq {
   @AcceptableRoles(
       roles = {UserRole.ROLE_USER, UserRole.ROLE_MENTOR},
       message = "Only users and mentors can be invited to mentorship")
-  private UserRole RequesterRole = UserRole.ROLE_MENTOR;
+  private UserRole assigneeRole = UserRole.ROLE_MENTOR;
 
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private MentorshipRequest.Status status = MentorshipRequest.Status.ON_GOING;

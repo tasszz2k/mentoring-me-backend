@@ -28,6 +28,7 @@ import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 
@@ -151,6 +152,13 @@ public class UserServiceImpl implements UserService {
   @Override
   public List<User> findAllByIds(Collection<Long> ids) {
     return userRepository.findAllByIdInAndEnabledIsTrue(ids);
+  }
+
+  @Override
+  public void uploadAvatar(LocalUser localUser, MultipartFile image) {
+    var user = localUser.getUser();
+    var fileName = StringUtils.cleanPath(Objects.requireNonNull(image.getOriginalFilename()));
+    // userProfileService.save(userProfile);
   }
 
   private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {

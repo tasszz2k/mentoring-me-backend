@@ -10,6 +10,7 @@ import com.labate.mentoringme.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collection;
 import java.util.List;
@@ -39,4 +40,6 @@ public interface UserService {
   Page<User> findAllUsers(PageCriteria pageCriteria, FindUsersRequest request);
 
   List<User> findAllByIds(Collection<Long> ids);
+
+  void uploadAvatar(LocalUser localUser, MultipartFile image);
 }

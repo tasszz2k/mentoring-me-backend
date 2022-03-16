@@ -12,9 +12,9 @@ import java.util.Date;
 public class MentorshipRequestDto {
 
   private Long id;
-  private UserInfo requester;
   private UserInfo assignee;
-  private UserRole requesterRole;
+  private UserInfo approver;
+  private UserRole assigneeRole;
   private MentorshipRequest.Status status;
   private MentorshipDto mentorship;
 

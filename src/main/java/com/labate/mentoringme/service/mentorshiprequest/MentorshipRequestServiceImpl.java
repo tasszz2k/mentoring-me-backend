@@ -44,14 +44,14 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     }
 
     var mentorshipRequest =
-        mentorshipRequestRepository.findByMentorshipIdAndRequesterId(mentorshipId, studentId);
+        mentorshipRequestRepository.findByMentorshipIdAndAssigneeId(mentorshipId, studentId);
     if (mentorshipRequest == null) {
       var roleUser = roleRepository.findByName(UserRole.ROLE_USER.name());
       var newMentorshipRequest =
           MentorshipRequest.builder()
               .mentorship(mentorship)
-              .requesterId(studentId)
-              .RequesterRole(roleUser)
+              .approverId(studentId)
+              .assigneeRole(roleUser)
               .build();
       save(newMentorshipRequest);
     } else {
@@ -117,7 +117,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     var mentorshipRequest = mentorshipRequestRepository.save(oldMentorshipRequest);
 
     if (MentorshipRequest.Status.APPROVED.equals(status)
-        && UserRole.ROLE_MENTOR.equals(mentorshipRequest.getRequesterRole().getUserRole())) {
+        && UserRole.ROLE_MENTOR.equals(mentorshipRequest.getAssigneeRole().getUserRole())) {
       // Update mentor into mentorship
       var mentorId = localUser.getUser().getId();
       mentorshipService.bookMentor(mentorshipRequest, mentorId);
@@ -147,7 +147,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
 
     if (!userId.equals(entity.getMentorship().getCreatedBy())
         && !userId.equals(entity.getMentorship().getMentorId())
-        && !userId.equals(entity.getAssigneeId())
+        && !userId.equals(entity.getApproverId())
         && !UserRole.MANAGER_ROLES.contains(role)) {
       throw new AccessDeniedException("You are not allowed to update this mentorship request");
     }
@@ -167,7 +167,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     // Status = CANCELED -> Check if user is owner (createdBy)
     if (status == MentorshipRequest.Status.APPROVED
         || status == MentorshipRequest.Status.REJECTED) {
-      if (!entity.getAssigneeId().equals(localUser.getUser().getId())) {
+      if (!entity.getApproverId().equals(localUser.getUser().getId())) {
         throw new AccessDeniedException("You are not allowed to update this mentorship request");
       }
     } else if (status == MentorshipRequest.Status.CANCELED) {

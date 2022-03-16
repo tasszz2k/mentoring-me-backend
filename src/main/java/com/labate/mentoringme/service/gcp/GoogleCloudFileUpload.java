@@ -52,8 +52,9 @@ public class GoogleCloudFileUpload {
               file.getBytes(), // the file
               BlobTargetOption.predefinedAcl(PredefinedAcl.PUBLIC_READ) // Set file permission
               );
-      var signedPathStyleUrl = createSignedPathStyleUrl(blobInfo, 10, TimeUnit.MINUTES);
-      return signedPathStyleUrl.toString(); // Return file url
+      // var signedPathStyleUrl = createSignedPathStyleUrl(blobInfo, 10, TimeUnit.MINUTES);
+      // return signedPathStyleUrl.toExternalForm(); // Return file url
+      return blobInfo.getMediaLink();
     } catch (IllegalStateException e) {
       throw new RuntimeException(e);
     }

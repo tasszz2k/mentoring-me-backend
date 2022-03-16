@@ -21,5 +21,5 @@ public class QuizDto {
   private Boolean isDraft;
   private String author;
   private Set<QuestionDto> questions;
-  private Set<QuizCategoryDto> categories;
+  private Set<CategoryDto> categories;
 }

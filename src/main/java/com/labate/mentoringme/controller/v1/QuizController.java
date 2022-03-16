@@ -158,14 +158,6 @@ public class QuizController {
     return BaseResponseEntity.ok(pageResponse);
   }
 
-  @ApiImplicitParam(
-      name = "Authorization",
-      value = "Access Token",
-      required = true,
-      paramType = "header",
-      dataTypeClass = String.class,
-      example = "Bearer access_token")
-  @PreAuthorize("hasAnyRole('MENTOR', 'USER')")
   @PostMapping("/results")
   public ResponseEntity<?> getQuizTakingResult(@RequestBody ResultQuizCheckingRequest request) {
     return BaseResponseEntity.ok(quizService.getQuizResult(request));

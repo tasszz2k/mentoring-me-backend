@@ -22,9 +22,9 @@ public interface QuizService {
 
   Page<QuizOverviewDto> getListDraftQuiz(PageCriteria pageCriteria);
 
-  Quiz addQuiz(CreateQuizRequest createQuizRequest);
+  QuizDto addQuiz(CreateQuizRequest createQuizRequest);
 
-  Quiz updateQuiz(UpdateQuizRequest updateQuizRequest);
+  QuizDto updateQuiz(UpdateQuizRequest updateQuizRequest);
 
   Page<QuizTakingHistoryResponse> getQuizTakingHistory(PageCriteria pageCriteria);
 

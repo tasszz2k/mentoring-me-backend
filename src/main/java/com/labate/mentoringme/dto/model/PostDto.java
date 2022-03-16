@@ -34,7 +34,7 @@ public class PostDto {
   private int likeCount;
 
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-  private Long createdBy;
+  private UserInfo createdBy;
 
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private Set<Integer> likedUserIds;

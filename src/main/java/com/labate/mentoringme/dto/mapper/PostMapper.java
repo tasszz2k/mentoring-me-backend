@@ -4,8 +4,8 @@ import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.model.PostDto;
 import com.labate.mentoringme.dto.request.CreatePostRequest;
 import com.labate.mentoringme.model.Post;
-import com.labate.mentoringme.service.address.AddressService;
 import com.labate.mentoringme.service.category.CategoryService;
+import com.labate.mentoringme.service.user.UserService;
 import com.labate.mentoringme.util.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,12 +18,12 @@ import java.util.stream.Collectors;
 public class PostMapper {
 
   private static CategoryService categoryService;
-  private static AddressService addressService;
+  private static UserService userService;
 
   @Autowired
-  public PostMapper(CategoryService categoryService, AddressService addressService) {
+  public PostMapper(CategoryService categoryService, UserService userService) {
     PostMapper.categoryService = categoryService;
-    PostMapper.addressService = addressService;
+    PostMapper.userService = userService;
   }
 
   public static PostDto toDto(Post entity) {
@@ -31,7 +31,14 @@ public class PostMapper {
       return null;
     }
 
-    return ObjectMapperUtils.map(entity, PostDto.class);
+    var dto = ObjectMapperUtils.map(entity, PostDto.class);
+    if (entity.getCreatedBy() != null) {
+      var createdBy = userService.findUserById(entity.getCreatedBy()).orElseGet(null);
+      if (createdBy != null) {
+        dto.setCreatedBy(UserMapper.buildUserInfo(createdBy));
+      }
+    }
+    return dto;
   }
 
   public static Post toEntity(PostDto dto) {

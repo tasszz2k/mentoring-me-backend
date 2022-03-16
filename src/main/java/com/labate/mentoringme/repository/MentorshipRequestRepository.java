@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface MentorshipRequestRepository extends JpaRepository<MentorshipRequest, Long> {
   @Query(
-      "select ce from MentorshipRequest ce where ce.mentorship.id = :mentorshipId and ce.requesterId = :requesterId")
-  MentorshipRequest findByMentorshipIdAndRequesterId(Long mentorshipId, Long requesterId);
+      "select ce from MentorshipRequest ce where ce.mentorship.id = :mentorshipId and ce.assigneeId = :assigneeId")
+  MentorshipRequest findByMentorshipIdAndAssigneeId(Long mentorshipId, Long assigneeId);
 
   @Query(
       "select mr from MentorshipRequest mr where "

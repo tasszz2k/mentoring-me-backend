@@ -37,23 +37,23 @@ public class MentorshipRequestMapper {
       dto.setMentorship(mentorShipDto);
     }
 
-    if (entity.getRequesterId() != null) {
-      var user = userService.findUserById(entity.getRequesterId()).orElse(null);
-      if (user != null) {
-        var userInfo = UserMapper.buildUserInfo(user);
-        dto.setRequester(userInfo);
-      }
-    }
-
-    if (entity.getAssigneeId() != null) {
-      var user = userService.findUserById(entity.getAssigneeId()).orElse(null);
+    if (entity.getApproverId() != null) {
+      var user = userService.findUserById(entity.getApproverId()).orElse(null);
       if (user != null) {
         var userInfo = UserMapper.buildUserInfo(user);
         dto.setAssignee(userInfo);
       }
     }
 
-    dto.setRequesterRole(entity.getRequesterRole().getUserRole());
+    if (entity.getApproverId() != null) {
+      var user = userService.findUserById(entity.getApproverId()).orElse(null);
+      if (user != null) {
+        var userInfo = UserMapper.buildUserInfo(user);
+        dto.setApprover(userInfo);
+      }
+    }
+
+    dto.setAssigneeRole(entity.getAssigneeRole().getUserRole());
 
     return dto;
   }
@@ -70,11 +70,10 @@ public class MentorshipRequestMapper {
     if (dto == null) {
       return null;
     }
-
     var entity = ObjectMapperUtils.map(dto, MentorshipRequest.class);
     var mentorship = MentorshipMapper.toEntity(dto.getMentorship());
     entity.setMentorship(mentorship);
-    entity.setRequesterRole(roleRepository.findByName(dto.getRequesterRole().name()));
+    entity.setAssigneeRole(roleRepository.findByName(dto.getAssigneeRole().name()));
 
     return entity;
   }

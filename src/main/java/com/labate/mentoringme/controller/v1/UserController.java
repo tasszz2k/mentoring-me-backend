@@ -14,8 +14,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -87,5 +90,23 @@ public class UserController {
 
     var response = new PageResponse(userDtos, paging);
     return BaseResponseEntity.ok(response);
+  }
+
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PostMapping("/avatar")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  public ResponseEntity<?> uploadAvatar(
+      @RequestParam("image") @NotNull(message = "image is required") MultipartFile image,
+      @CurrentUser LocalUser localUser)
+      throws IOException {
+
+    var url = userService.uploadAvatar(localUser, image);
+    return BaseResponseEntity.ok(null, "Avatar uploaded");
   }
 }

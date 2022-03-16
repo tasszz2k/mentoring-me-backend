@@ -31,16 +31,16 @@ public class MentorshipRequest {
   @JoinColumn(name = "mentorship_id", referencedColumnName = "id")
   private Mentorship mentorship;
 
-  @Column(name = "requester_id")
-  private Long requesterId;
-
   @Column(name = "assignee_id")
   private Long assigneeId;
 
+  @Column(name = "approver_id")
+  private Long approverId;
+
   @JsonIgnore
   @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  @JoinColumn(name = "requester_role_id", referencedColumnName = "id")
-  private Role RequesterRole;
+  @JoinColumn(name = "assignee_role_id", referencedColumnName = "id")
+  private Role assigneeRole;
 
   private Date enrollDate;
 

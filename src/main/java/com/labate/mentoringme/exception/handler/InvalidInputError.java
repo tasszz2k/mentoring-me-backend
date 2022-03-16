@@ -29,6 +29,7 @@ public enum InvalidInputError implements ResponseError {
   FILE_NOT_EXISTED(4000019, "File not existed: {0}"),
   USER_AVATAR_IMAGE_UUID_FORMAT(400020, "User avatar image uuid not format"),
   USER_ALREADY_EXISTED(400021, "User already existed: {0}"),
+  INVALID_IMAGE_FORMAT(400023, "Invalid image format: {0}"),
   ;
 
   private final Integer code;

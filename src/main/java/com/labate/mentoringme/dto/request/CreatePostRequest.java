@@ -18,6 +18,9 @@ public class CreatePostRequest {
   private String title;
   private Long categoryId;
   private String content;
+
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Bangkok")
+  @DateTimeFormat(pattern = "yyyy-MM-dd")
   private Date startDate;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Bangkok")
@@ -25,7 +28,8 @@ public class CreatePostRequest {
   private Date endDate;
 
   private Integer type;
-  private Post.Status status;
+
+  private Post.Status status = Post.Status.ON_GOING;
   private Float price;
   private Long addressId;
   private String detailAddress;

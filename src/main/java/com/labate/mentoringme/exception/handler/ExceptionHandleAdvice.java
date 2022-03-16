@@ -496,6 +496,21 @@ public class ExceptionHandleAdvice {
                     FieldErrorResponse.builder().message(e.getMessage()).build())));
   }
 
+  @ExceptionHandler(InvalidImageException.class)
+  public ResponseEntity<ErrorResponse<Void>> handleInvalidImageException(
+      InvalidImageException e, HttpServletRequest request) {
+    ResponseError error = InvalidInputError.INVALID_IMAGE_FORMAT;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            new InvalidInputResponse(
+                error.getCode(),
+                MessageFormat.format(error.getMessage(), e.getMessage()),
+                error.getName(),
+                Collections.singleton(
+                    FieldErrorResponse.builder().message(e.getMessage()).build())));
+  }
+
   @ExceptionHandler(InvalidTokenException.class)
   public ResponseEntity<ErrorResponse<Void>> handleInvalidTokenException(
       InvalidTokenException e, HttpServletRequest request) {

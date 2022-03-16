@@ -8,6 +8,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
-  @Query("select p from Post p")
+  @Query(
+      "SELECT p FROM Post p WHERE "
+          + " (:#{#request.status} is null or p.status = :#{#request.status}) "
+          + "and (:#{#request.createdBy} is null or p.createdBy = :#{#request.createdBy})"
+          + "AND (COALESCE(:#{#request.categoryIds}, NULL) IS NULL OR p.category.id IN (:#{#request.categoryIds})) "
+          + "and (:#{#request.minPrice} is null or p.price >= :#{#request.minPrice}) "
+          + "and (:#{#request.maxPrice} is null or p.price <= :#{#request.maxPrice}) "
+          + "and (:#{#request.fromDate} is null or p.startDate >= :#{#request.fromDate}) "
+          + "and (:#{#request.toDate} is null or p.startDate <= :#{#request.toDate}) ")
   Page<Post> findAllByConditions(GetPostsRequest request, Pageable pageable);
 }

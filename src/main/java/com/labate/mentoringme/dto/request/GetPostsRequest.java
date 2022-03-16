@@ -1,6 +1,6 @@
 package com.labate.mentoringme.dto.request;
 
-import com.labate.mentoringme.model.Mentorship;
+import com.labate.mentoringme.model.Post;
 import lombok.Builder;
 import lombok.Value;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -13,9 +13,8 @@ import java.util.List;
 public class GetPostsRequest {
   Long createdBy;
   List<Long> categoryIds;
-  List<Long> addressIds;
 
-  Mentorship.Status status;
+  Post.Status status;
 
   @DateTimeFormat(pattern = "yyyy-MM-dd")
   Date fromDate;

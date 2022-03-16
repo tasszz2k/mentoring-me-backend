@@ -13,4 +13,5 @@ public class QuizOverviewDto {
   private Integer time;
   private Boolean isDraft;
   private String author;
+  private Long authorId;
 }

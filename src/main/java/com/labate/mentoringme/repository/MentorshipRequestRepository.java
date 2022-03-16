@@ -15,12 +15,12 @@ public interface MentorshipRequestRepository extends JpaRepository<MentorshipReq
   @Query(
       "select mr from MentorshipRequest mr where "
           + " (:#{#request.status} is null or mr.status = :#{#request.status}) "
+          + "and (:#{#request.createdBy} is null or mr.mentorship.createdBy = :#{#request.createdBy})"
           + "AND (:#{#request.mentorId} is null or mr.mentorship.mentorId = :#{#request.mentorId}) "
           + "AND (COALESCE(:#{#request.categoryIds}, NULL) IS NULL OR mr.mentorship.category.id IN (:#{#request.categoryIds})) "
           + "and (:#{#request.minPrice} is null or mr.mentorship.price >= :#{#request.minPrice}) "
           + "and (:#{#request.maxPrice} is null or mr.mentorship.price <= :#{#request.maxPrice}) "
           + "and (:#{#request.fromDate} is null or mr.mentorship.startDate >= :#{#request.fromDate}) "
-          + "and (:#{#request.toDate} is null or mr.mentorship.startDate <= :#{#request.toDate}) "
-          + "and (:#{#request.createdBy} is null or mr.mentorship.createdBy = :#{#request.createdBy})")
+          + "and (:#{#request.toDate} is null or mr.mentorship.startDate <= :#{#request.toDate}) ")
   Page<MentorshipRequest> findAllByConditions(GetMentorshipRequestRq request, Pageable pageable);
 }

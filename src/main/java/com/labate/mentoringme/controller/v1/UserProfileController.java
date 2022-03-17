@@ -113,8 +113,8 @@ public class UserProfileController {
 
   @GetMapping("/top-mentors")
   public ResponseEntity<?> findTop10MentorProfiles() {
-    var sort = List.of("+createdDate");
     // TODO: build sort by ranking
+    var sort = List.of("+createdDate");
     PageCriteria pageCriteria = PageCriteria.builder().limit(10).page(1).sort(sort).build();
     FindUsersRequest request = FindUsersRequest.builder().role(UserRole.ROLE_MENTOR).build();
 

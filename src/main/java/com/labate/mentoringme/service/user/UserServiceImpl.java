@@ -146,9 +146,6 @@ public class UserServiceImpl implements UserService {
   @Override
   public Page<User> findAllUsers(PageCriteria pageCriteria, FindUsersRequest request) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
-
-    // var sort = pageable.getSort().;
-    // System.out.println(sort);
     return userRepository.findAllByConditions(request, pageable);
   }
 

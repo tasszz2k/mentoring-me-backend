@@ -61,7 +61,7 @@ public class PostController {
 
     var sort = List.of("-createdDate");
     PageCriteria pageCriteria = PageCriteria.builder().limit(10).page(1).sort(sort).build();
-    GetPostsRequest request = GetPostsRequest.builder().build();
+    GetPostsRequest request = GetPostsRequest.builder().status(Post.Status.ON_GOING).build();
     return findAllPostsByConditions(pageCriteria, request);
   }
 

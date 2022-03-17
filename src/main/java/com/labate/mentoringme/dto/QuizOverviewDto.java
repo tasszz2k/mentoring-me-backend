@@ -1,5 +1,6 @@
 package com.labate.mentoringme.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import lombok.Data;
@@ -14,4 +15,7 @@ public class QuizOverviewDto {
   private Boolean isDraft;
   private String author;
   private Long authorId;
+  private Boolean isLiked;
+  @JsonIgnore
+  private Long userId;
 }

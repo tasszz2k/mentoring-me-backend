@@ -55,6 +55,19 @@ public class QuizServiceImpl implements QuizService {
       var quizDto = modelMapper.map(quiz, QuizOverviewDto.class);
       return quizDto;
     });
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if (principal instanceof LocalUser) {
+      LocalUser localUser =
+          (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      var userId = localUser.getUser().getId();
+      response.getContent().forEach(item -> {
+        if (item.getUserId() != null && item.getUserId() == userId) {
+          item.setIsLiked(true);
+        } else {
+          item.setIsLiked(false);
+        }
+      });
+    }
     return response;
   }
 
@@ -143,7 +156,8 @@ public class QuizServiceImpl implements QuizService {
   }
 
   private void saveToQuizResult(QuizResultResponse response, Long quizId) {
-    try {
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if (principal instanceof LocalUser) {
       LocalUser localUser =
           (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
       var quizResult = modelMapper.map(response, QuizResult.class);
@@ -151,8 +165,6 @@ public class QuizServiceImpl implements QuizService {
       quizResult.setUserId(localUser.getUser().getId());
       quizResult.setIsDeleted(false);
       quizResultRepository.save(quizResult);
-    } catch (Exception ex) {
-      return;
     }
   }
 

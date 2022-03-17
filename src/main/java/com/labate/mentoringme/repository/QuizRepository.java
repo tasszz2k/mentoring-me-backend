@@ -17,8 +17,9 @@ import com.labate.mentoringme.model.quiz.Quiz;
 public interface QuizRepository extends JpaRepository<Quiz, Long> {
 
   @Query(
-      value = " SELECT DISTINCT(A.id), title, time, number_of_question AS numberOfQuestion, author, A.created, A.created_by AS authorId "
-          + " FROM quizzes A join quizzes_categories B ON A.id = B.quiz_id WHERE A.is_deleted = 0 "
+      value = " SELECT DISTINCT(A.id), title, time, number_of_question AS numberOfQuestion, author, A.created, A.created_by AS authorId, C.user_id as userId"
+          + " FROM quizzes A join quizzes_categories B ON A.id = B.quiz_id "
+          + " LEFT JOIN favorite_quizzes C on A.id = C.quiz_id WHERE A.is_deleted = 0 "
           + " AND (:#{#cond.categoryId} IS NULL OR B.category_id = :#{#cond.categoryId})"
           + " AND (:#{#cond.userId} IS NULL OR A.created_by = :#{#cond.userId})"
           + " AND (:#{#cond.title} IS NULL OR LOWER(A.title) LiKE LOWER(CONCAT('%', :#{#cond.title}, '%')))"
@@ -26,10 +27,10 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
           + " AND (:#{#cond.minNumberOfQuestion} IS NULL OR number_of_question >= :#{#cond.minNumberOfQuestion})"
           + " AND (:#{#cond.maxNumberOfQuestion} IS NULL OR number_of_question <= :#{#cond.maxNumberOfQuestion})"
           + " AND (:#{#cond.minTime} IS NULL OR time >= :#{#cond.minTime})"
-          + " AND (:#{#cond.maxTime} IS NULL OR time <= :#{#cond.maxTime})"
-          + " ORDER BY A.created desc",
+          + " AND (:#{#cond.maxTime} IS NULL OR time <= :#{#cond.maxTime})",
       countQuery = "SELECT count(distinct(A.id)) "
-          + " FROM quizzes A join quizzes_categories B ON A.id = B.quiz_id WHERE A.is_deleted = 0 "
+          + " FROM quizzes A join quizzes_categories B ON A.id = B.quiz_id "
+          + " LEFT JOIN favorite_quizzes C on A.id = C.quiz_id WHERE A.is_deleted = 0"
           + " AND (:#{#cond.categoryId} IS NULL OR B.category_id = :#{#cond.categoryId})"
           + " AND (:#{#cond.userId} IS NULL OR A.created_by = :#{#cond.userId}) "
           + " AND (:#{#cond.title} IS NULL OR LOWER(A.title) LiKE LOWER(CONCAT('%', :#{#cond.title}, '%')))"

@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -18,5 +19,5 @@ public class CategoryDto {
   @NotBlank private String code;
 
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  private List<CategoryDto> subCategories;
+  private List<CategoryDto> subCategories = new ArrayList<>();
 }

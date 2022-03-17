@@ -1,16 +1,14 @@
 package com.labate.mentoringme.dto.mapper;
 
 import com.labate.mentoringme.dto.model.CategoryDto;
+import com.labate.mentoringme.exception.CategoryNotFoundException;
 import com.labate.mentoringme.model.Category;
 import com.labate.mentoringme.service.category.CategoryService;
 import com.labate.mentoringme.util.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -27,11 +25,7 @@ public class CategoryMapper {
     if (entity == null) {
       return null;
     }
-    var dto = ObjectMapperUtils.map(entity, CategoryDto.class);
-    var parent = entity.getParentCategory();
-    var parentCategoryId = parent == null ? null : parent.getId();
-    dto.setParentCategoryId(parentCategoryId);
-    return dto;
+    return ObjectMapperUtils.map(entity, CategoryDto.class);
   }
 
   public static Category toEntity(CategoryDto dto) {
@@ -42,8 +36,8 @@ public class CategoryMapper {
     var parentCategoryId = dto.getParentCategoryId();
 
     var parentCategory = categoryService.findById(parentCategoryId);
-    if (parentCategory != null) {
-      entity.setParentCategory(parentCategory);
+    if (parentCategory == null) {
+      throw new CategoryNotFoundException("Parent category not found, id: " + parentCategoryId);
     }
 
     return entity;
@@ -55,24 +49,22 @@ public class CategoryMapper {
     if (entities == null) {
       dtos = null;
     } else {
-
-      // Filter to remove duplicate entity inside sub-categories
-      var entityMap =
-          entities.stream().collect(Collectors.toMap(Category::getId, category -> category));
-      var filteredEntities =
-          entities.stream()
-              .filter(
-                  entity -> {
-                    var parentCategoryId =
-                        entity.getParentCategory() == null
-                            ? null
-                            : entity.getParentCategory().getId();
-                    return parentCategoryId == null || !entityMap.containsKey(parentCategoryId);
-                  })
-              .collect(Collectors.toList());
-      dtos = filteredEntities.stream().map(CategoryMapper::toDto).collect(Collectors.toList());
-      dtos.forEach(
-          dto -> dto.getSubCategories().sort(Comparator.comparing(CategoryDto::getId)));
+      var dtoMap = new HashMap<Long, CategoryDto>();
+      entities.forEach(
+          entity -> {
+            if (entity.getParentCategoryId() == null) {
+              dtoMap.put(entity.getId(), toDto(entity));
+              return;
+            }
+            var parent = dtoMap.get(entity.getParentCategoryId());
+            if (parent != null) {
+              parent.getSubCategories().add(toDto(entity));
+            } else {
+              dtoMap.put(entity.getId(), toDto(entity));
+            }
+          });
+      dtos = new ArrayList<>(dtoMap.values());
+      dtos.forEach(dto -> dto.getSubCategories().sort(Comparator.comparing(CategoryDto::getId)));
     }
     return dtos;
   }

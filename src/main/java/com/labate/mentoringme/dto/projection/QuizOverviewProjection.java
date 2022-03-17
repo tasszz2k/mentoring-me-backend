@@ -15,4 +15,6 @@ public interface QuizOverviewProjection {
   String getAuthor();
 
   Long getAuthorId();
+
+  Long getUserId();
 }

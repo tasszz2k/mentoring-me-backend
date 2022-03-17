@@ -3,7 +3,6 @@ package com.labate.mentoringme.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import net.minidev.json.annotate.JsonIgnore;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,7 +11,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.Set;
 
 @EntityListeners(AuditingEntityListener.class)
 @Entity
@@ -27,13 +25,13 @@ public class Category {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @ManyToOne
-  @JoinColumn(name = "parent_category_id")
-  private Category parentCategory;
+  // @ManyToOne
+  // @JoinColumn(name = "parent_category_id")
+  private Long parentCategoryId;
 
-  @JsonIgnore
-  @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-  private Set<Category> subCategories;
+  // @JsonIgnore
+  // @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  // private Set<Category> subCategories;
 
   @Column(name = "name", length = 50)
   private String name;

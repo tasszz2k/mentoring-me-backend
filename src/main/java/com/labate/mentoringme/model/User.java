@@ -1,6 +1,7 @@
 package com.labate.mentoringme.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.labate.mentoringme.constant.MentorStatus;
 import com.labate.mentoringme.constant.UserRole;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,7 +44,7 @@ public class User implements Serializable {
   private String provider;
   private String providerUserId;
 
-  private Integer status;
+  private MentorStatus status;
 
   @Column(name = "verified_email", columnDefinition = "BIT", length = 1)
   private boolean verifiedEmail;

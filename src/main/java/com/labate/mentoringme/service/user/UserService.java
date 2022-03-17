@@ -1,5 +1,6 @@
 package com.labate.mentoringme.service.user;
 
+import com.labate.mentoringme.constant.MentorStatus;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.FindUsersRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
@@ -43,4 +44,6 @@ public interface UserService {
   List<User> findAllByIds(Collection<Long> ids);
 
   String uploadAvatar(LocalUser localUser, MultipartFile image) throws IOException;
+
+  void updateStatus(Long userId, MentorStatus status);
 }

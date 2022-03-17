@@ -1,6 +1,8 @@
 package com.labate.mentoringme.service.user;
 
+import com.labate.mentoringme.constant.MentorStatus;
 import com.labate.mentoringme.constant.SocialProvider;
+import com.labate.mentoringme.constant.UserRole;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
 import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
@@ -44,6 +46,7 @@ public class UserServiceImpl implements UserService {
   private final UserProfileService userProfileService;
   private final TimetableService timetableService;
   private final GoogleCloudFileUpload googleCloudFileUpload;
+  private final MentorVerificationService mentorVerificationService;
 
   @Value("${labate.secure.default-password}")
   private String defaultPassword;
@@ -56,10 +59,16 @@ public class UserServiceImpl implements UserService {
       throw new UserAlreadyExistAuthenticationException("email = " + signUpRequest.getEmail());
     }
     User user = buildUser(signUpRequest);
+    if (UserRole.ROLE_MENTOR.equals(signUpRequest.getRole())) {
+      user.setStatus(MentorStatus.IN_PROGRESS);
+    }
+
     user = userRepository.save(user);
     userRepository.flush();
+    Long userId = user.getId();
     timetableService.createNewTimetable(
-        user.getId(), String.format("Thời khóa biểu của %s", user.getFullName()));
+        userId, String.format("Thời khóa biểu của %s", user.getFullName()));
+    mentorVerificationService.registerMentor(userId);
 
     return user;
   }
@@ -161,6 +170,13 @@ public class UserServiceImpl implements UserService {
     user.setImageUrl(imageUrl);
     save(user);
     return imageUrl;
+  }
+
+  @Override
+  public void updateStatus(Long userId, MentorStatus status) {
+    var user = findUserById(userId).orElseThrow(() -> new UserNotFoundException("id = " + userId));
+    user.setStatus(status);
+    save(user);
   }
 
   private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {

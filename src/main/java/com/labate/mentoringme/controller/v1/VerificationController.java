@@ -1,10 +1,17 @@
 package com.labate.mentoringme.controller.v1;
 
 import com.labate.mentoringme.config.CurrentUser;
+import com.labate.mentoringme.dto.mapper.MentorVerificationMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
+import com.labate.mentoringme.dto.request.GetMentorVerificationsRequest;
+import com.labate.mentoringme.dto.request.PageCriteria;
+import com.labate.mentoringme.dto.request.VerifyMentorRequest;
 import com.labate.mentoringme.dto.request.VerifyTokenRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
+import com.labate.mentoringme.dto.response.PageResponse;
+import com.labate.mentoringme.dto.response.Paging;
 import com.labate.mentoringme.exception.InvalidTokenException;
+import com.labate.mentoringme.service.user.MentorVerificationService;
 import com.labate.mentoringme.service.verification.AccountVerificationService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +31,7 @@ public class VerificationController {
   private static final String REDIRECT_LOGIN = "redirect:/signin";
 
   private final AccountVerificationService accountVerificationService;
+  private final MentorVerificationService mentorVerificationService;
 
   @GetMapping("/email")
   public String verifyEmail(@RequestParam String token) throws InvalidTokenException {
@@ -54,5 +62,45 @@ public class VerificationController {
       throws InvalidTokenException {
     accountVerificationService.verifyToken(request);
     return BaseResponseEntity.ok(null, "Token is valid. You can now use for verification request.");
+  }
+
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
+  @PatchMapping("/mentors")
+  public ResponseEntity<?> verifyMentor(
+      @RequestBody @Valid VerifyMentorRequest request, @CurrentUser LocalUser localUser) {
+    mentorVerificationService.verifyMentor(request, localUser);
+    return BaseResponseEntity.ok(null, "Mentor status is updated to " + request.getStatus());
+  }
+
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR')")
+  @GetMapping("/mentors")
+  public ResponseEntity<?> findAllMentorVerificationsByConditions(
+      @Valid PageCriteria pageCriteria, @Valid GetMentorVerificationsRequest request) {
+    var page =
+        mentorVerificationService.findAllMentorVerificationsByConditions(request, pageCriteria);
+    var entities = page.getContent();
+
+    var paging =
+        Paging.builder()
+            .limit(pageCriteria.getLimit())
+            .page(pageCriteria.getPage())
+            .total(page.getTotalElements())
+            .build();
+    var response = new PageResponse(MentorVerificationMapper.toDtos(entities), paging);
+    return BaseResponseEntity.ok(response);
   }
 }

@@ -29,7 +29,7 @@ import com.labate.mentoringme.model.Category;
 import com.labate.mentoringme.model.quiz.Question;
 import com.labate.mentoringme.model.quiz.Quiz;
 import com.labate.mentoringme.model.quiz.QuizResult;
-import com.labate.mentoringme.repository.CategoryRepository;
+import com.labate.mentoringme.repository.FavoriteQuizRepository;
 import com.labate.mentoringme.repository.QuestionRepository;
 import com.labate.mentoringme.repository.QuizRepository;
 import com.labate.mentoringme.repository.QuizResultRepository;
@@ -45,7 +45,7 @@ public class QuizServiceImpl implements QuizService {
   private final QuizRepository quizRepository;
   private final QuestionRepository questionRepository;
   private final QuizResultRepository quizResultRepository;
-  private final CategoryRepository categoryRepository;
+  private final FavoriteQuizRepository favoriteQuizRepository;
   private final ModelMapper modelMapper = new ModelMapper();
 
   @Override
@@ -76,6 +76,16 @@ public class QuizServiceImpl implements QuizService {
     var quizOpt = quizRepository.findById(quizId);
     if (quizOpt.isPresent()) {
       var quizOverview = ObjectMapperUtils.map(quizOpt.get(), QuizOverviewDto.class);
+      Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      if (principal instanceof LocalUser) {
+        LocalUser localUser =
+            (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var userId = localUser.getUser().getId();
+        var favoriteQuiz = favoriteQuizRepository.findByUserIdAndQuizId(userId, quizId);
+        quizOverview.setIsLiked(false);
+        if (favoriteQuiz != null)
+          quizOverview.setIsLiked(true);;
+      }
       return quizOverview;
     }
     return null;

@@ -64,6 +64,7 @@ public class CategoryMapper {
             }
           });
       dtos = new ArrayList<>(dtoMap.values());
+      dtos.sort(Comparator.comparing(CategoryDto::getId));
       dtos.forEach(dto -> dto.getSubCategories().sort(Comparator.comparing(CategoryDto::getId)));
     }
     return dtos;

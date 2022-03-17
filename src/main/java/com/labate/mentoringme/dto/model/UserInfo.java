@@ -2,6 +2,7 @@ package com.labate.mentoringme.dto.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.labate.mentoringme.constant.Gender;
+import com.labate.mentoringme.constant.MentorStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
@@ -27,7 +28,7 @@ public class UserInfo {
   private final Date dob;
 
   private final String provider;
-  private final Integer status;
+  private final MentorStatus status;
   private final Boolean verifiedEmail;
   private final Boolean verifiedPhoneNumber;
   private final Boolean enabled;

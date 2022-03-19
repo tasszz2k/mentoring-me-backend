@@ -16,6 +16,7 @@ public class CreateMentorshipRequestRq {
   @NotNull private CreateMentorshipRequest mentorship;
   @NotNull private Long assigneeId;
   @NotNull private Long approverId;
+  private String content;
 
   @NotNull
   @AcceptableRoles(

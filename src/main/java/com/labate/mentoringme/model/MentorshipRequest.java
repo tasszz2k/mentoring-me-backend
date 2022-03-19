@@ -47,6 +47,7 @@ public class MentorshipRequest {
   @Enumerated(EnumType.ORDINAL)
   private Status status;
 
+  private String content;
   private String message;
 
   @Builder.Default

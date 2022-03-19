@@ -45,5 +45,5 @@ public interface UserService {
 
   String uploadAvatar(LocalUser localUser, MultipartFile image) throws IOException;
 
-  void updateStatus(Long userId, MentorStatus status);
+  void updateMentorStatus(Long userId, MentorStatus status);
 }

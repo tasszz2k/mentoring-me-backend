@@ -5,6 +5,7 @@ import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.GetMentorVerificationsRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
+import com.labate.mentoringme.dto.request.RegisterBecomeMentorRequest;
 import com.labate.mentoringme.dto.request.VerifyMentorRequest;
 import com.labate.mentoringme.exception.UserAlreadyExistAuthenticationException;
 import com.labate.mentoringme.exception.UserNotFoundException;
@@ -31,7 +32,7 @@ public class MentorVerificationServiceImpl implements MentorVerificationService 
   }
 
   @Override
-  public void registerMentor(Long mentorId) {
+  public void registerMentor(Long mentorId, String message) {
     if (mentorVerificationRepository.existsByMentorId(mentorId)) {
       throw new UserAlreadyExistAuthenticationException("mentorId = " + mentorId);
     }
@@ -40,6 +41,7 @@ public class MentorVerificationServiceImpl implements MentorVerificationService 
         MentorVerification.builder()
             .mentorId(mentorId)
             .status(MentorVerification.Status.IN_PROGRESS)
+            .message(message)
             .build();
     mentorVerificationRepository.save(mentorVerification);
   }
@@ -59,14 +61,21 @@ public class MentorVerificationServiceImpl implements MentorVerificationService 
     mentorVerificationRepository.save(mentorVerification);
 
     MentorStatus mentorStatus = MentorStatus.valueOf(status.name());
-    userService.updateStatus(mentorId, mentorStatus);
+    userService.updateMentorStatus(mentorId, mentorStatus);
   }
 
   @Override
   public Page<MentorVerification> findAllMentorVerificationsByConditions(
-          GetMentorVerificationsRequest request, PageCriteria pageCriteria) {
+      GetMentorVerificationsRequest request, PageCriteria pageCriteria) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
 
     return mentorVerificationRepository.findAllByConditions(request, pageable);
+  }
+
+  @Transactional
+  @Override
+  public void registerBecomeMentor(Long userId, RegisterBecomeMentorRequest request) {
+    registerMentor(userId, request.getMessage());
+    userService.updateMentorStatus(userId, MentorStatus.IN_PROGRESS);
   }
 }

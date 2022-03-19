@@ -46,7 +46,6 @@ public class UserMapper {
   }
 
   public static UserInfo buildUserInfo(User user) {
-    System.out.println("user : " + user.getId());
     var localUser = localUserDetailService.createLocalUser(user);
     return buildUserInfo(localUser);
   }

@@ -3,10 +3,7 @@ package com.labate.mentoringme.controller.v1;
 import com.labate.mentoringme.config.CurrentUser;
 import com.labate.mentoringme.dto.mapper.MentorVerificationMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
-import com.labate.mentoringme.dto.request.GetMentorVerificationsRequest;
-import com.labate.mentoringme.dto.request.PageCriteria;
-import com.labate.mentoringme.dto.request.VerifyMentorRequest;
-import com.labate.mentoringme.dto.request.VerifyTokenRequest;
+import com.labate.mentoringme.dto.request.*;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
@@ -102,5 +99,20 @@ public class VerificationController {
             .build();
     var response = new PageResponse(MentorVerificationMapper.toDtos(entities), paging);
     return BaseResponseEntity.ok(response);
+  }
+
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PostMapping("/mentors/register")
+  @PreAuthorize("hasAnyRole('USER')")
+  public ResponseEntity<?> registerBecomeMentor(
+      @RequestBody @Valid RegisterBecomeMentorRequest request, @CurrentUser LocalUser localUser) {
+    mentorVerificationService.registerBecomeMentor(localUser.getUser().getId(), request);
+    return BaseResponseEntity.ok(null, "Mentor request sent successfully");
   }
 }

@@ -31,6 +31,8 @@ public class MentorVerification {
   @Enumerated(EnumType.ORDINAL)
   private Status status;
 
+  private String message;
+
   @Temporal(TemporalType.TIMESTAMP)
   private Date verifiedDate;
 

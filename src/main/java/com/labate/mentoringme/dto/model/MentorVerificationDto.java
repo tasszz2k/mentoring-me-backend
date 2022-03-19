@@ -14,6 +14,8 @@ public class MentorVerificationDto {
   private UserInfo mentor;
   private UserInfo moderator;
 
+  private String message;
+
   private MentorVerification.Status status;
 
   @JsonFormat(

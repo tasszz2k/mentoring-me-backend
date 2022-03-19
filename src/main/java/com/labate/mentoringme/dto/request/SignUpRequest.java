@@ -7,7 +7,7 @@ import com.labate.mentoringme.validator.ValidPassword;
 import lombok.Data;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 
 @Data
 public class SignUpRequest {
@@ -18,9 +18,9 @@ public class SignUpRequest {
 
   private SocialProvider socialProvider;
 
-  @NotEmpty private String fullName;
+  @NotBlank private String fullName;
 
-  @NotEmpty @Email private String email;
+  @NotBlank @Email private String email;
 
   @ValidPassword private String password;
 

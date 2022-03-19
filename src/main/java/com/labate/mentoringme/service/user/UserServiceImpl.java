@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
     Long userId = user.getId();
     timetableService.createNewTimetable(
         userId, String.format("Thời khóa biểu của %s", user.getFullName()));
-    mentorVerificationService.registerMentor(userId);
+    mentorVerificationService.registerMentor(userId, null);
 
     return user;
   }
@@ -173,9 +173,16 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void updateStatus(Long userId, MentorStatus status) {
+  public void updateMentorStatus(Long userId, MentorStatus status) {
     var user = findUserById(userId).orElseThrow(() -> new UserNotFoundException("id = " + userId));
     user.setStatus(status);
+
+    // User become mentor
+    if (MentorStatus.ACCEPTED.equals(status) && UserRole.ROLE_USER.equals(user.getRole())) {
+      var roleMentor = roleRepository.findByName(UserRole.ROLE_MENTOR.name());
+      user.setRoles(new HashSet<>(List.of(roleMentor)));
+    }
+
     save(user);
   }
 

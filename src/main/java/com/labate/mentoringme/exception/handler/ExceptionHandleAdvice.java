@@ -525,4 +525,34 @@ public class ExceptionHandleAdvice {
                 Collections.singleton(
                     FieldErrorResponse.builder().message(e.getMessage()).build())));
   }
+
+  @ExceptionHandler(LoginFailException.class)
+  public ResponseEntity<ErrorResponse<Void>> handleLoginFailException(
+      LoginFailException e, HttpServletRequest request) {
+    ResponseError error = UnauthorizedError.LOGIN_FAIL;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            new InvalidInputResponse(
+                error.getCode(),
+                error.getMessage(),
+                error.getName(),
+                Collections.singleton(
+                    FieldErrorResponse.builder().message(e.getMessage()).build())));
+  }
+
+  @ExceptionHandler(LoginFailBlockAccountException.class)
+  public ResponseEntity<ErrorResponse<Void>> handleLoginFailBlockAccountException(
+      LoginFailBlockAccountException e, HttpServletRequest request) {
+    ResponseError error = UnauthorizedError.LOGIN_FAIL_BLOCK_ACCOUNT;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            new InvalidInputResponse(
+                error.getCode(),
+                error.getMessage(),
+                error.getName(),
+                Collections.singleton(
+                    FieldErrorResponse.builder().message(e.getMessage()).build())));
+  }
 }

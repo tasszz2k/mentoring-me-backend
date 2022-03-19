@@ -1,10 +1,8 @@
 package com.labate.mentoringme.exception;
 
-public class InvalidTokenException extends Exception {
+import org.springframework.security.core.AuthenticationException;
 
-  public InvalidTokenException() {
-    super();
-  }
+public class InvalidTokenException extends AuthenticationException {
 
   public InvalidTokenException(String message) {
     super(message);

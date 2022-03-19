@@ -16,6 +16,7 @@ public class MentorshipRequestDto {
   private UserInfo approver;
   private UserRole assigneeRole;
   private MentorshipRequest.Status status;
+  private String message;
   private MentorshipDto mentorship;
 
   @JsonFormat(

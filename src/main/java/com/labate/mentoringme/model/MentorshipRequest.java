@@ -47,6 +47,8 @@ public class MentorshipRequest {
   @Enumerated(EnumType.ORDINAL)
   private Status status;
 
+  private String message;
+
   @Builder.Default
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
   private Boolean isDeleted = false;

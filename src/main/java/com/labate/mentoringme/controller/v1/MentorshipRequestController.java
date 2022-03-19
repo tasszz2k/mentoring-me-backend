@@ -113,7 +113,7 @@ public class MentorshipRequestController {
       @PathVariable Long id,
       @Valid @RequestBody UpdateMentorshipRequestStatusRequest request,
       @CurrentUser LocalUser localUser) {
-    mentorshipRequestService.updateStatus(id, request.getStatus(), localUser);
+    mentorshipRequestService.updateStatus(id, request, localUser);
     return BaseResponseEntity.ok(null, "Mentorship request status updated successfully");
   }
 }

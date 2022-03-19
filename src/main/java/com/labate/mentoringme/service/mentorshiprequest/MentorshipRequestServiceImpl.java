@@ -7,6 +7,7 @@ import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreateMentorshipRequestRq;
 import com.labate.mentoringme.dto.request.GetMentorshipRequestRq;
 import com.labate.mentoringme.dto.request.PageCriteria;
+import com.labate.mentoringme.dto.request.UpdateMentorshipRequestStatusRequest;
 import com.labate.mentoringme.exception.CanNotReEnrollException;
 import com.labate.mentoringme.exception.ClassHasBegunException;
 import com.labate.mentoringme.exception.MentorshipNotFoundException;
@@ -106,7 +107,11 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
 
   @Transactional
   @Override
-  public void updateStatus(Long id, MentorshipRequest.Status status, LocalUser localUser) {
+  public void updateStatus(
+      Long id, UpdateMentorshipRequestStatusRequest request, LocalUser localUser) {
+    var status = request.getStatus();
+    var message = request.getMessage();
+
     var oldMentorshipRequest = findById(id);
     if (oldMentorshipRequest == null) {
       throw new MentorshipRequestNotFoundException("id = " + id);
@@ -114,6 +119,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
 
     checkPermissionToUpdateStatus(oldMentorshipRequest, localUser, status);
     oldMentorshipRequest.setStatus(status);
+    oldMentorshipRequest.setMessage(message);
     var mentorshipRequest = mentorshipRequestRepository.save(oldMentorshipRequest);
 
     if (MentorshipRequest.Status.APPROVED.equals(status)

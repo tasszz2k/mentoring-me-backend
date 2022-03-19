@@ -5,6 +5,7 @@ import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreateMentorshipRequestRq;
 import com.labate.mentoringme.dto.request.GetMentorshipRequestRq;
 import com.labate.mentoringme.dto.request.PageCriteria;
+import com.labate.mentoringme.dto.request.UpdateMentorshipRequestStatusRequest;
 import com.labate.mentoringme.model.MentorshipRequest;
 import org.springframework.data.domain.Page;
 
@@ -24,5 +25,5 @@ public interface MentorshipRequestService {
 
   MentorshipRequest createNewMentorshipRequest(CreateMentorshipRequestRq request);
 
-  void updateStatus(Long id, MentorshipRequest.Status status, LocalUser localUser);
+  void updateStatus(Long id, UpdateMentorshipRequestStatusRequest request, LocalUser localUser);
 }

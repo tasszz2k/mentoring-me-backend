@@ -12,4 +12,5 @@ import javax.validation.constraints.NotNull;
 public class UpdateMentorshipRequestStatusRequest {
 
   @NotNull MentorshipRequest.Status status;
+  String message;
 }

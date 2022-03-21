@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.labate.mentoringme.dto.request.CreateFavoriteMentorRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.AddFavoriteQuizRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
@@ -47,7 +48,8 @@ public class FavoriteController {
   public ResponseEntity<?> deleteFavoriteQuiz(@PathVariable Long quizId) {
     var favoriteQuiz = favoriteService.findByQuizIdAndUserId(quizId);
     if (favoriteQuiz == null) {
-      throw new FavoriteQuizNotFoundException("FavoriteQuiz is not found! quizid = " + quizId);
+      throw new FavoriteQuizNotFoundException("MSG-303",
+          "FavoriteQuiz is not found! quizid = " + quizId);
     }
     favoriteService.deleteFavoriteQuiz(quizId);
     return BaseResponseEntity.ok("Favorite Quiz deleted successfully");
@@ -60,6 +62,38 @@ public class FavoriteController {
   public ResponseEntity<?> addFavoriteQuiz(
       @RequestBody AddFavoriteQuizRequest addFavoriteQuizRequest) {
     var favoriteQuiz = favoriteService.addFavoriteQuiz(addFavoriteQuizRequest);
+    return BaseResponseEntity.ok(favoriteQuiz);
+  }
+
+  @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true,
+      paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('USER')")
+  @GetMapping("/mentors")
+  public ResponseEntity<?> getListFavoriteMentor(PageCriteria pageCriteria) {
+    pageCriteria.setSort(List.of("-created"));
+    var pageData = favoriteService.findFavoriteMentor(pageCriteria);
+    var paging = Paging.builder().limit(pageCriteria.getLimit()).page(pageCriteria.getPage())
+        .total(pageData.getTotalElements()).build();
+    var pageResponse = new PageResponse(pageData.getContent(), paging);
+    return BaseResponseEntity.ok(pageResponse);
+  }
+
+  @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true,
+      paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('USER')")
+  @DeleteMapping("/mentors/{mentorId}")
+  public ResponseEntity<?> deleteFavoriteMentor(@PathVariable Long mentorId) {
+    favoriteService.deleteFavoriteMentor(mentorId);
+    return BaseResponseEntity.ok("Favorite Quiz deleted successfully");
+  }
+
+  @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true,
+      paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('USER')")
+  @PostMapping("/mentors")
+  public ResponseEntity<?> addFavoriteMentor(
+      @RequestBody CreateFavoriteMentorRequest createFavoriteMentorRequest) {
+    var favoriteQuiz = favoriteService.addFavoriteMentor(createFavoriteMentorRequest);
     return BaseResponseEntity.ok(favoriteQuiz);
   }
 

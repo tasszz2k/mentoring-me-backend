@@ -6,11 +6,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class FavoriteQuizNotFoundException extends RuntimeException {
 
-  public FavoriteQuizNotFoundException(String message) {
+  private String code;
+
+  public FavoriteQuizNotFoundException(String code, String message) {
     super(message);
+    this.code = code;
   }
 
   public FavoriteQuizNotFoundException(String message, Throwable cause) {
     super(message, cause);
   }
+
 }

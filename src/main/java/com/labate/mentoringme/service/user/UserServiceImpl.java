@@ -1,11 +1,16 @@
 package com.labate.mentoringme.service.user;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.labate.mentoringme.constant.MentorStatus;
 import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.constant.UserRole;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
 import com.labate.mentoringme.dto.mapper.UserMapper;
+import com.labate.mentoringme.dto.model.BasicUserInfo;
 import com.labate.mentoringme.dto.model.LocalUser;
+import com.labate.mentoringme.dto.projection.BasicUserInfoProjection;
 import com.labate.mentoringme.dto.request.FindUsersRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.SignUpRequest;
@@ -22,6 +27,7 @@ import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfoFactory;
 import com.labate.mentoringme.service.gcp.GoogleCloudFileUpload;
 import com.labate.mentoringme.service.timetable.TimetableService;
 import com.labate.mentoringme.service.userprofile.UserProfileService;
+import com.sun.istack.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -35,6 +41,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -50,6 +58,20 @@ public class UserServiceImpl implements UserService {
 
   @Value("${labate.secure.default-password}")
   private String defaultPassword;
+
+  // TODO: Move to new class
+  public final LoadingCache<Long, BasicUserInfo> basicUserInfoCache =
+      CacheBuilder.newBuilder()
+          .maximumSize(1000)
+          .expireAfterWrite(6, TimeUnit.HOURS)
+          .build(
+              new CacheLoader<>() {
+                @Override
+                public BasicUserInfo load(@NotNull final Long userId) {
+                  var prj = userRepository.findBasicUserInfoById(userId);
+                  return UserMapper.toBasicUserInfo(prj);
+                }
+              });
 
   @Override
   @Transactional(value = "transactionManager")
@@ -184,6 +206,18 @@ public class UserServiceImpl implements UserService {
     }
 
     save(user);
+  }
+
+  @Override
+  public BasicUserInfo findBasicUserInfoByUserId(Long id) {
+    return basicUserInfoCache.getUnchecked(id);
+  }
+
+  @Override
+  public Map<Long, BasicUserInfo> findBasicUserInfos(List<Long> ids) {
+    var prjList = userRepository.findBasicUserInfoByIdIn(ids);
+    return prjList.stream()
+        .collect(Collectors.toMap(BasicUserInfoProjection::getId, UserMapper::toBasicUserInfo));
   }
 
   private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {

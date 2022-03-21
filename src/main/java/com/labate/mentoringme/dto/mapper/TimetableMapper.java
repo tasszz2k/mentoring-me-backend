@@ -23,9 +23,9 @@ public class TimetableMapper {
 
   public static TimetableDto toDto(Timetable entity) {
     var dto = ObjectMapperUtils.map(entity, TimetableDto.class);
-    var user = userService.findUserById(entity.getUserId()).orElse(null);
-    assert user != null;
-    dto.setUser(UserMapper.buildUserInfo(user));
+    var basicUserInfo = userService.findBasicUserInfoByUserId(entity.getUserId());
+    assert basicUserInfo != null;
+    dto.setUser(basicUserInfo);
     return dto;
   }
 

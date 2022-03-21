@@ -11,8 +11,8 @@ import java.util.Date;
 public class MentorVerificationDto {
   private Long id;
 
-  private UserInfo mentor;
-  private UserInfo moderator;
+  private BasicUserInfo mentor;
+  private BasicUserInfo moderator;
 
   private String message;
 

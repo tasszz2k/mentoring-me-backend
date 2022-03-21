@@ -49,15 +49,15 @@ public class MentorshipMapper {
     //   dto.setAddress(address);
     // }
     if (entity.getMentorId() != null) {
-      var mentor = userService.findUserById(entity.getMentorId()).orElseGet(null);
+      var mentor = userService.findBasicUserInfoByUserId(entity.getMentorId());
       if (mentor != null) {
-        dto.setMentor(UserMapper.buildUserInfo(mentor));
+        dto.setMentor(mentor);
       }
     }
     if (entity.getCreatedBy() != null) {
-      var createdBy = userService.findUserById(entity.getCreatedBy()).orElseGet(null);
+      var createdBy = userService.findBasicUserInfoByUserId(entity.getCreatedBy());
       if (createdBy != null) {
-        dto.setCreatedBy(UserMapper.buildUserInfo(createdBy));
+        dto.setCreatedBy(createdBy);
       }
     }
     return dto;

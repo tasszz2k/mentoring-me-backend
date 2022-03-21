@@ -9,7 +9,9 @@ import com.labate.mentoringme.model.UserProfile;
 import com.labate.mentoringme.repository.UserProfileRepository;
 import com.labate.mentoringme.service.address.AddressService;
 import com.labate.mentoringme.service.category.CategoryService;
-import lombok.RequiredArgsConstructor;
+import com.labate.mentoringme.service.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +19,24 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-@RequiredArgsConstructor
 @Service
 public class UserProfileServiceImpl implements UserProfileService {
   private final UserProfileRepository userProfileRepository;
   private final AddressService addressService;
   private final CategoryService categoryService;
+  private final UserService userService;
+
+  @Autowired
+  public UserProfileServiceImpl(
+      UserProfileRepository userProfileRepository,
+      AddressService addressService,
+      CategoryService categoryService,
+      @Lazy UserService userService) {
+    this.userProfileRepository = userProfileRepository;
+    this.addressService = addressService;
+    this.categoryService = categoryService;
+    this.userService = userService;
+  }
 
   @Override
   public void save(UserProfile userProfile) {
@@ -31,10 +45,13 @@ public class UserProfileServiceImpl implements UserProfileService {
 
   @Override
   public void partialUpdateProfile(LocalUser localUser, PartialUpdateUserProfileRequest request) {
-    var userProfile =
-        userProfileRepository
-            .findById(request.getId())
+
+    var user =
+        userService
+            .findUserById(request.getId())
             .orElseThrow(() -> new UserNotFoundException("id = " + request.getId()));
+
+    var userProfile = user.getUserProfile();
 
     checkPermissionToUpdate(localUser.getUser().getId(), localUser);
 
@@ -52,9 +69,9 @@ public class UserProfileServiceImpl implements UserProfileService {
     Boolean isOfflineStudy = request.getIsOfflineStudy();
     List<Long> categoryIds = request.getCategoryIds();
 
-    if (fullName != null) userProfile.getUser().setFullName(fullName);
-    if (phoneNumber != null) userProfile.getUser().setPhoneNumber(phoneNumber);
-    if (imageUrl != null) userProfile.getUser().setImageUrl(imageUrl);
+    if (fullName != null) user.setFullName(fullName);
+    if (phoneNumber != null) user.setPhoneNumber(phoneNumber);
+    if (imageUrl != null) user.setImageUrl(imageUrl);
     if (gender != null) userProfile.setGender(gender);
     if (dob != null) userProfile.setDob(dob);
     if (school != null) userProfile.setSchool(school);

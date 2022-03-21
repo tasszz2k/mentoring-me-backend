@@ -26,7 +26,7 @@ public class MentorshipDto extends BasicMentorshipDto {
   // private AddressDto address;
 
   private Set<ShiftDto> shifts;
-  // private Set<UserInfo> students;
+  // private Set<BasicUserInfo> students;
 
   @JsonFormat(
       shape = JsonFormat.Shape.STRING,

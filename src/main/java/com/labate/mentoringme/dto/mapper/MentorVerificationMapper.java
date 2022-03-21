@@ -28,15 +28,15 @@ public class MentorVerificationMapper {
 
     var dto = ObjectMapperUtils.map(entity, MentorVerificationDto.class);
     if (entity.getMentorId() != null) {
-      var mentor = userService.findUserById(entity.getMentorId()).orElseGet(null);
+      var mentor = userService.findBasicUserInfoByUserId(entity.getMentorId());
       if (mentor != null) {
-        dto.setMentor(UserMapper.buildUserInfo(mentor));
+        dto.setMentor(mentor);
       }
     }
     if (entity.getModeratorId() != null) {
-      var mod = userService.findUserById(entity.getModeratorId()).orElseGet(null);
+      var mod = userService.findBasicUserInfoByUserId(entity.getModeratorId());
       if (mod != null) {
-        dto.setModerator(UserMapper.buildUserInfo(mod));
+        dto.setModerator(mod);
       }
     }
     return dto;

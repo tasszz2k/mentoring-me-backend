@@ -6,9 +6,9 @@ import lombok.Data;
 @Data
 public class BasicMentorshipDto {
   private Long id;
-  private UserInfo mentor;
+  private BasicUserInfo mentor;
   private CategoryDto category;
-  private UserInfo createdBy;
+  private BasicUserInfo createdBy;
   private String title;
   private Mentorship.Status status;
 }

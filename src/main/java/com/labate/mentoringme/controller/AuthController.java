@@ -6,6 +6,7 @@ import com.labate.mentoringme.dto.request.LoginRequest;
 import com.labate.mentoringme.dto.request.SignUpRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.JwtAuthenticationResponse;
+import com.labate.mentoringme.exception.LoginFailBlockAccountException;
 import com.labate.mentoringme.security.jwt.TokenProvider;
 import com.labate.mentoringme.security.oauth2.AuthService;
 import com.labate.mentoringme.service.user.UserService;
@@ -43,6 +44,10 @@ public class AuthController {
   }
 
   private ResponseEntity<?> getResponseEntity(String email, String password) {
+    if (authService.isBruteForceAttack(email)) {
+      throw new LoginFailBlockAccountException("Account is blocked");
+    }
+
     Authentication authentication = authService.getAuthentication(email, password);
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String jwt = tokenProvider.createToken(authentication);

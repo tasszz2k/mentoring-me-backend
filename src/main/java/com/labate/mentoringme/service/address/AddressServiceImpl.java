@@ -18,7 +18,7 @@ public class AddressServiceImpl implements AddressService {
     if (id == null) {
       return null;
     }
-    return addressRepository.findById(id).orElse(null);
+    return addressRepository.findByIdUseFetchJoin(id);
   }
 
   @Override

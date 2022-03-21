@@ -64,10 +64,10 @@ public class UserProfile {
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
 
-  @JsonIgnore
-  @OneToOne(mappedBy = "userProfile", cascade = CascadeType.ALL)
-  @PrimaryKeyJoinColumn
-  private User user;
+  // @JsonIgnore
+  // @OneToOne(mappedBy = "userProfile", cascade = CascadeType.ALL)
+  // @PrimaryKeyJoinColumn
+  // private User user;
 
   @JsonIgnore
   @ManyToMany(fetch = FetchType.EAGER)

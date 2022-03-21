@@ -147,7 +147,7 @@ public class QuizServiceImpl implements QuizService {
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     var userId = localUser.getUser().getId();
-    var response = quizRepository.getQuizTakingHistory(userId, pageable).map(item -> {
+    var response = quizResultRepository.getQuizTakingHistory(userId, pageable).map(item -> {
       var quizTakingHistoryResponse = modelMapper.map(item, QuizTakingHistoryResponse.class);
       return quizTakingHistoryResponse;
     });

@@ -3,6 +3,7 @@ package com.labate.mentoringme.service.user;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.labate.mentoringme.constant.AppConstant;
 import com.labate.mentoringme.constant.MentorStatus;
 import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.constant.UserRole;
@@ -56,14 +57,17 @@ public class UserServiceImpl implements UserService {
   private final GoogleCloudFileUpload googleCloudFileUpload;
   private final MentorVerificationService mentorVerificationService;
 
-  @Value("${labate.secure.default-password}")
+  @Value("${labate.security.default-password}")
   private String defaultPassword;
+
+  @Value("${labate.cache.user.expiration-time}")
+  private int timeCacheUser;
 
   // TODO: Move to new class
   public final LoadingCache<Long, BasicUserInfo> basicUserInfoCache =
       CacheBuilder.newBuilder()
-          .maximumSize(1000)
-          .expireAfterWrite(6, TimeUnit.HOURS)
+          .maximumSize(AppConstant.MAXIMUM_CACHE_SIZE)
+          .expireAfterWrite(timeCacheUser, TimeUnit.HOURS)
           .build(
               new CacheLoader<>() {
                 @Override

@@ -535,10 +535,9 @@ public class ExceptionHandleAdvice {
         .body(
             new InvalidInputResponse(
                 error.getCode(),
-                error.getMessage(),
+                MessageFormat.format(error.getMessage(), e.getMessage()),
                 error.getName(),
-                Collections.singleton(
-                    FieldErrorResponse.builder().message(e.getMessage()).build())));
+                null));
   }
 
   @ExceptionHandler(LoginFailBlockAccountException.class)

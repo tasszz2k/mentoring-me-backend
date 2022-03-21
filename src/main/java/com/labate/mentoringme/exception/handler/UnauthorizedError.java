@@ -13,7 +13,7 @@ public enum UnauthorizedError implements ResponseError {
   FORBIDDEN_REFRESH_TOKEN(4010002, "Refresh token has been forbidden: {0}"),
   LOGIN_FAIL_WARNING_BEFORE_BLOCK(
       4010003, "Login fail, the account will be blocked if login invalid more than 5 times"),
-  LOGIN_FAIL(4010004, "Login fail, please try again"),
+  LOGIN_FAIL(4010004, "Login fail, please try again. {0} times"),
   LOGIN_FAIL_BLOCK_ACCOUNT(
       4010005, "The account is temporarily blocked due to invalid login more than 5 times"),
   ;

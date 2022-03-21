@@ -3,39 +3,36 @@ package com.labate.mentoringme.security.oauth2;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.labate.mentoringme.constant.AppConstant;
 import com.labate.mentoringme.exception.LoginFailException;
-import com.sun.istack.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class AuthService {
-  private static final long MAXIMUM_CACHE_SIZE = 1000;
 
-  @Value("${labate.security.failed-login.count}")
-  private int maxFailedLogins;
+  @Value("${labate.security.max-login-attempts}")
+  private int maxLoginAttempts;
 
   @Value("${labate.security.failed-login.time}")
   private int timeFailedLogins;
 
   @Autowired private AuthenticationManager authenticationManager;
 
-  // Email - Login Fail Counter
-  public final LoadingCache<String, Integer> loginFailCounterCache =
+  private final LoadingCache<String, Integer> loginFailCounterCache =
       CacheBuilder.newBuilder()
-          .maximumSize(MAXIMUM_CACHE_SIZE)
-          .expireAfterAccess(timeFailedLogins, TimeUnit.MINUTES)
+          .maximumSize(AppConstant.MAXIMUM_CACHE_SIZE)
+          .expireAfterWrite(5, TimeUnit.MINUTES)
           .build(
               new CacheLoader<>() {
                 @Override
-                public Integer load(@NotNull final String username) {
+                public Integer load(String key) {
                   return 0;
                 }
               });
@@ -47,21 +44,21 @@ public class AuthService {
           authenticationManager.authenticate(
               new UsernamePasswordAuthenticationToken(email, password));
     } catch (Exception e) {
-      increaseLoginFailCounter(email);
-      throw new LoginFailException("Invalid username or password");
+      int times = increaseLoginFailCounter(email);
+      throw new LoginFailException(String.valueOf(times));
     }
     return authenticate;
   }
 
-  private void increaseLoginFailCounter(String username) {
-    var counter = loginFailCounterCache.getIfPresent(username);
-    int value = counter + 1;
-    loginFailCounterCache.put(username, value);
+  private int increaseLoginFailCounter(String username) {
+    var counter = loginFailCounterCache.getUnchecked(username);
+    counter++;
+    loginFailCounterCache.put(username, counter);
+    return counter;
   }
 
   public boolean isBruteForceAttack(String username) {
     int counter = loginFailCounterCache.getUnchecked(username);
-    return counter >= maxFailedLogins;
+    return counter >= maxLoginAttempts;
   }
-
 }

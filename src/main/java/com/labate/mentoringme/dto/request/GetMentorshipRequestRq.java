@@ -13,6 +13,7 @@ import java.util.List;
 public class GetMentorshipRequestRq {
   Long createdBy;
   Long mentorId;
+  Long assigneeId;
   List<Long> categoryIds;
   List<Long> addressIds;
 

@@ -15,6 +15,7 @@ public interface MentorshipRequestRepository extends JpaRepository<MentorshipReq
   @Query(
       "select mr from MentorshipRequest mr where "
           + " (:#{#request.status} is null or mr.status = :#{#request.status}) "
+          + "AND (:#{#request.assigneeId} is null or mr.assigneeId = :#{#request.assigneeId}) "
           + "and (:#{#request.createdBy} is null or mr.mentorship.createdBy = :#{#request.createdBy})"
           + "AND (:#{#request.mentorId} is null or mr.mentorship.mentorId = :#{#request.mentorId}) "
           + "AND (COALESCE(:#{#request.categoryIds}, NULL) IS NULL OR mr.mentorship.category.id IN (:#{#request.categoryIds})) "

@@ -8,7 +8,6 @@ import com.labate.mentoringme.service.user.UserService;
 import com.labate.mentoringme.util.ObjectMapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StopWatch;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,17 +26,11 @@ public class MentorshipRequestMapper {
   }
 
   public static MentorshipRequestDto toDto(MentorshipRequest entity) {
-    StopWatch stopWatch = new StopWatch("MentorshipRequestDto toDto");
-
     if (entity == null) {
       return null;
     }
 
-    stopWatch.start("ObjectMapperUtils.map");
     var dto = ObjectMapperUtils.map(entity, MentorshipRequestDto.class);
-    stopWatch.stop();
-
-    stopWatch.start("map user");
     if (entity.getMentorship() != null) {
       var mentorShipDto = MentorshipMapper.toDto(entity.getMentorship());
       dto.setMentorship(mentorShipDto);
@@ -56,9 +49,8 @@ public class MentorshipRequestMapper {
         dto.setApprover(basicUserInfo);
       }
     }
-    stopWatch.stop();
     dto.setAssigneeRole(entity.getAssigneeRole().getUserRole());
-    System.out.println("\n" + stopWatch.prettyPrint());
+
     return dto;
   }
 

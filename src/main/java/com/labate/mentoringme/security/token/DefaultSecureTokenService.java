@@ -24,7 +24,7 @@ public class DefaultSecureTokenService implements SecureTokenService {
   private static final Charset US_ASCII = StandardCharsets.US_ASCII;
   @Autowired SecureTokenRepository secureTokenRepository;
 
-  @Value("${labate.secure.token.validity}")
+  @Value("${labate.security.token.validity}")
   private int tokenValidityInSeconds;
 
   @Override

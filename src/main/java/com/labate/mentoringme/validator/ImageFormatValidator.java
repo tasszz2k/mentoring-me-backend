@@ -24,8 +24,8 @@ public class ImageFormatValidator implements ConstraintValidator<ValidImageForma
   }
 
   private static final Pattern IMAGE_PATTEN =
-      Pattern.compile("([^\\s]+(\\.(?i)(/bmp|jpg|gif|png|svg))$)");
-  private static final Pattern IMAGE_EXTENSION_PATTEN = Pattern.compile("bmp|jpg|gif|png|svg");
+      Pattern.compile("([^\\s]+(\\.(?i)(/bmp|jpg|gif|png|svg|jpeg|raw|cr2|nef|orf|sr2))$)");
+  private static final Pattern IMAGE_EXTENSION_PATTEN = Pattern.compile("bmp|jpg|gif|png|svg|jpeg|raw|cr2|nef|orf|sr2");
   private static Matcher matcher;
 
   public static boolean validate(final String image) {

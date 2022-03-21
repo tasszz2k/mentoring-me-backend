@@ -2,9 +2,11 @@ package com.labate.mentoringme.dto.mapper;
 
 import com.labate.mentoringme.constant.Gender;
 import com.labate.mentoringme.constant.SocialProvider;
+import com.labate.mentoringme.dto.model.BasicUserInfo;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.model.UserDetails;
 import com.labate.mentoringme.dto.model.UserInfo;
+import com.labate.mentoringme.dto.projection.BasicUserInfoProjection;
 import com.labate.mentoringme.dto.request.UpdateUserProfileRequest;
 import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.service.address.AddressService;
@@ -130,5 +132,19 @@ public class UserMapper {
     profile.setPrice(request.getPrice());
 
     return user;
+  }
+
+  public static BasicUserInfo toBasicUserInfo(BasicUserInfoProjection prj) {
+    if (prj.getId() == null) {
+      return null;
+    }
+    return new BasicUserInfo(
+        prj.getId(),
+        prj.getEmail(),
+        prj.getFullName(),
+        prj.getPhoneNumber(),
+        prj.getImageUrl(),
+        // prj.Gender.of(getGender()),
+        prj.getRoles());
   }
 }

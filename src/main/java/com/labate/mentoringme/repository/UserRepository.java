@@ -1,5 +1,6 @@
 package com.labate.mentoringme.repository;
 
+import com.labate.mentoringme.dto.projection.BasicUserInfoProjection;
 import com.labate.mentoringme.dto.request.FindUsersRequest;
 import com.labate.mentoringme.model.User;
 import org.springframework.data.domain.Page;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -43,4 +43,36 @@ public interface UserRepository extends JpaRepository<User, Long> {
   Page<User> findAllByConditions(FindUsersRequest request, Pageable pageable);
 
   List<User> findAllByIdInAndEnabledIsTrue(Collection<Long> userIds);
+
+  @Query(
+      value =
+          "SELECT users.id           AS id,\n"
+              + "       users.email        AS email,\n"
+              + "       users.full_name    AS fullName,\n"
+              + "       users.phone_number AS phoneNumber,\n"
+              + "       users.image_url    AS imageUrl,\n"
+              + "       roles.name         AS roles\n"
+              + "\n"
+              + "FROM users\n"
+              + "         LEFT JOIN users_roles ON users_roles.user_id = users.id\n"
+              + "         LEFT JOIN roles ON roles.id = users_roles.role_id\n"
+              + "WHERE users.id = :userId",
+      nativeQuery = true)
+  BasicUserInfoProjection findBasicUserInfoById(Long userId);
+
+  @Query(
+      value =
+          "SELECT users.id           AS id,\n"
+              + "       users.email        AS email,\n"
+              + "       users.full_name    AS fullName,\n"
+              + "       users.phone_number AS phoneNumber,\n"
+              + "       users.image_url    AS imageUrl,\n"
+              + "       roles.name         AS roles\n"
+              + "\n"
+              + "FROM users\n"
+              + "         LEFT JOIN users_roles ON users_roles.user_id = users.id\n"
+              + "         LEFT JOIN roles ON roles.id = users_roles.role_id\n"
+              + "WHERE users.id IN (:userIds)",
+      nativeQuery = true)
+  List<BasicUserInfoProjection> findBasicUserInfoByIdIn(List<Long> userIds);
 }

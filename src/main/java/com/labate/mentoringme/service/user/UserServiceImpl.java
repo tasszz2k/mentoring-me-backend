@@ -5,7 +5,9 @@ import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.constant.UserRole;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
 import com.labate.mentoringme.dto.mapper.UserMapper;
+import com.labate.mentoringme.dto.model.BasicUserInfo;
 import com.labate.mentoringme.dto.model.LocalUser;
+import com.labate.mentoringme.dto.projection.BasicUserInfoProjection;
 import com.labate.mentoringme.dto.request.FindUsersRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.SignUpRequest;
@@ -35,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -184,6 +187,19 @@ public class UserServiceImpl implements UserService {
     }
 
     save(user);
+  }
+
+  @Override
+  public BasicUserInfo findBasicUserInfoByUserId(Long id) {
+    var prj = userRepository.findBasicUserInfoById(id);
+    return UserMapper.toBasicUserInfo(prj);
+  }
+
+  @Override
+  public Map<Long, BasicUserInfo> findBasicUserInfos(List<Long> ids) {
+    var prjList = userRepository.findBasicUserInfoByIdIn(ids);
+    return prjList.stream()
+        .collect(Collectors.toMap(BasicUserInfoProjection::getId, UserMapper::toBasicUserInfo));
   }
 
   private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {

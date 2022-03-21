@@ -12,8 +12,8 @@ import java.util.Date;
 public class MentorshipRequestDto {
 
   private Long id;
-  private UserInfo assignee;
-  private UserInfo approver;
+  private BasicUserInfo assignee;
+  private BasicUserInfo approver;
   private UserRole assigneeRole;
   private MentorshipRequest.Status status;
   private String content;

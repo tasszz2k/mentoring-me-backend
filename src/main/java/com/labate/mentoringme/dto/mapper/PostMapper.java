@@ -33,9 +33,9 @@ public class PostMapper {
 
     var dto = ObjectMapperUtils.map(entity, PostDto.class);
     if (entity.getCreatedBy() != null) {
-      var createdBy = userService.findUserById(entity.getCreatedBy()).orElseGet(null);
+      var createdBy = userService.findBasicUserInfoByUserId(entity.getCreatedBy());
       if (createdBy != null) {
-        dto.setCreatedBy(UserMapper.buildUserInfo(createdBy));
+        dto.setCreatedBy(createdBy);
       }
     }
     return dto;

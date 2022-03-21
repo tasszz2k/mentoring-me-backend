@@ -12,7 +12,7 @@ import java.util.Set;
 public class TimetableDto {
 
   private Long id;
-  private UserInfo user;
+  private BasicUserInfo user;
   private String name;
 
   @JsonFormat(

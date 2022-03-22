@@ -5,7 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
-import com.labate.mentoringme.dto.request.CreatedFeedbackRequest;
+import com.labate.mentoringme.dto.request.CreateFeedbackRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.model.Feedback;
 import com.labate.mentoringme.repository.FeedbackRepository;
@@ -25,10 +25,10 @@ public class FeedbackServiceImpl implements FeedbackService {
   }
 
   @Override
-  public Feedback createFeedback(CreatedFeedbackRequest createdFeedbackRequest) {
+  public Feedback createFeedback(CreateFeedbackRequest createFeedbackRequest) {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    var feedback = ObjectMapperUtils.map(createdFeedbackRequest, Feedback.class);
+    var feedback = ObjectMapperUtils.map(createFeedbackRequest, Feedback.class);
     feedback.setFromUserId(localUser.getUser().getId());
     return feedbackRepository.save(feedback);
   }

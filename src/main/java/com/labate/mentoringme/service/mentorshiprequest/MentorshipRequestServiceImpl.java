@@ -120,6 +120,10 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     checkPermissionToUpdateStatus(oldMentorshipRequest, localUser, status);
     oldMentorshipRequest.setStatus(status);
     oldMentorshipRequest.setMessage(message);
+
+    if (MentorshipRequest.Status.APPROVED.equals(status)) {
+      oldMentorshipRequest.setEnrollDate(new Date());
+    }
     var mentorshipRequest = mentorshipRequestRepository.save(oldMentorshipRequest);
 
     if (MentorshipRequest.Status.APPROVED.equals(status)

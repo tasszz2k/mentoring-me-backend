@@ -1,5 +1,6 @@
 package com.labate.mentoringme.service.report;
 
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,16 @@ public class ReportServiceImpl implements ReportService {
       report.setImgUrl3(imageUrl3);
     }
     return reportRepository.save(report);
+  }
+
+  @Override
+  public Optional<Report> getDetailReport(Long id) {
+    return reportRepository.findById(id);
+  }
+
+  @Override
+  public void deleteReportById(Long id) {
+    reportRepository.deleteById(id);
   }
 
 }

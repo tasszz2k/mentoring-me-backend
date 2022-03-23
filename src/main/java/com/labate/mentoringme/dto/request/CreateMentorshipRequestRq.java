@@ -6,6 +6,7 @@ import com.labate.mentoringme.model.MentorshipRequest;
 import com.labate.mentoringme.validator.AcceptableRoles;
 import lombok.Data;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -13,7 +14,7 @@ public class CreateMentorshipRequestRq {
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private Long id;
 
-  @NotNull private CreateMentorshipRequest mentorship;
+  @Valid @NotNull private CreateMentorshipRequest mentorship;
   @NotNull private Long assigneeId;
   @NotNull private Long approverId;
   private String content;

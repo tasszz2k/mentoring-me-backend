@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -28,4 +29,10 @@ public class ShiftDto {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
   @DateTimeFormat(pattern = "HH:mm:ss")
   private Time endTime;
+
+  @AssertTrue(message = "end time must be after than start time")
+  private boolean checkEndTimeAfterStartTime() {
+    return endTime.after(startTime);
+  }
+
 }

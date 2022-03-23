@@ -17,8 +17,12 @@ public class DateUtils {
     return startDate.datesUntil(endDate).collect(Collectors.toList());
   }
 
-  public static Date toDate(LocalDate date, Time startTime) {
-    var localDateTime = date.atTime(startTime.toLocalTime());
+  public static Date toDate(LocalDate localDate, Time startTime) {
+    var localDateTime = localDate.atTime(startTime.toLocalTime());
     return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+  }
+
+  public static Date toDate(LocalDate localDate) {
+    return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
   }
 }

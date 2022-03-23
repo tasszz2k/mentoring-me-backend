@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.labate.mentoringme.dto.request.CreatedFeedbackRequest;
+import com.labate.mentoringme.dto.request.CreateFeedbackRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.PageResponse;
@@ -41,8 +41,8 @@ public class FeedbackController {
       paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('USER')")
   @PostMapping()
-  public ResponseEntity<?> addFeedback(@RequestBody CreatedFeedbackRequest createdFeedbackRequest) {
-    var feedback = feedbackService.createFeedback(createdFeedbackRequest);
+  public ResponseEntity<?> addFeedback(@RequestBody CreateFeedbackRequest createFeedbackRequest) {
+    var feedback = feedbackService.createFeedback(createFeedbackRequest);
     return BaseResponseEntity.ok(feedback);
   }
 

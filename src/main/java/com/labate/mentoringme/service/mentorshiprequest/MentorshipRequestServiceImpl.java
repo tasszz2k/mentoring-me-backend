@@ -171,7 +171,8 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
       return;
     }
     if (MentorshipRequest.Status.COMPLETED_STATUSES.contains(entity.getStatus())) {
-      throw new AccessDeniedException("You are not allowed to update this mentorship request");
+      throw new AccessDeniedException(
+          "This mentorship request have already been completed (APPROVED, REJECTED, CANCELED)");
     }
     // Status = APPROVED/REJECTED -> Check if user is assignee
     // Status = CANCELED -> Check if user is owner (createdBy)

@@ -14,6 +14,7 @@ public class ShiftDto {
   private Long mentorshipId;
 
   @NotNull private DayOfWeek dayOfWeek;
+  private Integer repeat = 1;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
   @DateTimeFormat(pattern = "HH:mm:ss")

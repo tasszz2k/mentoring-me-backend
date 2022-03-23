@@ -1,5 +1,6 @@
 package com.labate.mentoringme.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import java.util.Date;
 
 @EntityListeners(AuditingEntityListener.class)
 @Entity
+@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -31,6 +33,9 @@ public class Shift {
 
   @Enumerated(EnumType.STRING)
   private DayOfWeek dayOfWeek;
+
+  @Column(name = "`repeat`")
+  private Integer repeat = 1;
 
   private Time startTime;
   private Time endTime;

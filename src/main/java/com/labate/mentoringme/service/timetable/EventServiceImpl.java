@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -57,14 +58,21 @@ public class EventServiceImpl implements EventService {
     var start = DateUtils.toLocalDate(startDate);
     var end = DateUtils.toLocalDate(endDate);
     var lDates = DateUtils.getDateFromTo(start, end);
+    var repeat = shift.getRepeat();
+    // Variable used in lambda expression should be final or effectively final
+    var weekCounter = new AtomicInteger(0);
     return lDates.stream()
         .map(
             date -> {
               var dayOfWeek = date.getDayOfWeek();
+              Event.Basic basicEvent = null;
               if (shift.getDayOfWeek().equals(dayOfWeek)) {
-                return createBasicEvent(date, shift);
+                if (weekCounter.get() == 0 || weekCounter.get() % repeat == 0) {
+                  basicEvent = createBasicEvent(date, shift);
+                }
+                weekCounter.incrementAndGet();
               }
-              return null;
+              return basicEvent;
             })
         .filter(Objects::nonNull)
         .collect(Collectors.toList());

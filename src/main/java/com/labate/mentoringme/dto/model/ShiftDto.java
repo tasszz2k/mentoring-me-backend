@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.sql.Time;
 import java.time.DayOfWeek;
@@ -14,6 +16,9 @@ public class ShiftDto {
   private Long mentorshipId;
 
   @NotNull private DayOfWeek dayOfWeek;
+
+  @Min(value = 1, message = "repeat must be greater than 0")
+  @Max(value = 4, message = "repeat must be less than or equal to 4")
   private Integer repeat = 1;
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")

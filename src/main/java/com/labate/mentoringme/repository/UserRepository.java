@@ -28,6 +28,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
               + "LEFT JOIN userProfile.categories category "
               + "LEFT JOIN userProfile.address address "
               + "WHERE (:#{#request.getRoleName()} IS NULL OR role.name = :#{#request.getRoleName()}) "
+              + "AND (:#{#request.getMentorStatus()} IS NULL OR user.status = :#{#request.getMentorStatus()}) "
+              + "AND (:#{#request.getEnabled()} IS NULL OR user.enabled = :#{#request.getEnabled()}) "
               + "AND (COALESCE(:#{#request.categoryIds}, NULL) IS NULL OR category.id IN (:#{#request.categoryIds})) "
               + "AND (COALESCE(:#{#request.addressIds}, NULL) IS NULL OR address.id IN (:#{#request.addressIds})) ",
       countQuery =
@@ -38,6 +40,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
               + "LEFT JOIN userProfile.categories category "
               + "LEFT JOIN userProfile.address address "
               + "WHERE (:#{#request.getRoleName()} IS NULL OR role.name = :#{#request.getRoleName()}) "
+              + "AND (:#{#request.getMentorStatus()} IS NULL OR user.status = :#{#request.getMentorStatus()}) "
+              + "AND (:#{#request.getEnabled()} IS NULL OR user.enabled = :#{#request.getEnabled()}) "
               + "AND (COALESCE(:#{#request.categoryIds}, NULL) IS NULL OR category.id IN (:#{#request.categoryIds})) "
               + "AND (COALESCE(:#{#request.addressIds}, NULL) IS NULL OR address.id IN (:#{#request.addressIds})) ")
   Page<User> findAllByConditions(FindUsersRequest request, Pageable pageable);

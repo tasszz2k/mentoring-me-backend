@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.labate.mentoringme.dto.request.CreateFeedbackRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
-import com.labate.mentoringme.dto.response.PageResponse;
-import com.labate.mentoringme.dto.response.Paging;
 import com.labate.mentoringme.service.feedback.FeedbackService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
@@ -30,11 +28,8 @@ public class FeedbackController {
   @GetMapping()
   public ResponseEntity<?> getListFavoriteQuiz(@Valid PageCriteria pageCriteria, Long toUserId) {
     pageCriteria.setSort(List.of("-createdDate"));
-    var pageData = feedbackService.getByUserId(toUserId, pageCriteria);
-    var paging = Paging.builder().limit(pageCriteria.getLimit()).page(pageCriteria.getPage())
-        .total(pageData.getTotalElements()).build();
-    var pageResponse = new PageResponse(pageData.getContent(), paging);
-    return BaseResponseEntity.ok(pageResponse);
+    var feedbackResponse = feedbackService.getByUserId(toUserId, pageCriteria);
+    return BaseResponseEntity.ok(feedbackResponse);
   }
 
   @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true,

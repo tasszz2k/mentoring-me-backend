@@ -1,9 +1,5 @@
 package com.labate.mentoringme.service.user;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.labate.mentoringme.constant.AppConstant;
 import com.labate.mentoringme.constant.MentorStatus;
 import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.constant.UserRole;
@@ -28,7 +24,6 @@ import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfoFactory;
 import com.labate.mentoringme.service.gcp.GoogleCloudFileUpload;
 import com.labate.mentoringme.service.timetable.TimetableService;
 import com.labate.mentoringme.service.userprofile.UserProfileService;
-import com.sun.istack.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -42,7 +37,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -56,26 +50,10 @@ public class UserServiceImpl implements UserService {
   private final TimetableService timetableService;
   private final GoogleCloudFileUpload googleCloudFileUpload;
   private final MentorVerificationService mentorVerificationService;
+  private final UserCaching userCaching;
 
   @Value("${labate.security.default-password}")
   private String defaultPassword;
-
-  @Value("${labate.cache.user.expiration-time}")
-  private int timeCacheUser;
-
-  // TODO: Move to new class
-  public final LoadingCache<Long, BasicUserInfo> basicUserInfoCache =
-      CacheBuilder.newBuilder()
-          .maximumSize(AppConstant.MAXIMUM_CACHE_SIZE)
-          .expireAfterWrite(timeCacheUser, TimeUnit.HOURS)
-          .build(
-              new CacheLoader<>() {
-                @Override
-                public BasicUserInfo load(@NotNull final Long userId) {
-                  var prj = userRepository.findBasicUserInfoById(userId);
-                  return UserMapper.toBasicUserInfo(prj);
-                }
-              });
 
   @Override
   @Transactional(value = "transactionManager")
@@ -89,7 +67,7 @@ public class UserServiceImpl implements UserService {
       user.setStatus(MentorStatus.IN_PROGRESS);
     }
 
-    user = userRepository.save(user);
+    user = save(user);
     userRepository.flush();
     Long userId = user.getId();
     timetableService.createNewTimetable(
@@ -97,6 +75,11 @@ public class UserServiceImpl implements UserService {
     mentorVerificationService.registerMentor(userId, null);
 
     return user;
+  }
+
+  @Override
+  public boolean existsByEmail(String email) {
+    return userRepository.existsByEmail(email);
   }
 
   private User buildUser(final SignUpRequest formDto) {
@@ -174,7 +157,7 @@ public class UserServiceImpl implements UserService {
     var user = findUserById(userId).orElseThrow(() -> new UserNotFoundException("id = " + userId));
     if (user.isEnabled() != enable) {
       user.setEnabled(enable);
-      userRepository.save(user);
+      save(user);
     }
   }
 
@@ -214,7 +197,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public BasicUserInfo findBasicUserInfoByUserId(Long id) {
-    return basicUserInfoCache.getUnchecked(id);
+    return userCaching.basicUserInfoCache.getUnchecked(id);
   }
 
   @Override
@@ -227,7 +210,7 @@ public class UserServiceImpl implements UserService {
   private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {
     existingUser.setFullName(oAuth2UserInfo.getName());
     existingUser.setImageUrl(oAuth2UserInfo.getImageUrl());
-    return userRepository.save(existingUser);
+    return save(existingUser);
   }
 
   private SignUpRequest toUserRegistrationObject(
@@ -248,7 +231,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public LocalUser findLocalUserById(Long id) {
-    var user = userRepository.findById(id).orElse(null);
+    var user = findUserById(id).orElse(null);
     if (user == null) {
       throw new UserNotFoundException("id = " + id);
     }

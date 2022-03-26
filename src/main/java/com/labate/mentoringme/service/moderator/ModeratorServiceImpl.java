@@ -9,6 +9,7 @@ import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.model.UserProfile;
 import com.labate.mentoringme.repository.RoleRepository;
 import com.labate.mentoringme.repository.UserRepository;
+import com.labate.mentoringme.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,18 +20,18 @@ import java.util.HashSet;
 @RequiredArgsConstructor
 public class ModeratorServiceImpl implements ModeratorService {
 
-  private final UserRepository userRepository;
+  private final UserService userService;
   private final RoleRepository roleRepository;
   private final PasswordEncoder passwordEncoder;
 
   @Override
   public User createModerator(CreateModeratorRequest request) {
-    if (userRepository.existsByEmail(request.getEmail())) {
+    if (userService.existsByEmail(request.getEmail())) {
       throw new UserAlreadyExistAuthenticationException("email = " + request.getEmail());
     }
     User user = buildUser(request);
-    user = userRepository.save(user);
-    userRepository.flush();
+    user = userService.save(user);
+    // userService.flush();
     return user;
   }
 

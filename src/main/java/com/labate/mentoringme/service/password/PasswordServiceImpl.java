@@ -7,7 +7,6 @@ import com.labate.mentoringme.exception.InvalidPasswordException;
 import com.labate.mentoringme.exception.InvalidTokenException;
 import com.labate.mentoringme.exception.UserNotFoundException;
 import com.labate.mentoringme.model.User;
-import com.labate.mentoringme.repository.UserRepository;
 import com.labate.mentoringme.security.token.SecureTokenService;
 import com.labate.mentoringme.service.mail.EmailService;
 import com.labate.mentoringme.service.user.UserService;
@@ -24,7 +23,6 @@ public class PasswordServiceImpl implements PasswordService {
 
   private final PasswordEncoder passwordEncoder;
   private final UserService userService;
-  private final UserRepository userRepository;
   private final SecureTokenService secureTokenService;
   private final EmailService emailService;
 
@@ -43,7 +41,7 @@ public class PasswordServiceImpl implements PasswordService {
     }
 
     user.setPassword(passwordEncoder.encode(newPassword));
-    userRepository.save(user);
+    userService.save(user);
     return true;
   }
 
@@ -74,7 +72,7 @@ public class PasswordServiceImpl implements PasswordService {
     var user = secureToken.getUser();
 
     user.setPassword(passwordEncoder.encode(newPassword));
-    userRepository.save(user);
+    userService.save(user);
     // Remove token
     secureTokenService.removeToken(secureToken);
     return true;

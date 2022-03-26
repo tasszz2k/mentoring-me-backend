@@ -24,6 +24,8 @@ public interface UserService {
 
   User registerNewUser(SignUpRequest signUpRequest) throws UserAlreadyExistAuthenticationException;
 
+  boolean existsByEmail(String email);
+
   User findUserByEmail(String email);
 
   Optional<User> findUserById(Long id);
@@ -47,7 +49,7 @@ public interface UserService {
   String uploadAvatar(LocalUser localUser, MultipartFile image) throws IOException;
 
   void updateMentorStatus(Long userId, MentorStatus status);
-
   BasicUserInfo findBasicUserInfoByUserId(Long userId);
+
   Map<Long, BasicUserInfo> findBasicUserInfos(List<Long> userIds);
 }

@@ -1,6 +1,7 @@
 package com.labate.mentoringme.dto.mapper;
 
 import com.labate.mentoringme.dto.model.TimetableDto;
+import com.labate.mentoringme.dto.projection.TimetableProjection;
 import com.labate.mentoringme.model.Timetable;
 import com.labate.mentoringme.service.user.UserService;
 import com.labate.mentoringme.util.ObjectMapperUtils;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +33,17 @@ public class TimetableMapper {
 
   public static Timetable toEntity(TimetableDto dto) {
     return ObjectMapperUtils.map(dto, Timetable.class);
+  }
+
+  public static Timetable toEntity(TimetableProjection prj) {
+    if (prj == null || prj.getId() == null) {
+      return null;
+    }
+    Timetable entity = ObjectMapperUtils.map(prj, Timetable.class);
+    if (entity.getEvents() == null) {
+      entity.setEvents(Collections.emptySet());
+    }
+    return entity;
   }
 
   public static List<TimetableDto> toDtos(Collection<Timetable> entities) {

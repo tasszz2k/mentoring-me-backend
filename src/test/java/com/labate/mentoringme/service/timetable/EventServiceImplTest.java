@@ -19,15 +19,6 @@ class EventServiceImplTest {
   @Autowired private EventService eventService;
 
   @Test
-  void createBasicEvents() {}
-
-  @Test
-  void createEvents() {}
-
-  @Test
-  void testCreateEvents() {}
-
-  @Test
   void givenDatesAndShiftWithRepeatIs1Week_whenCreateBasicEvents_thenReturnBasicEvents() {
     var startDate = DateUtils.toDate(LocalDate.of(2022, 3, 23));
     var endDate = DateUtils.toDate(LocalDate.of(2022, 5, 23));

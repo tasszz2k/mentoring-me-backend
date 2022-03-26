@@ -12,6 +12,7 @@ import java.util.Date;
 public class EventDto {
   private Long id;
   private String title;
+  private Long mentorshipId;
 
   @JsonFormat(
       shape = JsonFormat.Shape.STRING,

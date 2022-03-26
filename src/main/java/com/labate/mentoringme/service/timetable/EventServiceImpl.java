@@ -1,5 +1,6 @@
 package com.labate.mentoringme.service.timetable;
 
+import com.labate.mentoringme.exception.http.CannotCreateEventsException;
 import com.labate.mentoringme.model.Event;
 import com.labate.mentoringme.model.Shift;
 import com.labate.mentoringme.repository.EventRepository;
@@ -50,7 +51,11 @@ public class EventServiceImpl implements EventService {
 
   @Override
   public void saveAll(List<Event> events) {
-    eventRepository.saveAll(events);
+    try {
+      eventRepository.saveAll(events);
+    } catch (Exception e) {
+      throw new CannotCreateEventsException("duplicate events");
+    }
   }
 
   @Override

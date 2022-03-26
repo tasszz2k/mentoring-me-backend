@@ -11,6 +11,7 @@ import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
 import com.labate.mentoringme.exception.MentorshipRequestNotFoundException;
+import com.labate.mentoringme.model.MentorshipRequest;
 import com.labate.mentoringme.service.mentorshiprequest.MentorshipRequestService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +60,8 @@ public class MentorshipRequestController {
 
     var sort = List.of("-createdDate");
     PageCriteria pageCriteria = PageCriteria.builder().limit(10).page(1).sort(sort).build();
-    GetMentorshipRequestRq request = GetMentorshipRequestRq.builder().build();
+    GetMentorshipRequestRq request =
+        GetMentorshipRequestRq.builder().status(MentorshipRequest.Status.ON_GOING).build();
     return findAllMentorship(pageCriteria, request);
   }
 

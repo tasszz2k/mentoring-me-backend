@@ -8,6 +8,7 @@ import com.labate.mentoringme.dto.response.ErrorResponse;
 import com.labate.mentoringme.dto.response.FieldErrorResponse;
 import com.labate.mentoringme.dto.response.InvalidInputResponse;
 import com.labate.mentoringme.exception.*;
+import com.labate.mentoringme.exception.http.CannotCreateEventsException;
 import com.labate.mentoringme.exception.http.ResponseError;
 import com.labate.mentoringme.exception.http.ResponseException;
 import com.labate.mentoringme.internationalization.LanguageService;
@@ -122,6 +123,20 @@ public class ExceptionHandleAdvice {
   public ResponseEntity<ErrorResponse<Void>> handleLikeOrUnlikeException(
       CannotLikeOrUnlikeException e, HttpServletRequest request) {
     ResponseError error = BadRequestError.CANNOT_LIKE_OR_UNLIKE;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            ErrorResponse.<Void>builder()
+                .code(error.getCode())
+                .error(error.getName())
+                .message(MessageFormat.format(error.getMessage(), e.getMessage()))
+                .build());
+  }
+
+  @ExceptionHandler(CannotCreateEventsException.class)
+  public ResponseEntity<ErrorResponse<Void>> handleCannotCreateEventsException(
+      CannotCreateEventsException e, HttpServletRequest request) {
+    ResponseError error = BadRequestError.CANNOT_CREATE_EVENTS;
     log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
     return ResponseEntity.status(error.getStatus())
         .body(

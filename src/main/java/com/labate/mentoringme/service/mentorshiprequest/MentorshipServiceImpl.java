@@ -15,6 +15,8 @@ import com.labate.mentoringme.repository.MentorshipRepository;
 import com.labate.mentoringme.service.timetable.TimetableService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ public class MentorshipServiceImpl implements MentorshipService {
   private final ShiftService shiftService;
   private final TimetableService timetableService;
 
+  @Cacheable(value = "mentorship", key = "#id")
   @Override
   public Mentorship findById(Long id) {
     if (id == null) {
@@ -45,6 +48,7 @@ public class MentorshipServiceImpl implements MentorshipService {
     return mentorshipRepository.findAllByConditions(request, pageable);
   }
 
+  @CachePut("mentorship")
   @Transactional
   @Override
   public Mentorship saveMentorship(Mentorship entity) {

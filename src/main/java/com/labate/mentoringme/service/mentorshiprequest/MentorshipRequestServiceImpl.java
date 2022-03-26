@@ -18,6 +18,8 @@ import com.labate.mentoringme.repository.MentorshipRequestRepository;
 import com.labate.mentoringme.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -60,6 +62,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     }
   }
 
+  @Cacheable("mentorshipRequest")
   @Override
   public MentorshipRequest findById(Long id) {
     return mentorshipRequestRepository.findById(id).orElse(null);
@@ -72,6 +75,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     return mentorshipRequestRepository.findAllByConditions(request, pageable);
   }
 
+  @CachePut("mentorshipRequest")
   @Transactional
   @Override
   public MentorshipRequest save(MentorshipRequest entity) {
@@ -124,7 +128,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     if (MentorshipRequest.Status.APPROVED.equals(status)) {
       oldMentorshipRequest.setEnrollDate(new Date());
     }
-    var mentorshipRequest = mentorshipRequestRepository.save(oldMentorshipRequest);
+    var mentorshipRequest = save(oldMentorshipRequest);
 
     if (MentorshipRequest.Status.APPROVED.equals(status)
         && UserRole.ROLE_MENTOR.equals(mentorshipRequest.getAssigneeRole().getUserRole())) {

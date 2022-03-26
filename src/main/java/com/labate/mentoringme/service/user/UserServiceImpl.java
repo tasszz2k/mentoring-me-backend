@@ -26,6 +26,8 @@ import com.labate.mentoringme.service.timetable.TimetableService;
 import com.labate.mentoringme.service.userprofile.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
@@ -144,6 +146,7 @@ public class UserServiceImpl implements UserService {
     return LocalUser.create(user, attributes, idToken, userInfo);
   }
 
+  @CachePut(value = "user")
   @Transactional
   @Override
   public User save(User user) {
@@ -224,11 +227,13 @@ public class UserServiceImpl implements UserService {
         .build();
   }
 
+  @Cacheable("user")
   @Override
   public Optional<User> findUserById(Long id) {
     return userRepository.findById(id);
   }
 
+  @Cacheable("localUser")
   @Override
   public LocalUser findLocalUserById(Long id) {
     var user = findUserById(id).orElse(null);

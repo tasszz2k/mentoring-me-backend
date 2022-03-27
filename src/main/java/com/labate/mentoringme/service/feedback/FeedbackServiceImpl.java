@@ -70,8 +70,38 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     var overallRating = totalRating / feedbacks.size();
-    overallRating = Double.parseDouble(new DecimalFormat("#.##").format(overallRating));
-    var feedbackOverviewResponse = new FeedbackOverviewResponse(overallRating);
+    overallRating = Double.parseDouble(new DecimalFormat("#.#").format(overallRating));
+
+    var numberOfOneRating = 0;
+    var numberOfTwoRating = 0;
+    var numberOfThreeRating = 0;
+    var numberOfFourRating = 0;
+    var numberOfFiveRating = 0;
+
+    for (Feedback feedback : feedbacks) {
+      switch (feedback.getRating()) {
+        case 1:
+          numberOfOneRating++;
+          break;
+        case 2:
+          numberOfTwoRating++;
+          break;
+        case 3:
+          numberOfThreeRating++;
+          break;
+        case 4:
+          numberOfFourRating++;
+          break;
+        case 5:
+          numberOfFiveRating++;
+          break;
+      }
+    }
+
+    var feedbackOverviewResponse = FeedbackOverviewResponse.builder().overallRating(overallRating)
+        .numberOfFeedback(feedbacks.size()).numberOfOneRating(numberOfOneRating)
+        .numberOfTwoRating(numberOfTwoRating).numberOfThreeRating(numberOfThreeRating)
+        .numberOfFourRating(numberOfFourRating).numberOfFiveRating(numberOfFiveRating).build();
 
     Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     if (principal instanceof LocalUser) {

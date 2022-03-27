@@ -1,6 +1,8 @@
 package com.labate.mentoringme.dto.response;
 
 import java.util.Date;
+import org.springframework.format.annotation.DateTimeFormat;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,5 +13,8 @@ public class FeedbackResponse {
   private String imageUrl;
   private Integer rating;
   private String comment;
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss",
+      timezone = "Asia/Bangkok")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private Date created;
 }

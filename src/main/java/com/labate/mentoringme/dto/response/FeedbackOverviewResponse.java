@@ -16,9 +16,9 @@ public class FeedbackOverviewResponse {
   private FeedbackResponse myFeedback;
   private Double overallRating;
   private Integer numberOfFeedback;
-  private Integer numberOfOneRating;
-  private Integer numberOfTwoRating;
-  private Integer numberOfThreeRating;
-  private Integer numberOfFourRating;
-  private Integer numberOfFiveRating;
+  private Double proportionOfOneRating;
+  private Double proportionOfTwoRating;
+  private Double proportionOfThreeRating;
+  private Double proportionOfFourRating;
+  private Double proportionOfFiveRating;
 }

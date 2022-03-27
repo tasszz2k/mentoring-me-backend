@@ -97,11 +97,14 @@ public class FeedbackServiceImpl implements FeedbackService {
           break;
       }
     }
-
+    var numberOfFeedback = feedbacks.size();
     var feedbackOverviewResponse = FeedbackOverviewResponse.builder().overallRating(overallRating)
-        .numberOfFeedback(feedbacks.size()).numberOfOneRating(numberOfOneRating)
-        .numberOfTwoRating(numberOfTwoRating).numberOfThreeRating(numberOfThreeRating)
-        .numberOfFourRating(numberOfFourRating).numberOfFiveRating(numberOfFiveRating).build();
+        .numberOfFeedback(numberOfFeedback)
+        .proportionOfOneRating(calculateProportion(numberOfOneRating, numberOfFeedback))
+        .proportionOfTwoRating(calculateProportion(numberOfTwoRating, numberOfFeedback))
+        .proportionOfThreeRating(calculateProportion(numberOfThreeRating, numberOfFeedback))
+        .proportionOfFourRating(calculateProportion(numberOfFourRating, numberOfFeedback))
+        .proportionOfFiveRating(calculateProportion(numberOfFiveRating, numberOfFeedback)).build();
 
     Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     if (principal instanceof LocalUser) {
@@ -109,12 +112,19 @@ public class FeedbackServiceImpl implements FeedbackService {
           (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
       var user = localUser.getUser();
       var feedback = feedbackRepository.findByToUserIdAndFromUserId(toUserId, user.getId());
-      var feedbackResponse = modelMapper.map(feedback, FeedbackResponse.class);
-      feedbackResponse.setFullName(user.getFullName());
-      feedbackResponse.setImageUrl(user.getImageUrl());
-      feedbackOverviewResponse.setMyFeedback(feedbackResponse);
+      if (feedback != null) {
+        var feedbackResponse = modelMapper.map(feedback, FeedbackResponse.class);
+        feedbackResponse.setFullName(user.getFullName());
+        feedbackResponse.setImageUrl(user.getImageUrl());
+        feedbackOverviewResponse.setMyFeedback(feedbackResponse);
+      }
     }
     return feedbackOverviewResponse;
+  }
+
+  private Double calculateProportion(int value, int sampleSize) {
+    var result = (double) (value * 100) / sampleSize;
+    return Double.parseDouble(new DecimalFormat("#.#").format(result));
   }
 
 }

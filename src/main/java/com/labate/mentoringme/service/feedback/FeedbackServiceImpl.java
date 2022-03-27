@@ -1,17 +1,20 @@
 package com.labate.mentoringme.service.feedback;
 
 import java.text.DecimalFormat;
+import javax.transaction.Transactional;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreateFeedbackRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
+import com.labate.mentoringme.dto.response.FeedbackOverviewResponse;
 import com.labate.mentoringme.dto.response.FeedbackResponse;
-import com.labate.mentoringme.dto.response.PageResponse;
-import com.labate.mentoringme.dto.response.Paging;
 import com.labate.mentoringme.model.Feedback;
 import com.labate.mentoringme.repository.FeedbackRepository;
+import com.labate.mentoringme.repository.ProfileRepository;
 import com.labate.mentoringme.util.ObjectMapperUtils;
 import lombok.RequiredArgsConstructor;
 
@@ -21,14 +24,45 @@ public class FeedbackServiceImpl implements FeedbackService {
 
   private final FeedbackRepository feedbackRepository;
 
-  @Override
-  public FeedbackResponse getByUserId(Long toUserId, PageCriteria pageCriteria) {
-    var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
-    var pageData = feedbackRepository.findByToUserId(toUserId, pageable);
-    var paging = Paging.builder().limit(pageCriteria.getLimit()).page(pageCriteria.getPage())
-        .total(pageData.getTotalElements()).build();
-    var pageResponse = new PageResponse(pageData.getContent(), paging);
+  private final ProfileRepository profileRepository;
 
+  private ModelMapper modelMapper = new ModelMapper();
+
+  @Override
+  public Page<FeedbackResponse> getByUserId(Long toUserId, PageCriteria pageCriteria) {
+    var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
+    return feedbackRepository.findByToUserId(toUserId, pageable).map(ele -> {
+      var feedbackResponse = ObjectMapperUtils.map(ele, FeedbackResponse.class);
+      return feedbackResponse;
+    });
+  }
+
+  @Transactional
+  @Override
+  public Feedback createFeedback(CreateFeedbackRequest createFeedbackRequest) {
+    LocalUser localUser =
+        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    var feedback = modelMapper.map(createFeedbackRequest, Feedback.class);
+    feedback.setFromUserId(localUser.getUser().getId());
+    var userProfileOpt = profileRepository.findById(createFeedbackRequest.getToUserId());
+    if (userProfileOpt.isPresent()) {
+      var numberOfFeedback =
+          feedbackRepository.findByToUserId(createFeedbackRequest.getToUserId()).size();
+      Float newRating = (float) 0;
+      if (numberOfFeedback == 0) {
+        newRating = createFeedbackRequest.getRating().floatValue();
+      } else {
+        var currentRating = userProfileOpt.get().getRating();
+        newRating = (currentRating * numberOfFeedback + createFeedbackRequest.getRating())
+            / (numberOfFeedback + 1);
+      }
+      profileRepository.updateRating(newRating, createFeedbackRequest.getToUserId());
+    }
+    return feedbackRepository.save(feedback);
+  }
+
+  @Override
+  public FeedbackOverviewResponse getFeedbackOverview(Long toUserId) {
     var feedbacks = feedbackRepository.findByToUserId(toUserId);
     Double totalRating = (double) 0;
     for (Feedback feedback : feedbacks) {
@@ -37,17 +71,20 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     var overallRating = totalRating / feedbacks.size();
     overallRating = Double.parseDouble(new DecimalFormat("#.##").format(overallRating));
+    var feedbackOverviewResponse = new FeedbackOverviewResponse(overallRating);
 
-    return new FeedbackResponse(pageResponse, overallRating);
-  }
-
-  @Override
-  public Feedback createFeedback(CreateFeedbackRequest createFeedbackRequest) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    var feedback = ObjectMapperUtils.map(createFeedbackRequest, Feedback.class);
-    feedback.setFromUserId(localUser.getUser().getId());
-    return feedbackRepository.save(feedback);
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if (principal instanceof LocalUser) {
+      LocalUser localUser =
+          (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      var user = localUser.getUser();
+      var feedback = feedbackRepository.findByToUserIdAndFromUserId(toUserId, user.getId());
+      var feedbackResponse = modelMapper.map(feedback, FeedbackResponse.class);
+      feedbackResponse.setFullName(user.getFullName());
+      feedbackResponse.setImageUrl(user.getImageUrl());
+      feedbackOverviewResponse.setMyFeedback(feedbackResponse);
+    }
+    return feedbackOverviewResponse;
   }
 
 }

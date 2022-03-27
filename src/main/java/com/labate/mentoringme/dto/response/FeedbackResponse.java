@@ -1,13 +1,15 @@
 package com.labate.mentoringme.dto.response;
 
-import lombok.AllArgsConstructor;
+import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class FeedbackResponse {
-  private PageResponse pageResponse;
-  private Double overallRating;
+  private String fullName;
+  private String imageUrl;
+  private Integer rating;
+  private String comment;
+  private Date created;
 }

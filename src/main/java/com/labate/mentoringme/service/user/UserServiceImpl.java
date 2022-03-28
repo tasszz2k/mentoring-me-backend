@@ -175,6 +175,7 @@ public class UserServiceImpl implements UserService {
     return userRepository.findAllByIdInAndEnabledIsTrue(ids);
   }
 
+  @Transactional
   @Override
   public String uploadAvatar(LocalUser localUser, MultipartFile image) throws IOException {
     var user = localUser.getUser();

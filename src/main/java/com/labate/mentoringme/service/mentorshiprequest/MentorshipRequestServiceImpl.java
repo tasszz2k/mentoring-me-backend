@@ -133,7 +133,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     if (MentorshipRequest.Status.APPROVED.equals(status)
         && UserRole.ROLE_MENTOR.equals(mentorshipRequest.getAssigneeRole().getUserRole())) {
       // Update mentor into mentorship
-      var mentorId = localUser.getUser().getId();
+      var mentorId = localUser.getUserId();
       mentorshipService.bookMentor(mentorshipRequest, mentorId);
     }
   }
@@ -156,7 +156,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
   }
 
   public void checkPermissionToUpdate(MentorshipRequest entity, LocalUser localUser) {
-    var userId = localUser.getUser().getId();
+    var userId = localUser.getUserId();
     var role = localUser.getUser().getRole();
 
     if (!userId.equals(entity.getMentorship().getCreatedBy())
@@ -182,11 +182,11 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     // Status = CANCELED -> Check if user is owner (createdBy)
     if (status == MentorshipRequest.Status.APPROVED
         || status == MentorshipRequest.Status.REJECTED) {
-      if (!entity.getApproverId().equals(localUser.getUser().getId())) {
+      if (!entity.getApproverId().equals(localUser.getUserId())) {
         throw new AccessDeniedException("You are not allowed to update this mentorship request");
       }
     } else if (status == MentorshipRequest.Status.CANCELED) {
-      if (!entity.getMentorship().getCreatedBy().equals(localUser.getUser().getId())) {
+      if (!entity.getMentorship().getCreatedBy().equals(localUser.getUserId())) {
         throw new AccessDeniedException("You are not allowed to update this mentorship request");
       }
     } else {

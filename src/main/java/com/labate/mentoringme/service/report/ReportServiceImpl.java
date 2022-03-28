@@ -33,7 +33,7 @@ public class ReportServiceImpl implements ReportService {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var report = ObjectMapperUtils.map(createReportRequest, Report.class);
-    report.setFromUserId(localUser.getUser().getId());
+    report.setFromUserId(localUser.getUserId());
     var images = createReportRequest.getImages();
     if (images == null)
       return reportRepository.save(report);

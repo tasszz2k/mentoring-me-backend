@@ -59,7 +59,7 @@ public class QuizServiceImpl implements QuizService {
     if (principal instanceof LocalUser) {
       LocalUser localUser =
           (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-      var userId = localUser.getUser().getId();
+      var userId = localUser.getUserId();
       response.getContent().forEach(item -> {
         if (item.getUserId() != null && item.getUserId() == userId) {
           item.setIsLiked(true);
@@ -80,7 +80,7 @@ public class QuizServiceImpl implements QuizService {
       if (principal instanceof LocalUser) {
         LocalUser localUser =
             (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var userId = localUser.getUser().getId();
+        var userId = localUser.getUserId();
         var favoriteQuiz = favoriteQuizRepository.findByUserIdAndQuizId(userId, quizId);
         quizOverview.setIsLiked(false);
         if (favoriteQuiz != null)
@@ -110,7 +110,7 @@ public class QuizServiceImpl implements QuizService {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var quiz = modelMapper.map(createQuizRequest, Quiz.class);
-    quiz.setCreatedBy(localUser.getUser().getId());
+    quiz.setCreatedBy(localUser.getUserId());
     quiz.setAuthor(localUser.getUser().getFullName());
     quiz.getQuestions().forEach(question -> {
       question.setQuiz(quiz);
@@ -126,7 +126,7 @@ public class QuizServiceImpl implements QuizService {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var quiz = modelMapper.map(updateQuizRequest, Quiz.class);
-    quiz.setModifiedBy(localUser.getUser().getId());
+    quiz.setModifiedBy(localUser.getUserId());
     quiz.getQuestions().forEach(question -> {
       question.setQuiz(quiz);
     });
@@ -146,7 +146,7 @@ public class QuizServiceImpl implements QuizService {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
-    var userId = localUser.getUser().getId();
+    var userId = localUser.getUserId();
     var response = quizResultRepository.getQuizTakingHistory(userId, pageable).map(item -> {
       var quizTakingHistoryResponse = modelMapper.map(item, QuizTakingHistoryResponse.class);
       return quizTakingHistoryResponse;
@@ -172,7 +172,7 @@ public class QuizServiceImpl implements QuizService {
           (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
       var quizResult = modelMapper.map(response, QuizResult.class);
       quizResult.setQuizId(quizId);
-      quizResult.setUserId(localUser.getUser().getId());
+      quizResult.setUserId(localUser.getUserId());
       quizResult.setIsDeleted(false);
       quizResultRepository.save(quizResult);
     }
@@ -242,7 +242,7 @@ public class QuizServiceImpl implements QuizService {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
-    var userId = localUser.getUser().getId();
+    var userId = localUser.getUserId();
     return quizRepository.findAllByCreatedByAndIsDraft(userId, true, pageable).map(quiz -> {
       var quizOverviewDto = modelMapper.map(quiz, QuizOverviewDto.class);
       return quizOverviewDto;
@@ -255,7 +255,7 @@ public class QuizServiceImpl implements QuizService {
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var quiz = quizRepository.findById(request.getId()).get();
     quiz.setModifiedDate(new Date());
-    quiz.setModifiedBy(localUser.getUser().getId());
+    quiz.setModifiedBy(localUser.getUserId());
     quiz.setTime(request.getTime());
     quiz.setTitle(request.getTitle());
     quiz.setIsDraft(request.getIsDraft());

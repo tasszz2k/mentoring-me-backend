@@ -55,7 +55,7 @@ public class PostMapper {
     }
 
     Post post = ObjectMapperUtils.map(dto, Post.class);
-    post.setCreatedBy(localUser.getUser().getId());
+    post.setCreatedBy(localUser.getUserId());
     if (dto.getCategoryId() != null) {
       var category = categoryService.findById(dto.getCategoryId());
       post.setCategory(category);

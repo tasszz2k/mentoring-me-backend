@@ -64,7 +64,7 @@ public class UserProfileController {
       @PathVariable Long userId,
       @RequestBody @Valid UpdateUserProfileRequest request,
       @CurrentUser LocalUser localUser) {
-    if (!userId.equals(localUser.getUser().getId())) {
+    if (!userId.equals(localUser.getUserId())) {
       throw new AccessDeniedException("You can't update other user's profile");
     }
 

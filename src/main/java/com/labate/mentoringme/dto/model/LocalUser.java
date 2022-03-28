@@ -120,4 +120,8 @@ public class LocalUser extends User implements OAuth2User, OidcUser {
   public com.labate.mentoringme.model.User getUser() {
     return user;
   }
+
+  public Long getUserId() {
+    return user.getId();
+  }
 }

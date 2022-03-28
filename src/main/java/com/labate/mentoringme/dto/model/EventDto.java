@@ -13,6 +13,7 @@ public class EventDto {
   private Long id;
   private String title;
   private Long mentorshipId;
+  private Long shiftId;
 
   @JsonFormat(
       shape = JsonFormat.Shape.STRING,

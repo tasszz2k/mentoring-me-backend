@@ -34,19 +34,29 @@ public class GoogleCloudFileUpload {
   @Value("${gcp.subdirectory}")
   String subdirectory;
 
-  public String upload(MultipartFile file) throws IOException {
+  public String uploadImage(MultipartFile file) throws IOException {
+
+    var originalFilename = file.getOriginalFilename();
+    var extension = FilenameUtils.getExtension(file.getOriginalFilename());
+
+    if (!ImageFormatValidator.validateFileName(originalFilename)) {
+      throw new InvalidImageException(
+          "Missing file or unable to detect image with file name: " + originalFilename);
+    }
+
+    if (!ImageFormatValidator.validateExtension(extension)) {
+      throw new InvalidImageException(
+          "original file name: "
+              + originalFilename
+              + ". Format: "
+              + extension
+              + " is not supported");
+    }
+    return uploadFile(file, extension);
+  }
+
+  private String uploadFile(MultipartFile file, String extension) throws IOException {
     try {
-      var originalFilename = file.getOriginalFilename();
-      var extension = FilenameUtils.getExtension(file.getOriginalFilename());
-
-      if(!ImageFormatValidator.validateFileName(originalFilename)) {
-        throw new InvalidImageException("Missing file or unable to detect image with file name: " + originalFilename);
-      }
-
-      if (!ImageFormatValidator.validateExtension(extension)) {
-        throw new InvalidImageException("format: " + extension + " is not supported");
-      }
-
       var fileName = generateFileName(extension);
       // Prepare the blobId
       // BlobId is a combination of bucketName + subdirectory(optional) + fileName

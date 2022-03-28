@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum InternalServerError implements ResponseError {
   INTERNAL_SERVER_ERROR("There are somethings wrong {0}"),
+  MISSING_SERVLET_REQUEST_PART("There are somethings wrong {0}"),
   ;
 
   private final String message;

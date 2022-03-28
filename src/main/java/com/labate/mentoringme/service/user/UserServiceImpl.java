@@ -179,7 +179,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public String uploadAvatar(LocalUser localUser, MultipartFile image) throws IOException {
     var user = localUser.getUser();
-    String imageUrl = googleCloudFileUpload.upload(image);
+    String imageUrl = googleCloudFileUpload.uploadImage(image);
     user.setImageUrl(imageUrl);
     save(user);
     return imageUrl;

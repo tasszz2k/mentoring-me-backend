@@ -103,7 +103,7 @@ public class UserController {
   @PostMapping("/avatar")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   public ResponseEntity<?> uploadAvatar(
-      @RequestParam(value = "image", required = true) MultipartFile image,
+      @RequestParam(value = "image") MultipartFile image,
       @CurrentUser LocalUser localUser)
       throws IOException {
 

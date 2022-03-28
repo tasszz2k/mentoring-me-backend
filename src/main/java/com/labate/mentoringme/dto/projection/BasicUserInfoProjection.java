@@ -14,8 +14,7 @@ public interface BasicUserInfoProjection {
 
   String getImageUrl();
 
-  // Integer getGender();
+  Integer getGender();
 
   List<String> getRoles();
-
 }

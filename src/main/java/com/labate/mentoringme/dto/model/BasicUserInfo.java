@@ -12,6 +12,6 @@ public class BasicUserInfo {
   private final String fullName;
   private final String phoneNumber;
   private final String imageUrl;
-  // private final Gender gender;
+  private final Gender gender;
   private final List<String> roles;
 }

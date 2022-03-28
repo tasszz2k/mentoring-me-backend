@@ -35,7 +35,7 @@ public class FeedbackController {
     var paging = Paging.builder().limit(pageCriteria.getLimit()).page(pageCriteria.getPage())
         .total(pageData.getTotalElements()).build();
     var pageResponse = new PageResponse(pageData.getContent(), paging);
-    return BaseResponseEntity.ok(pageData);
+    return BaseResponseEntity.ok(pageResponse);
   }
 
   @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true,

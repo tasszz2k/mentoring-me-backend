@@ -3,6 +3,7 @@ package com.labate.mentoringme.controller.v1;
 import com.labate.mentoringme.config.CurrentUser;
 import com.labate.mentoringme.dto.mapper.TimetableMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
+import com.labate.mentoringme.dto.request.CreateEventRequest;
 import com.labate.mentoringme.dto.request.GetTimetableRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.exception.TimetableNotFoundException;
@@ -12,10 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -47,7 +45,7 @@ public class TimetableController {
   @GetMapping("/me")
   public ResponseEntity<?> getMyTimetable(
       @CurrentUser LocalUser localUser, @Valid GetTimetableRequest request) {
-    Long userId = localUser.getUser().getId();
+    Long userId = localUser.getUserId();
     return findTimetableById(userId, request);
   }
 
@@ -75,4 +73,20 @@ public class TimetableController {
   //   return BaseResponseEntity.ok(TimetableMapper.toDto(timetable));
   // }
 
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  @PostMapping("/events")
+  public ResponseEntity<?> createNewEvent(
+      @Valid @RequestBody CreateEventRequest request, @CurrentUser LocalUser localUser) {
+
+    timetableService.createNewEvent(request, localUser);
+
+    return BaseResponseEntity.ok(null, "Event created successfully");
+  }
 }

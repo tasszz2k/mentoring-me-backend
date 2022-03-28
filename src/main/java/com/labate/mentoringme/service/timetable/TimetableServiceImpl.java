@@ -1,6 +1,8 @@
 package com.labate.mentoringme.service.timetable;
 
 import com.labate.mentoringme.dto.mapper.TimetableMapper;
+import com.labate.mentoringme.dto.model.LocalUser;
+import com.labate.mentoringme.dto.request.CreateEventRequest;
 import com.labate.mentoringme.dto.request.GetTimetableRequest;
 import com.labate.mentoringme.model.MentorshipRequest;
 import com.labate.mentoringme.model.Timetable;
@@ -72,5 +74,11 @@ public class TimetableServiceImpl implements TimetableService {
     return timetable != null
         ? timetable
         : TimetableMapper.toEntity(timetableRepository.findTimetablePrjByUserId(userId));
+  }
+
+  @Override
+  public void createNewEvent(CreateEventRequest request, LocalUser localUser) {
+    Long userId = localUser.getUserId();
+    var timetable = findByUserId(userId);
   }
 }

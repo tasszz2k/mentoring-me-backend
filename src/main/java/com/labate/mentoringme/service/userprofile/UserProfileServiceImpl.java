@@ -53,7 +53,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     var userProfile = user.getUserProfile();
 
-    checkPermissionToUpdate(localUser.getUser().getId(), localUser);
+    checkPermissionToUpdate(localUser.getUserId(), localUser);
 
     String fullName = request.getFullName();
     String phoneNumber = request.getPhoneNumber();
@@ -88,7 +88,7 @@ public class UserProfileServiceImpl implements UserProfileService {
   }
 
   public void checkPermissionToUpdate(Long id, LocalUser localUser) {
-    var userId = localUser.getUser().getId();
+    var userId = localUser.getUserId();
     var role = localUser.getUser().getRole();
 
     if (!userId.equals(id) && !UserRole.MANAGER_ROLES.contains(role)) {

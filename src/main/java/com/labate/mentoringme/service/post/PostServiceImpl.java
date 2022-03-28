@@ -139,7 +139,7 @@ public class PostServiceImpl implements PostService {
   }
 
   public void checkPermissionToUpdate(Post entity, LocalUser localUser) {
-    var userId = localUser.getUser().getId();
+    var userId = localUser.getUserId();
     var role = localUser.getUser().getRole();
 
     if (!userId.equals(entity.getCreatedBy()) && !UserRole.MANAGER_ROLES.contains(role)) {

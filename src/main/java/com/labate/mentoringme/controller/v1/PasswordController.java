@@ -40,7 +40,7 @@ public class PasswordController {
   public ResponseEntity<?> changePassword(
       @Valid @RequestBody ChangePasswordRequest request, @CurrentUser LocalUser localUser) {
 
-    var userId = localUser.getUser().getId();
+    var userId = localUser.getUserId();
     boolean isSuccess =
         passwordService.changePassword(userId, request.getOldPassword(), request.getNewPassword());
 

@@ -112,7 +112,7 @@ public class VerificationController {
   @PreAuthorize("hasAnyRole('USER')")
   public ResponseEntity<?> registerBecomeMentor(
       @RequestBody @Valid RegisterBecomeMentorRequest request, @CurrentUser LocalUser localUser) {
-    mentorVerificationService.registerBecomeMentor(localUser.getUser().getId(), request);
+    mentorVerificationService.registerBecomeMentor(localUser.getUserId(), request);
     return BaseResponseEntity.ok(null, "Mentor request sent successfully");
   }
 }

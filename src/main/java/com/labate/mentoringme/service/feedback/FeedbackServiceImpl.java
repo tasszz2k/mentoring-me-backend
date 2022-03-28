@@ -43,7 +43,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var feedback = modelMapper.map(createFeedbackRequest, Feedback.class);
-    feedback.setFromUserId(localUser.getUser().getId());
+    feedback.setFromUserId(localUser.getUserId());
     var userProfileOpt = profileRepository.findById(createFeedbackRequest.getToUserId());
     if (userProfileOpt.isPresent()) {
       var numberOfFeedback =

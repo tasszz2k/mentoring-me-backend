@@ -73,7 +73,7 @@ public class MentorshipController {
   @PostMapping("")
   public ResponseEntity<?> createNewMentorship(
       @Valid @RequestBody CreateMentorshipRequest request, @CurrentUser LocalUser localUser) {
-    request.setCreatedBy(localUser.getUser().getId());
+    request.setCreatedBy(localUser.getUserId());
     var entity = MentorshipMapper.toEntity(request);
     entity.setId(null);
     var savedEntity = mentorshipService.saveMentorship(entity);

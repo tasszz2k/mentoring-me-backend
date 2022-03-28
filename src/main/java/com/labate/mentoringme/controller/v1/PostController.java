@@ -130,7 +130,7 @@ public class PostController {
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   @PostMapping("/{id}/like")
   public ResponseEntity<?> likePost(@PathVariable Long id, @CurrentUser LocalUser localUser) {
-    postService.likePost(id, localUser.getUser().getId());
+    postService.likePost(id, localUser.getUserId());
     return BaseResponseEntity.ok(null, "Post liked successfully");
   }
 
@@ -144,7 +144,7 @@ public class PostController {
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   @PostMapping("/{id}/unlike")
   public ResponseEntity<?> unlikePost(@PathVariable Long id, @CurrentUser LocalUser localUser) {
-    postService.unlikePost(id, localUser.getUser().getId());
+    postService.unlikePost(id, localUser.getUserId());
     return BaseResponseEntity.ok(null, "Post unliked successfully");
   }
 

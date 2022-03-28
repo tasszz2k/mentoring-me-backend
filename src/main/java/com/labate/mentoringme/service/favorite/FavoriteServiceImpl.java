@@ -31,7 +31,7 @@ public class FavoriteServiceImpl implements FavoriteService {
   public Page<QuizOverviewDto> findFavoriteQuizByUserId(PageCriteria pageCriteria) {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    var userId = localUser.getUser().getId();
+    var userId = localUser.getUserId();
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     var response = favoriteQuizRepository.findAllByUserId(userId, pageable).map(quiz -> {
       var quizDto = modelMapper.map(quiz, QuizOverviewDto.class);
@@ -46,7 +46,7 @@ public class FavoriteServiceImpl implements FavoriteService {
   public FavoriteQuiz findByQuizIdAndUserId(Long quizId) {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    var userId = localUser.getUser().getId();
+    var userId = localUser.getUserId();
     return favoriteQuizRepository.findByUserIdAndQuizId(userId, quizId);
   }
 
@@ -54,7 +54,7 @@ public class FavoriteServiceImpl implements FavoriteService {
   public void deleteFavoriteQuiz(Long quizId) {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    var userId = localUser.getUser().getId();
+    var userId = localUser.getUserId();
     favoriteQuizRepository.deleteFavoriteQuiz(userId, quizId);
   }
 
@@ -64,7 +64,7 @@ public class FavoriteServiceImpl implements FavoriteService {
   public FavoriteQuiz addFavoriteQuiz(AddFavoriteQuizRequest addFavoriteQuizRequest) {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    var userId = localUser.getUser().getId();
+    var userId = localUser.getUserId();
     var favoriteQuiz = new FavoriteQuiz();
     favoriteQuiz.setQuizId(addFavoriteQuizRequest.getQuizId());
     favoriteQuiz.setUserId(userId);
@@ -77,7 +77,7 @@ public class FavoriteServiceImpl implements FavoriteService {
   public Page<UserDto> findFavoriteMentor(PageCriteria pageCriteria) {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    var userId = localUser.getUser().getId();
+    var userId = localUser.getUserId();
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     var response = favoriteMentorRepository.findAllByUserId(userId, pageable).map(quiz -> {
       var userDto = modelMapper.map(quiz, UserDto.class);
@@ -92,7 +92,7 @@ public class FavoriteServiceImpl implements FavoriteService {
   public void deleteFavoriteMentor(Long mentorId) {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    var userId = localUser.getUser().getId();
+    var userId = localUser.getUserId();
     favoriteMentorRepository.deleteFavoriteMentor(userId, mentorId);
   }
 
@@ -102,7 +102,7 @@ public class FavoriteServiceImpl implements FavoriteService {
   public FavoriteMentor addFavoriteMentor(CreateFavoriteMentorRequest createFavoriteMentorRequest) {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    var userId = localUser.getUser().getId();
+    var userId = localUser.getUserId();
     var favoriteMentor = new FavoriteMentor();
     favoriteMentor.setMentorId(createFavoriteMentorRequest.getMentorId());
     favoriteMentor.setStudentId(userId);

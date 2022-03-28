@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum BadRequestError implements ResponseError {
   INVALID_INPUT(4000000, "Invalid input"),
-  INVALID_ACCEPT_LANGUAGE(4000001, "Invalid value for request header Accept-Language: {0}"),
+  // INVALID_ACCEPT_LANGUAGE(4000001, "Invalid value for request header Accept-Language: {0}"),
   MISSING_PATH_VARIABLE(4000002, "Missing path variable"), // MissingPathVariable
   CLASS_HAS_BEGUN(4000003, "Class has begun: {0}"),
   CANNOT_RE_ENROLL(4000004, "You cannot re-enroll in this class: {0}"),

@@ -6,14 +6,14 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum DuplicatedError implements ResponseError {
-  GROUP_NAME_EXISTED(4090001, "Group name existed: {0}"),
-  RESOURCE_ID_EXISTED(4090002, "Resource code and tenant id pair existed: {0} , {1}"),
-  RESOURCE_NAME_EXISTED(4090003, "Resource name existed: {0}"),
-  USERNAME_EXISTED(4090004, "Username existed: {0}"),
-  CLIENT_ID_EXISTED(4090005, "Client id existed: {0}"),
-  DATA_POLICY_EXISTED(4090006, "Data policy existed: {0}"),
-  EMAIL_EXISTED(4090007, "Email existed: {0}"),
-  RESOURCE_SCOPE_EXISTED(4090008, "Resource scope existed: {0} , {1}"),
+  // GROUP_NAME_EXISTED(4090001, "Group name existed: {0}"),
+  // RESOURCE_ID_EXISTED(4090002, "Resource code and tenant id pair existed: {0} , {1}"),
+  // RESOURCE_NAME_EXISTED(4090003, "Resource name existed: {0}"),
+  // USERNAME_EXISTED(4090004, "Username existed: {0}"),
+  // CLIENT_ID_EXISTED(4090005, "Client id existed: {0}"),
+  // DATA_POLICY_EXISTED(4090006, "Data policy existed: {0}"),
+  // EMAIL_EXISTED(4090007, "Email existed: {0}"),
+  // RESOURCE_SCOPE_EXISTED(4090008, "Resource scope existed: {0} , {1}"),
   ;
 
   private final Integer code;

@@ -38,15 +38,15 @@ public class ReportServiceImpl implements ReportService {
     if (images == null)
       return reportRepository.save(report);
     if (images.length >= 1) {
-      var imageUrl1 = googleCloudFileUpload.upload(images[0]);
+      var imageUrl1 = googleCloudFileUpload.uploadImage(images[0]);
       report.setImgUrl1(imageUrl1);
     }
     if (images.length >= 2) {
-      var imageUrl2 = googleCloudFileUpload.upload(images[1]);
+      var imageUrl2 = googleCloudFileUpload.uploadImage(images[1]);
       report.setImgUrl2(imageUrl2);
     }
     if (images.length > 2) {
-      var imageUrl3 = googleCloudFileUpload.upload(images[2]);
+      var imageUrl3 = googleCloudFileUpload.uploadImage(images[2]);
       report.setImgUrl3(imageUrl3);
     }
     return reportRepository.save(report);

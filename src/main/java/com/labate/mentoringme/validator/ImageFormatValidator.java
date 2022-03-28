@@ -1,6 +1,7 @@
 package com.labate.mentoringme.validator;
 
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.ConstraintValidator;
@@ -25,7 +26,8 @@ public class ImageFormatValidator implements ConstraintValidator<ValidImageForma
 
   private static final Pattern IMAGE_PATTEN =
       Pattern.compile("([^\\s]+(\\.(?i)(/bmp|jpg|gif|png|svg|jpeg|raw|cr2|nef|orf|sr2))$)");
-  private static final Pattern IMAGE_EXTENSION_PATTEN = Pattern.compile("bmp|jpg|gif|png|svg|jpeg|raw|cr2|nef|orf|sr2");
+  private static final Pattern IMAGE_EXTENSION_PATTEN =
+      Pattern.compile("bmp|jpg|gif|png|svg|jpeg|raw|cr2|nef|orf|sr2");
   private static Matcher matcher;
 
   public static boolean validate(final String image) {
@@ -36,5 +38,9 @@ public class ImageFormatValidator implements ConstraintValidator<ValidImageForma
   public static boolean validateExtension(final String extension) {
     matcher = IMAGE_EXTENSION_PATTEN.matcher(extension);
     return matcher.matches();
+  }
+
+  public static boolean validateFileName(final String fileName) {
+    return StringUtils.hasText(fileName);
   }
 }

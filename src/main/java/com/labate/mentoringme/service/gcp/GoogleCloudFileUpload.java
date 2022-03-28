@@ -36,10 +36,15 @@ public class GoogleCloudFileUpload {
 
   public String upload(MultipartFile file) throws IOException {
     try {
+      var originalFilename = file.getOriginalFilename();
       var extension = FilenameUtils.getExtension(file.getOriginalFilename());
 
+      if(!ImageFormatValidator.validateFileName(originalFilename)) {
+        throw new InvalidImageException("Missing file or unable to detect image with file name: " + originalFilename);
+      }
+
       if (!ImageFormatValidator.validateExtension(extension)) {
-        throw new InvalidImageException("format " + extension + " is not supported");
+        throw new InvalidImageException("format: " + extension + " is not supported");
       }
 
       var fileName = generateFileName(extension);

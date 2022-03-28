@@ -87,6 +87,7 @@ public class EventServiceImpl implements EventService {
       Event.Basic basicEvent, Long timetableId, Long mentorshipId, String title) {
     return Event.builder()
         .timetableId(timetableId)
+        .shiftId(basicEvent.getShiftId())
         .mentorshipId(mentorshipId)
         .startTime(basicEvent.getStartTime())
         .endTime(basicEvent.getEndTime())
@@ -99,6 +100,6 @@ public class EventServiceImpl implements EventService {
     var endTime = shift.getEndTime();
     var start = DateUtils.toDate(date, startTime);
     var end = DateUtils.toDate(date, endTime);
-    return new Event.Basic(start, end);
+    return new Event.Basic(shift.getId(), start, end);
   }
 }

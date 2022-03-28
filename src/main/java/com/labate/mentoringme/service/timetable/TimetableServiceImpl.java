@@ -69,7 +69,7 @@ public class TimetableServiceImpl implements TimetableService {
 
   @Override
   public Timetable findByUserId(Long userId, GetTimetableRequest request) {
-    // TODO: find by userId and from date -> date
+    // find by userId and from date -> date
     var timetable = timetableRepository.findByUserIdAndConditions(userId, request);
     return timetable != null
         ? timetable

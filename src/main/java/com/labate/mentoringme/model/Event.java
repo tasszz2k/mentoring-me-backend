@@ -31,6 +31,9 @@ public class Event {
   @Column(name = "mentorship_id")
   private Long mentorshipId;
 
+  @Column(name = "shift_id")
+  private Long shiftId;
+
   private String title;
   // private String content;
 
@@ -56,6 +59,7 @@ public class Event {
   @AllArgsConstructor
   @Data
   public static class Basic {
+    private Long shiftId;
     private Date startTime;
     private Date endTime;
   }

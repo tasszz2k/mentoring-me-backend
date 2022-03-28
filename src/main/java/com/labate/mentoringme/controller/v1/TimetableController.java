@@ -89,4 +89,21 @@ public class TimetableController {
 
     return BaseResponseEntity.ok(null, "Event created successfully");
   }
+
+  @ApiImplicitParam(
+          name = "Authorization",
+          value = "Access Token",
+          required = true,
+          paramType = "header",
+          dataTypeClass = String.class,
+          example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  @DeleteMapping("/events")
+  public ResponseEntity<?> deleteEvent(
+          @Valid @RequestBody CreateEventRequest request, @CurrentUser LocalUser localUser) {
+
+    timetableService.createNewEvent(request, localUser);
+
+    return BaseResponseEntity.ok(null, "Event created successfully");
+  }
 }

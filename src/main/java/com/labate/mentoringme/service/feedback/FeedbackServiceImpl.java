@@ -69,8 +69,11 @@ public class FeedbackServiceImpl implements FeedbackService {
       totalRating += feedback.getRating();
     }
 
-    var overallRating = totalRating / feedbacks.size();
-    overallRating = Double.parseDouble(new DecimalFormat("#.#").format(overallRating));
+    var overallRating = (double) 0;
+    if (feedbacks.size() > 0) {
+      overallRating = totalRating / feedbacks.size();
+      overallRating = Double.parseDouble(new DecimalFormat("#.#").format(overallRating));
+    }
 
     var numberOfOneRating = 0;
     var numberOfTwoRating = 0;
@@ -123,6 +126,8 @@ public class FeedbackServiceImpl implements FeedbackService {
   }
 
   private Double calculateProportion(int value, int sampleSize) {
+    if (sampleSize == 0)
+      return (double) 0;
     var result = (double) (value * 100) / sampleSize;
     return Double.parseDouble(new DecimalFormat("#.#").format(result));
   }

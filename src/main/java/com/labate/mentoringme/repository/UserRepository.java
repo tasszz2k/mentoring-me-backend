@@ -50,14 +50,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   @Query(
       value =
-          "SELECT users.id           AS id,\n"
-              + "       users.email        AS email,\n"
-              + "       users.full_name    AS fullName,\n"
-              + "       users.phone_number AS phoneNumber,\n"
-              + "       users.image_url    AS imageUrl,\n"
-              + "       roles.name         AS roles\n"
+          "SELECT users.id             AS id,\n"
+              + "       users.email          AS email,\n"
+              + "       users.full_name      AS fullName,\n"
+              + "       users.phone_number   AS phoneNumber,\n"
+              + "       users.image_url      AS imageUrl,\n"
+              + "       user_profiles.gender AS gender,\n"
+              + "       roles.name           AS roles\n"
               + "\n"
               + "FROM users\n"
+              + "         LEFT JOIN user_profiles ON users.profile_id = user_profiles.id\n"
               + "         LEFT JOIN users_roles ON users_roles.user_id = users.id\n"
               + "         LEFT JOIN roles ON roles.id = users_roles.role_id\n"
               + "WHERE users.id = :userId",
@@ -66,14 +68,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
   @Query(
       value =
-          "SELECT users.id           AS id,\n"
-              + "       users.email        AS email,\n"
-              + "       users.full_name    AS fullName,\n"
-              + "       users.phone_number AS phoneNumber,\n"
-              + "       users.image_url    AS imageUrl,\n"
-              + "       roles.name         AS roles\n"
+          "SELECT users.id             AS id,\n"
+              + "       users.email          AS email,\n"
+              + "       users.full_name      AS fullName,\n"
+              + "       users.phone_number   AS phoneNumber,\n"
+              + "       users.image_url      AS imageUrl,\n"
+              + "       user_profiles.gender AS gender,\n"
+              + "       roles.name           AS roles\n"
               + "\n"
               + "FROM users\n"
+              + "         LEFT JOIN user_profiles ON users.profile_id = user_profiles.id\n"
               + "         LEFT JOIN users_roles ON users_roles.user_id = users.id\n"
               + "         LEFT JOIN roles ON roles.id = users_roles.role_id\n"
               + "WHERE users.id IN (:userIds)",

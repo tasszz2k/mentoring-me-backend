@@ -144,7 +144,7 @@ public class UserMapper {
         prj.getFullName(),
         prj.getPhoneNumber(),
         prj.getImageUrl(),
-        // prj.Gender.of(getGender()),
+        Gender.of(prj.getGender()),
         prj.getRoles());
   }
 }

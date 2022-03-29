@@ -11,8 +11,10 @@ public class QuizOverviewDto {
   private Integer time;
   private Boolean isDraft;
   private String author;
-  private Long authorId;
+  private Long createdBy;
   private Boolean isLiked;
   @JsonIgnore
   private Long userId;
+  private String imageUrl;
+  private String role;
 }

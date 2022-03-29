@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,6 +34,7 @@ import com.labate.mentoringme.repository.FavoriteQuizRepository;
 import com.labate.mentoringme.repository.QuestionRepository;
 import com.labate.mentoringme.repository.QuizRepository;
 import com.labate.mentoringme.repository.QuizResultRepository;
+import com.labate.mentoringme.repository.UserRepository;
 import com.labate.mentoringme.util.ObjectMapperUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +48,7 @@ public class QuizServiceImpl implements QuizService {
   private final QuestionRepository questionRepository;
   private final QuizResultRepository quizResultRepository;
   private final FavoriteQuizRepository favoriteQuizRepository;
+  private final UserRepository userRepository;
   private final ModelMapper modelMapper = new ModelMapper();
 
   @Override
@@ -71,24 +74,26 @@ public class QuizServiceImpl implements QuizService {
     return response;
   }
 
+  @Transactional
   @Override
   public QuizOverviewDto getQuizOverview(Long quizId) {
     var quizOpt = quizRepository.findById(quizId);
-    if (quizOpt.isPresent()) {
-      var quizOverview = ObjectMapperUtils.map(quizOpt.get(), QuizOverviewDto.class);
-      Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-      if (principal instanceof LocalUser) {
-        LocalUser localUser =
-            (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        var userId = localUser.getUserId();
-        var favoriteQuiz = favoriteQuizRepository.findByUserIdAndQuizId(userId, quizId);
-        quizOverview.setIsLiked(false);
-        if (favoriteQuiz != null)
-          quizOverview.setIsLiked(true);;
-      }
-      return quizOverview;
+    var quizOverview = ObjectMapperUtils.map(quizOpt.get(), QuizOverviewDto.class);
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if (principal instanceof LocalUser) {
+      LocalUser localUser =
+          (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      var userId = localUser.getUserId();
+      var favoriteQuiz = favoriteQuizRepository.findByUserIdAndQuizId(userId, quizId);
+      quizOverview.setIsLiked(false);
+      if (favoriteQuiz != null)
+        quizOverview.setIsLiked(true);;
+
+      var user = userRepository.findById(quizOverview.getCreatedBy()).get();
+      quizOverview.setImageUrl(user.getImageUrl());
+      quizOverview.setRole(user.getRole().name());;
     }
-    return null;
+    return quizOverview;
   }
 
   @Override

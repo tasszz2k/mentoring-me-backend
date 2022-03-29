@@ -1,18 +1,12 @@
 package com.labate.mentoringme.service.user;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
-import com.labate.mentoringme.constant.AppConstant;
-import com.labate.mentoringme.dto.mapper.UserMapper;
-import com.labate.mentoringme.dto.model.BasicUserInfo;
+import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.repository.UserRepository;
-import com.sun.istack.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
@@ -20,19 +14,33 @@ public class UserCaching {
 
   private final UserRepository userRepository;
 
-  @Value("${labate.cache.user.expiration-time}")
-  private int timeCacheUser;
+  // @Value("${labate.cache.user.expiration-time}")
+  // private int timeCacheUser;
+  //
+  // public final LoadingCache<Long, BasicUserInfo> basicUserInfoCache =
+  //     CacheBuilder.newBuilder()
+  //         .maximumSize(AppConstant.MAXIMUM_CACHE_SIZE)
+  //         .expireAfterWrite(6, TimeUnit.HOURS)
+  //         .build(
+  //             new CacheLoader<>() {
+  //               @Override
+  //               public BasicUserInfo load(@NotNull final Long userId) {
+  //                 var prj = userRepository.findBasicUserInfoById(userId);
+  //                 return UserMapper.toBasicUserInfo(prj);
+  //               }
+  //             });
 
-  public final LoadingCache<Long, BasicUserInfo> basicUserInfoCache =
-      CacheBuilder.newBuilder()
-          .maximumSize(AppConstant.MAXIMUM_CACHE_SIZE)
-          .expireAfterWrite(6, TimeUnit.HOURS)
-          .build(
-              new CacheLoader<>() {
-                @Override
-                public BasicUserInfo load(@NotNull final Long userId) {
-                  var prj = userRepository.findBasicUserInfoById(userId);
-                  return UserMapper.toBasicUserInfo(prj);
-                }
-              });
+  /**
+   * Only external method calls coming in through the proxy are intercepted. This means that
+   * self-invocation, in effect, a method within the target object calling another method of the
+   * target object, will not lead to an actual cache interception at runtime even if the invoked
+   * method is marked with @Cacheable.
+   *
+   * @param id
+   * @return
+   */
+  @Cacheable(value = "user", key = "#id")
+  public Optional<User> findUserById(Long id) {
+    return userRepository.findById(id);
+  }
 }

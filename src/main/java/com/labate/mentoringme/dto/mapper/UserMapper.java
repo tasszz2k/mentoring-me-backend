@@ -147,4 +147,18 @@ public class UserMapper {
         Gender.of(prj.getGender()),
         prj.getRoles());
   }
+
+  public static BasicUserInfo toBasicUserInfo(User entity) {
+    if (entity == null) {
+      return null;
+    }
+    return new BasicUserInfo(
+        entity.getId(),
+        entity.getEmail(),
+        entity.getFullName(),
+        entity.getPhoneNumber(),
+        entity.getImageUrl(),
+        entity.getUserProfile().getGender(),
+        List.of(entity.getRole().name()));
+  }
 }

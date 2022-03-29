@@ -146,7 +146,7 @@ public class UserServiceImpl implements UserService {
     return LocalUser.create(user, attributes, idToken, userInfo);
   }
 
-  @CachePut(value = {"user", "localUser", "basicUserInfo"}) // TODO: fix me, cache only user. localUser, basicUserInfo map from user
+  @CachePut("user")
   @Transactional
   @Override
   public User save(User user) {
@@ -199,7 +199,7 @@ public class UserServiceImpl implements UserService {
     save(user);
   }
 
-  @Cacheable("basicUserInfo")
+  // @Cacheable("basicUserInfo")
   @Override
   public BasicUserInfo findBasicUserInfoByUserId(Long id) {
     // return userCaching.basicUserInfoCache.getUnchecked(id);
@@ -238,7 +238,7 @@ public class UserServiceImpl implements UserService {
     return userRepository.findById(id);
   }
 
-  @Cacheable("localUser")
+  // @Cacheable("localUser")
   @Override
   public LocalUser findLocalUserById(Long id) {
     var user = findUserById(id).orElse(null);

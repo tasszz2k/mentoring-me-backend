@@ -107,6 +107,7 @@ public class UserServiceImpl implements UserService {
     return user;
   }
 
+  @Cacheable(cacheNames = "user", key = "#email")
   @Override
   public User findUserByEmail(final String email) {
     return userRepository.findByEmail(email);
@@ -205,7 +206,6 @@ public class UserServiceImpl implements UserService {
     // return userCaching.basicUserInfoCache.getUnchecked(id);
     var user = findUserById(id).orElseThrow(() -> new UserNotFoundException("id = " + id));
     return UserMapper.toBasicUserInfo(user);
-
   }
 
   @Override
@@ -232,10 +232,10 @@ public class UserServiceImpl implements UserService {
         .build();
   }
 
-  @Cacheable("user")
+  // @Cacheable(value = "user", key = "#id")
   @Override
   public Optional<User> findUserById(Long id) {
-    return userRepository.findById(id);
+    return userCaching.findUserById(id);
   }
 
   // @Cacheable("localUser")

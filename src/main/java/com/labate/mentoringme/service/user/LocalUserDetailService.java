@@ -25,7 +25,7 @@ public class LocalUserDetailService implements UserDetailsService {
     return createLocalUser(user);
   }
 
-  @Transactional
+  // @Transactional
   public LocalUser loadUserById(Long id) {
     User user =
         userService

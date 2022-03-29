@@ -146,7 +146,7 @@ public class UserServiceImpl implements UserService {
     return LocalUser.create(user, attributes, idToken, userInfo);
   }
 
-  @CachePut(value = "user")
+  @CachePut(value = {"user", "localUser", "basicUserInfo"}) // TODO: fix me, cache only user. localUser, basicUserInfo map from user
   @Transactional
   @Override
   public User save(User user) {

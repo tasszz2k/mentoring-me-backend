@@ -199,9 +199,13 @@ public class UserServiceImpl implements UserService {
     save(user);
   }
 
+  @Cacheable("basicUserInfo")
   @Override
   public BasicUserInfo findBasicUserInfoByUserId(Long id) {
-    return userCaching.basicUserInfoCache.getUnchecked(id);
+    // return userCaching.basicUserInfoCache.getUnchecked(id);
+    var user = findUserById(id).orElseThrow(() -> new UserNotFoundException("id = " + id));
+    return UserMapper.toBasicUserInfo(user);
+
   }
 
   @Override

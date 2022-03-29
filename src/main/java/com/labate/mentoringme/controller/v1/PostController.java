@@ -72,7 +72,7 @@ public class PostController {
       paramType = "header",
       dataTypeClass = String.class,
       example = "Bearer access_token")
-  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  @PreAuthorize("hasAnyRole('USER')")
   @PostMapping("")
   public ResponseEntity<?> addNewPost(
       @Valid @RequestBody CreatePostRequest request, @CurrentUser LocalUser localUser) {
@@ -92,7 +92,7 @@ public class PostController {
       paramType = "header",
       dataTypeClass = String.class,
       example = "Bearer access_token")
-  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  @PreAuthorize("hasAnyRole('USER')")
   @PutMapping("/{id}")
   public ResponseEntity<?> updatePost(
       @PathVariable Long id,

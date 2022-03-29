@@ -12,6 +12,7 @@ import com.labate.mentoringme.dto.request.CreateFeedbackRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.response.FeedbackOverviewResponse;
 import com.labate.mentoringme.dto.response.FeedbackResponse;
+import com.labate.mentoringme.exception.UserAlreadyFeedbackMentorException;
 import com.labate.mentoringme.model.Feedback;
 import com.labate.mentoringme.repository.FeedbackRepository;
 import com.labate.mentoringme.repository.ProfileRepository;
@@ -42,6 +43,11 @@ public class FeedbackServiceImpl implements FeedbackService {
   public Feedback createFeedback(CreateFeedbackRequest createFeedbackRequest) {
     LocalUser localUser =
         (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    var oldFeedback = feedbackRepository
+        .findByToUserIdAndFromUserId(createFeedbackRequest.getToUserId(), localUser.getUserId());
+    if (oldFeedback != null) {
+      throw new UserAlreadyFeedbackMentorException("UserId: " + localUser.getUserId());
+    }
     var feedback = modelMapper.map(createFeedbackRequest, Feedback.class);
     feedback.setFromUserId(localUser.getUserId());
     var userProfileOpt = profileRepository.findById(createFeedbackRequest.getToUserId());

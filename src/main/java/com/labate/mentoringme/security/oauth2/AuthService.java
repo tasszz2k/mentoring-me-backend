@@ -8,6 +8,7 @@ import com.labate.mentoringme.exception.LoginFailException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -38,11 +39,13 @@ public class AuthService {
               });
 
   public Authentication getAuthentication(String email, String password) {
-    Authentication authenticate;
+    Authentication authenticate = null;
     try {
       authenticate =
           authenticationManager.authenticate(
               new UsernamePasswordAuthenticationToken(email, password));
+    } catch (DisabledException e) {
+      throw new DisabledException(email);
     } catch (Exception e) {
       int times = increaseLoginFailCounter(email);
       throw new LoginFailException(String.valueOf(times));

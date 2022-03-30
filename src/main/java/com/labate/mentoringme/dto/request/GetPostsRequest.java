@@ -11,6 +11,8 @@ import java.util.List;
 @Builder
 @Value
 public class GetPostsRequest {
+  String keyword;
+
   Long createdBy;
   List<Long> categoryIds;
 

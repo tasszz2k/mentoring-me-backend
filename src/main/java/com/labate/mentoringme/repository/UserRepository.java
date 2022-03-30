@@ -28,10 +28,21 @@ public interface UserRepository extends JpaRepository<User, Long> {
               + "LEFT JOIN userProfile.categories category "
               + "LEFT JOIN userProfile.address address "
               + "WHERE (:#{#request.getRoleName()} IS NULL OR role.name = :#{#request.getRoleName()}) "
-              + "AND (:#{#request.getMentorStatus()} IS NULL OR user.status = :#{#request.getMentorStatus()}) "
-              + "AND (:#{#request.getEnabled()} IS NULL OR user.enabled = :#{#request.getEnabled()}) "
+              + "AND (:#{#request.mentorStatus} IS NULL OR user.status = :#{#request.mentorStatus}) "
+              + "AND (:#{#request.enabled} IS NULL OR user.enabled = :#{#request.enabled}) "
+              + "AND (COALESCE(:#{#request.genders}, NULL) IS NULL OR userProfile.genderValue IN (:#{#request.getGenderValues()})) "
+              + "and (:#{#request.minPrice} is null or userProfile.price >= :#{#request.minPrice}) "
+              + "and (:#{#request.maxPrice} is null or userProfile.price <= :#{#request.maxPrice}) "
+              + "and (:#{#request.isOfflineStudy} is null or userProfile.isOfflineStudy <= :#{#request.isOfflineStudy}) "
+              + "and (:#{#request.isOnlineStudy} is null or userProfile.isOnlineStudy <= :#{#request.isOnlineStudy}) "
               + "AND (COALESCE(:#{#request.categoryIds}, NULL) IS NULL OR category.id IN (:#{#request.categoryIds})) "
-              + "AND (COALESCE(:#{#request.addressIds}, NULL) IS NULL OR address.id IN (:#{#request.addressIds})) ",
+              + "AND (COALESCE(:#{#request.addressIds}, NULL) IS NULL OR address.id IN (:#{#request.addressIds})) "
+              + "and (:#{#request.keyword} is null "
+              + "or user.fullName like %:#{#request.keyword}% "
+              + "or user.email like %:#{#request.keyword}% "
+              + "or user.phoneNumber like %:#{#request.keyword}% "
+              + "or userProfile.school like %:#{#request.keyword}% "
+              + ") ",
       countQuery =
           "SELECT COUNT (DISTINCT user) "
               + "FROM User user "
@@ -40,10 +51,21 @@ public interface UserRepository extends JpaRepository<User, Long> {
               + "LEFT JOIN userProfile.categories category "
               + "LEFT JOIN userProfile.address address "
               + "WHERE (:#{#request.getRoleName()} IS NULL OR role.name = :#{#request.getRoleName()}) "
-              + "AND (:#{#request.getMentorStatus()} IS NULL OR user.status = :#{#request.getMentorStatus()}) "
-              + "AND (:#{#request.getEnabled()} IS NULL OR user.enabled = :#{#request.getEnabled()}) "
+              + "AND (:#{#request.mentorStatus} IS NULL OR user.status = :#{#request.mentorStatus}) "
+              + "AND (:#{#request.enabled} IS NULL OR user.enabled = :#{#request.enabled}) "
+              + "AND (COALESCE(:#{#request.genders}, NULL) IS NULL OR userProfile.genderValue IN (:#{#request.getGenderValues()})) "
+              + "and (:#{#request.minPrice} is null or userProfile.price >= :#{#request.minPrice}) "
+              + "and (:#{#request.maxPrice} is null or userProfile.price <= :#{#request.maxPrice}) "
+              + "and (:#{#request.isOfflineStudy} is null or userProfile.isOfflineStudy <= :#{#request.isOfflineStudy}) "
+              + "and (:#{#request.isOnlineStudy} is null or userProfile.isOnlineStudy <= :#{#request.isOnlineStudy}) "
               + "AND (COALESCE(:#{#request.categoryIds}, NULL) IS NULL OR category.id IN (:#{#request.categoryIds})) "
-              + "AND (COALESCE(:#{#request.addressIds}, NULL) IS NULL OR address.id IN (:#{#request.addressIds})) ")
+              + "AND (COALESCE(:#{#request.addressIds}, NULL) IS NULL OR address.id IN (:#{#request.addressIds})) "
+              + "and (:#{#request.keyword} is null "
+              + "or user.fullName like %:#{#request.keyword}% "
+              + "or user.email like %:#{#request.keyword}% "
+              + "or user.phoneNumber like %:#{#request.keyword}% "
+              + "or userProfile.school like %:#{#request.keyword}% "
+              + ") ")
   Page<User> findAllByConditions(FindUsersRequest request, Pageable pageable);
 
   List<User> findAllByIdInAndEnabledIsTrue(Collection<Long> userIds);

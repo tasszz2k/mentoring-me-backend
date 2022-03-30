@@ -16,6 +16,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
           + "and (:#{#request.minPrice} is null or p.price >= :#{#request.minPrice}) "
           + "and (:#{#request.maxPrice} is null or p.price <= :#{#request.maxPrice}) "
           + "and (:#{#request.fromDate} is null or p.startDate >= :#{#request.fromDate}) "
-          + "and (:#{#request.toDate} is null or p.startDate <= :#{#request.toDate}) ")
+          + "and (:#{#request.toDate} is null or p.startDate <= :#{#request.toDate}) "
+          + "and (:#{#request.keyword} is null "
+          + "or p.content like %:#{#request.keyword}% "
+          + ") ")
   Page<Post> findAllByConditions(GetPostsRequest request, Pageable pageable);
 }

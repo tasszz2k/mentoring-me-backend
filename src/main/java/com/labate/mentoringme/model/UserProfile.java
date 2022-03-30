@@ -26,9 +26,9 @@ public class UserProfile {
 
   @Column(name = "gender")
   @Basic
-  private Integer genderValue;
+  private Integer genderValue = 3;
 
-  @Transient private Gender gender;
+  @Transient private Gender gender = Gender.OTHER;
 
   private Date dob;
   private Float rating;

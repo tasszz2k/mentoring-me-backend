@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -598,5 +599,20 @@ public class ExceptionHandleAdvice {
                 error.getName(),
                 Collections.singleton(
                     FieldErrorResponse.builder().message(e.getMessage()).build())));
+  }
+
+  @ExceptionHandler(DisabledException.class)
+  public ResponseEntity<ErrorResponse<Void>> handleDisabledException(
+          DisabledException e, HttpServletRequest request) {
+    ResponseError error = UnauthorizedError.DISABLED_USER_EXCEPTION;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+            .body(
+                    new InvalidInputResponse(
+                            error.getCode(),
+                            error.getMessage(),
+                            error.getName(),
+                            Collections.singleton(
+                                    FieldErrorResponse.builder().message(e.getMessage()).build())));
   }
 }

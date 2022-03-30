@@ -17,6 +17,7 @@ public enum UnauthorizedError implements ResponseError {
   LOGIN_FAIL_BLOCK_ACCOUNT(
       4010005, "The account is temporarily blocked due to invalid login more than 5 times"),
   INVALID_PASSWORD(4010006, "Invalid password, please try again."),
+  DISABLED_USER_EXCEPTION(4010007, "The user is disabled."),
   ;
 
   private final int code;

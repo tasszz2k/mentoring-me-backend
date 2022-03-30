@@ -23,6 +23,7 @@ public class FindUsersRequest {
   Float maxPrice;
   Boolean isOfflineStudy;
   Boolean isOnlineStudy;
+  Float ratingFrom;
 
   List<Long> categoryIds;
   List<Long> addressIds;

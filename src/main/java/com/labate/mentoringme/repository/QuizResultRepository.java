@@ -12,8 +12,8 @@ import com.labate.mentoringme.model.quiz.QuizResult;
 @Repository
 public interface QuizResultRepository extends JpaRepository<QuizResult, Long> {
   @Query(
-      value = "SELECT A.title, A.number_of_question AS numberOfQuestion, B.score, B.number_of_false AS numberOfFalse, B.number_of_true AS numberOfTrue, B.created, author FROM quizzes A join quiz_results B on A.id = B.quiz_id WHERE B.user_id = :userId",
-      countQuery = "SELECT COUNT(B.id) FROM quizzes A join quiz_results B on A.id = B.quiz_id WHERE B.user_id = :userId",
+      value = "SELECT B.title, B.number_of_question AS numberOfQuestion, A.score, A.number_of_false AS numberOfFalse, A.number_of_true AS numberOfTrue, A.created, author FROM quiz_results A JOIN quizzes B on A.quiz_id = B.id WHERE A.user_id = :userId",
+      countQuery = "SELECT COUNT(A.id) FROM quiz_results A JOIN quizzes B on A.quiz_id = B.id WHERE A.user_id = :userId",
       nativeQuery = true)
   Page<QuizTakingHistoryProjection> getQuizTakingHistory(@Param("userId") Long userId,
       Pageable pageable);

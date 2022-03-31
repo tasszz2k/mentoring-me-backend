@@ -1,5 +1,6 @@
 package com.labate.mentoringme.repository;
 
+import java.util.List;
 import javax.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,4 +24,6 @@ public interface FavoriteMentorRepository extends JpaRepository<FavoriteMentor, 
   @Modifying
   @Query("UPDATE FavoriteMentor m SET m.isDeleted=1 WHERE m.studentId = :studentId AND m.mentorId = :mentorId")
   void deleteFavoriteMentor(@Param("studentId") Long userId, @Param("mentorId") Long mentorId);
+
+  List<FavoriteMentor> findAllByStudentId(@Param("studentId") Long studentId);
 }

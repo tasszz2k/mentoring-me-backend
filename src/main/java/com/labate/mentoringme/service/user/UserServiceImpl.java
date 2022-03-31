@@ -1,5 +1,27 @@
 package com.labate.mentoringme.service.user;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 import com.labate.mentoringme.constant.MentorStatus;
 import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.constant.UserRole;
@@ -7,6 +29,7 @@ import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
 import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.BasicUserInfo;
 import com.labate.mentoringme.dto.model.LocalUser;
+import com.labate.mentoringme.dto.model.UserDetails;
 import com.labate.mentoringme.dto.projection.BasicUserInfoProjection;
 import com.labate.mentoringme.dto.request.FindUsersRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
@@ -14,9 +37,11 @@ import com.labate.mentoringme.dto.request.SignUpRequest;
 import com.labate.mentoringme.exception.OAuth2AuthenticationProcessingException;
 import com.labate.mentoringme.exception.UserAlreadyExistAuthenticationException;
 import com.labate.mentoringme.exception.UserNotFoundException;
+import com.labate.mentoringme.model.FavoriteMentor;
 import com.labate.mentoringme.model.Role;
 import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.model.UserProfile;
+import com.labate.mentoringme.repository.FavoriteMentorRepository;
 import com.labate.mentoringme.repository.RoleRepository;
 import com.labate.mentoringme.repository.UserRepository;
 import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfo;
@@ -25,21 +50,6 @@ import com.labate.mentoringme.service.gcp.GoogleCloudFileUpload;
 import com.labate.mentoringme.service.timetable.TimetableService;
 import com.labate.mentoringme.service.userprofile.UserProfileService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.oidc.OidcIdToken;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -53,6 +63,7 @@ public class UserServiceImpl implements UserService {
   private final GoogleCloudFileUpload googleCloudFileUpload;
   private final MentorVerificationService mentorVerificationService;
   private final UserCaching userCaching;
+  private final FavoriteMentorRepository favoriteMentorRepository;
 
   @Value("${labate.security.default-password}")
   private String defaultPassword;
@@ -72,8 +83,8 @@ public class UserServiceImpl implements UserService {
     user = save(user);
     userRepository.flush();
     Long userId = user.getId();
-    timetableService.createNewTimetable(
-        userId, String.format("Thời khóa biểu của %s", user.getFullName()));
+    timetableService.createNewTimetable(userId,
+        String.format("Thời khóa biểu của %s", user.getFullName()));
     mentorVerificationService.registerMentor(userId, null);
 
     return user;
@@ -115,11 +126,8 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional
-  public LocalUser processUserRegistration(
-      String registrationId,
-      Map<String, Object> attributes,
-      OidcIdToken idToken,
-      OidcUserInfo userInfo) {
+  public LocalUser processUserRegistration(String registrationId, Map<String, Object> attributes,
+      OidcIdToken idToken, OidcUserInfo userInfo) {
     OAuth2UserInfo oAuth2UserInfo =
         OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, attributes);
     if (!StringUtils.hasText(oAuth2UserInfo.getName())) {
@@ -133,11 +141,8 @@ public class UserServiceImpl implements UserService {
       if (!user.getProvider().equals(registrationId)
           && !user.getProvider().equals(SocialProvider.LOCAL.getProviderType())) {
         throw new OAuth2AuthenticationProcessingException(
-            "Looks like you're signed up with "
-                + user.getProvider()
-                + " account. Please use your "
-                + user.getProvider()
-                + " account to login.");
+            "Looks like you're signed up with " + user.getProvider() + " account. Please use your "
+                + user.getProvider() + " account to login.");
       }
       user = updateExistingUser(user, oAuth2UserInfo);
     } else {
@@ -221,14 +226,17 @@ public class UserServiceImpl implements UserService {
     return save(existingUser);
   }
 
-  private SignUpRequest toUserRegistrationObject(
-      String registrationId, OAuth2UserInfo oAuth2UserInfo) {
-    return SignUpRequest.getBuilder()
-        .addProviderUserID(oAuth2UserInfo.getId())
-        .addFullName(oAuth2UserInfo.getName())
-        .addEmail(oAuth2UserInfo.getEmail())
-        .addSocialProvider(UserMapper.toSocialProvider(registrationId))
-        .addPassword(defaultPassword) // FIXME: change it to a random password
+  private SignUpRequest toUserRegistrationObject(String registrationId,
+      OAuth2UserInfo oAuth2UserInfo) {
+    return SignUpRequest.getBuilder().addProviderUserID(oAuth2UserInfo.getId())
+        .addFullName(oAuth2UserInfo.getName()).addEmail(oAuth2UserInfo.getEmail())
+        .addSocialProvider(UserMapper.toSocialProvider(registrationId)).addPassword(defaultPassword) // FIXME:
+                                                                                                     // change
+                                                                                                     // it
+                                                                                                     // to
+                                                                                                     // a
+                                                                                                     // random
+                                                                                                     // password
         .build();
   }
 
@@ -246,5 +254,52 @@ public class UserServiceImpl implements UserService {
       throw new UserNotFoundException("id = " + id);
     }
     return LocalUser.create(user, null, null, null);
+  }
+
+  @Override
+  public List<UserDetails> findAllUserProfile(PageCriteria pageCriteria, FindUsersRequest request) {
+    var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
+    var response = userRepository.findAllByConditions(request, pageable).map(item -> {
+      var userDetails = UserMapper.buildUserDetails(item);
+      return userDetails;
+    }).getContent();
+
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    var favoriteMentors = new ArrayList();
+    if (principal instanceof LocalUser) {
+      LocalUser localUser =
+          (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      if (localUser.getUser().getRole() == UserRole.ROLE_USER) {
+        favoriteMentors =
+            (ArrayList) favoriteMentorRepository.findAllByStudentId(localUser.getUserId());
+        if (favoriteMentors.size() > 0) {
+          Collections.sort(favoriteMentors, Comparator.comparing(FavoriteMentor::getMentorId));
+          for (UserDetails user : response) {
+            var isLiked = isLiked(favoriteMentors, user.getId());
+            user.setIsLiked(isLiked);
+          }
+        }
+
+      }
+    }
+
+    return response;
+  }
+
+  private Boolean isLiked(ArrayList<FavoriteMentor> favoriteMentors, Long mentorId) {
+    int left = 0;
+    int right = favoriteMentors.size() - 1;
+    while (right >= left) {
+      int mid = left + (right - left) / 2;
+      var id = favoriteMentors.get(mid).getMentorId();
+      if (id == mentorId)
+        return true;
+      if (id > mentorId) {
+        right = mid - 1;
+      } else {
+        left = mid + 1;
+      }
+    }
+    return false;
   }
 }

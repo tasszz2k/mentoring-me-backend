@@ -52,4 +52,6 @@ public interface UserService {
   Map<Long, BasicUserInfo> findBasicUserInfos(List<Long> userIds);
 
   List<UserDetails> findAllUserProfile(PageCriteria pageCriteria, FindUsersRequest request);
+
+  UserDetails findUserProfileById(Long id);
 }

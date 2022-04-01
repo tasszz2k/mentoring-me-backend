@@ -302,4 +302,31 @@ public class UserServiceImpl implements UserService {
     }
     return false;
   }
+
+  @Override
+  public UserDetails findUserProfileById(Long id) {
+    var userOpt = userRepository.findById(id);
+    if (userOpt.isEmpty()) {
+      throw new UserNotFoundException("id = " + id);
+    }
+    var userDetails = UserMapper.buildUserDetails(userOpt.get());
+    if (userOpt.get().getRole() == UserRole.ROLE_MENTOR) {
+      Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      if (principal instanceof LocalUser) {
+        LocalUser localUser =
+            (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (localUser.getUser().getRole() == UserRole.ROLE_USER) {
+          var favoriteMentors =
+              favoriteMentorRepository.findAllByStudentIdAndMentorId(localUser.getUserId(), id);
+          if (favoriteMentors.size() > 0)
+            userDetails.setIsLiked(true);
+          else
+            userDetails.setIsLiked(false);
+        }
+      }
+
+    }
+    return userDetails;
+  }
+
 }

@@ -26,4 +26,7 @@ public interface FavoriteMentorRepository extends JpaRepository<FavoriteMentor, 
   void deleteFavoriteMentor(@Param("studentId") Long userId, @Param("mentorId") Long mentorId);
 
   List<FavoriteMentor> findAllByStudentId(@Param("studentId") Long studentId);
+
+  List<FavoriteMentor> findAllByStudentIdAndMentorId(@Param("studentId") Long studentId,
+      @Param("mentorId") Long mentorId);
 }

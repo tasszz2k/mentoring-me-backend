@@ -42,7 +42,6 @@ import com.labate.mentoringme.repository.QuizResultRepository;
 import com.labate.mentoringme.repository.UserRepository;
 import com.labate.mentoringme.util.ObjectMapperUtils;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.var;
 import lombok.extern.slf4j.Slf4j;
 
 @Service

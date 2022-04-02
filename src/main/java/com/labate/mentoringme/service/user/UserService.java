@@ -51,7 +51,8 @@ public interface UserService {
 
   Map<Long, BasicUserInfo> findBasicUserInfos(List<Long> userIds);
 
-  List<UserDetails> findAllUserProfile(PageCriteria pageCriteria, FindUsersRequest request);
+  Page<UserDetails> findAllUserProfile(PageCriteria pageCriteria, FindUsersRequest request,
+      LocalUser localUser);
 
-  UserDetails findUserProfileById(Long id);
+  UserDetails findUserProfileById(Long id, LocalUser localUser);
 }

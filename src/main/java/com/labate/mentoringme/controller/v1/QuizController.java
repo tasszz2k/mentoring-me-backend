@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.labate.mentoringme.config.CurrentUser;
+import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.CreateQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.FindQuizRequest;
@@ -53,10 +55,10 @@ public class QuizController {
   }
 
   @GetMapping()
-  public ResponseEntity<?> getAllQuiz(@Valid PageCriteria pageCriteria,
-      FindQuizRequest quizRequest) {
-    pageCriteria.setSort(List.of("-created"));
-    var pageData = quizService.findAllQuiz(quizRequest, pageCriteria);
+  public ResponseEntity<?> getAllQuiz(@Valid PageCriteria pageCriteria, FindQuizRequest quizRequest,
+      @CurrentUser LocalUser localUser) {
+    pageCriteria.setSort(List.of("-createdDate"));
+    var pageData = quizService.findAllQuiz(quizRequest, pageCriteria, localUser);
     var paging = Paging.builder().limit(pageCriteria.getLimit()).page(pageCriteria.getPage())
         .total(pageData.getTotalElements()).build();
     var pageResponse = new PageResponse(pageData.getContent(), paging);

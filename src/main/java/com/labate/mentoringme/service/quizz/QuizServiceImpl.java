@@ -1,17 +1,20 @@
 package com.labate.mentoringme.service.quizz;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import com.labate.mentoringme.constant.UserRole;
 import com.labate.mentoringme.dto.QuizOverviewDto;
 import com.labate.mentoringme.dto.QuizResultCheckingDto;
 import com.labate.mentoringme.dto.UserSelectionDto;
@@ -24,9 +27,11 @@ import com.labate.mentoringme.dto.request.quiz.FindQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.ResultQuizCheckingRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizOverviewRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizRequest;
+import com.labate.mentoringme.dto.response.QuizResponse;
 import com.labate.mentoringme.dto.response.QuizResultResponse;
 import com.labate.mentoringme.dto.response.QuizTakingHistoryResponse;
 import com.labate.mentoringme.model.Category;
+import com.labate.mentoringme.model.quiz.FavoriteQuiz;
 import com.labate.mentoringme.model.quiz.Question;
 import com.labate.mentoringme.model.quiz.Quiz;
 import com.labate.mentoringme.model.quiz.QuizResult;
@@ -37,6 +42,7 @@ import com.labate.mentoringme.repository.QuizResultRepository;
 import com.labate.mentoringme.repository.UserRepository;
 import com.labate.mentoringme.util.ObjectMapperUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.var;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -52,24 +58,26 @@ public class QuizServiceImpl implements QuizService {
   private final ModelMapper modelMapper = new ModelMapper();
 
   @Override
-  public Page<QuizOverviewDto> findAllQuiz(FindQuizRequest request, PageCriteria pageCriteria) {
+  public Page<QuizResponse> findAllQuiz(FindQuizRequest request, PageCriteria pageCriteria,
+      LocalUser localUser) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     var response = quizRepository.findAllByConditions(request, pageable).map(quiz -> {
-      var quizDto = modelMapper.map(quiz, QuizOverviewDto.class);
-      return quizDto;
+      var quizResponse = modelMapper.map(quiz, QuizResponse.class);
+      return quizResponse;
     });
-    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    if (principal instanceof LocalUser) {
-      LocalUser localUser =
-          (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-      var userId = localUser.getUserId();
-      response.getContent().forEach(item -> {
-        if (item.getUserId() != null && item.getUserId() == userId) {
-          item.setIsLiked(true);
-        } else {
-          item.setIsLiked(false);
+
+    if (!Objects.isNull(localUser)) {
+      if (localUser.getUser().getRole() == UserRole.ROLE_USER) {
+        ArrayList<FavoriteQuiz> favoriteQuizzes =
+            (ArrayList<FavoriteQuiz>) favoriteQuizRepository.findAllByUserId(localUser.getUserId());
+        if (favoriteQuizzes.size() > 0) {
+          Collections.sort(favoriteQuizzes, Comparator.comparing(FavoriteQuiz::getQuizId));
+          for (QuizResponse quiz : response.getContent()) {
+            var isLiked = isLiked(favoriteQuizzes, quiz.getId());
+            quiz.setIsLiked(isLiked);
+          }
         }
-      });
+      }
     }
     return response;
   }
@@ -275,5 +283,22 @@ public class QuizServiceImpl implements QuizService {
   @Override
   public void publishQuiz(Long quizId) {
     quizRepository.publishQuiz(quizId);
+  }
+
+  private Boolean isLiked(ArrayList<FavoriteQuiz> favoriteQuizs, Long quizId) {
+    int left = 0;
+    int right = favoriteQuizs.size() - 1;
+    while (right >= left) {
+      int mid = left + (right - left) / 2;
+      var id = favoriteQuizs.get(mid).getQuizId();
+      if (id == quizId)
+        return true;
+      if (id > quizId) {
+        right = mid - 1;
+      } else {
+        left = mid + 1;
+      }
+    }
+    return false;
   }
 }

@@ -1,5 +1,6 @@
 package com.labate.mentoringme.repository;
 
+import java.util.List;
 import javax.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,4 +29,6 @@ public interface FavoriteQuizRepository extends JpaRepository<FavoriteQuiz, Long
   @Modifying
   @Query("UPDATE FavoriteQuiz q SET q.isDeleted=1 WHERE q.userId = :userId AND q.quizId = :quizId")
   void deleteFavoriteQuiz(@Param("userId") Long userId, @Param("quizId") Long quizId);
+
+  List<FavoriteQuiz> findAllByUserId(Long userId);
 }

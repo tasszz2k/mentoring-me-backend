@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.labate.mentoringme.config.CurrentUser;
+import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreateFavoriteMentorRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.AddFavoriteQuizRequest;
@@ -69,13 +71,10 @@ public class FavoriteController {
       paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('USER')")
   @GetMapping("/mentors")
-  public ResponseEntity<?> getListFavoriteMentor(PageCriteria pageCriteria) {
-    pageCriteria.setSort(List.of("-created"));
-    var pageData = favoriteService.findFavoriteMentor(pageCriteria);
-    var paging = Paging.builder().limit(pageCriteria.getLimit()).page(pageCriteria.getPage())
-        .total(pageData.getTotalElements()).build();
-    var pageResponse = new PageResponse(pageData.getContent(), paging);
-    return BaseResponseEntity.ok(pageResponse);
+  public ResponseEntity<?> getListFavoriteMentor(PageCriteria pageCriteria,
+      @CurrentUser LocalUser localUser) {
+    pageCriteria.setSort(List.of("-createdDate"));
+    return BaseResponseEntity.ok(favoriteService.findFavoriteMentor(pageCriteria, localUser));
   }
 
   @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true,

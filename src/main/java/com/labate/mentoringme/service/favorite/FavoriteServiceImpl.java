@@ -1,20 +1,26 @@
 package com.labate.mentoringme.service.favorite;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.labate.mentoringme.dto.QuizOverviewDto;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
+import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
-import com.labate.mentoringme.dto.model.UserDto;
 import com.labate.mentoringme.dto.request.CreateFavoriteMentorRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.AddFavoriteQuizRequest;
+import com.labate.mentoringme.dto.response.PageResponse;
+import com.labate.mentoringme.dto.response.Paging;
 import com.labate.mentoringme.model.FavoriteMentor;
 import com.labate.mentoringme.model.quiz.FavoriteQuiz;
 import com.labate.mentoringme.repository.FavoriteMentorRepository;
 import com.labate.mentoringme.repository.FavoriteQuizRepository;
+import com.labate.mentoringme.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -24,6 +30,8 @@ public class FavoriteServiceImpl implements FavoriteService {
   private final FavoriteQuizRepository favoriteQuizRepository;
 
   private final FavoriteMentorRepository favoriteMentorRepository;
+
+  private final UserRepository userRepository;
 
   private final ModelMapper modelMapper = new ModelMapper();
 
@@ -74,16 +82,21 @@ public class FavoriteServiceImpl implements FavoriteService {
 
 
   @Override
-  public Page<UserDto> findFavoriteMentor(PageCriteria pageCriteria) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    var userId = localUser.getUserId();
+  public PageResponse findFavoriteMentor(PageCriteria pageCriteria, LocalUser localUser) {
+    var studentId = localUser.getUserId();
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
-    var response = favoriteMentorRepository.findAllByUserId(userId, pageable).map(quiz -> {
-      var userDto = modelMapper.map(quiz, UserDto.class);
-      return userDto;
-    });
-    return response;
+    var favoriteMentors = favoriteMentorRepository.findAllByStudentId(studentId, pageable);
+    List<Long> userIds = new ArrayList();
+    for (FavoriteMentor favoriteMentor : favoriteMentors.getContent()) {
+      userIds.add(favoriteMentor.getMentorId());
+    }
+    var mentors = userRepository.findAllById(userIds);
+    var mentorInfos =
+        mentors.stream().map(UserMapper::buildUserDetails).collect(Collectors.toList());
+    var paging = Paging.builder().limit(pageCriteria.getLimit()).page(pageCriteria.getPage())
+        .total(favoriteMentors.getTotalElements()).build();
+    var pageResponse = new PageResponse(mentorInfos, paging);
+    return pageResponse;
   }
 
 

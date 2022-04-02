@@ -45,9 +45,10 @@ public class UserProfileController {
   }
 
   @GetMapping("/{userId}")
-  public ResponseEntity<?> findUserProfileById(@PathVariable Long userId) {
-    return BaseResponseEntity
-        .ok(UserMapper.buildUserDetails(userService.findLocalUserById(userId)));
+  public ResponseEntity<?> findUserProfileById(@PathVariable Long userId,
+      @CurrentUser LocalUser localUser) {
+    var userProfile = userService.findUserProfileById(userId, localUser);
+    return BaseResponseEntity.ok(userProfile);
   }
 
   @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true,
@@ -81,22 +82,21 @@ public class UserProfileController {
 
   @GetMapping("")
   public ResponseEntity<?> findAllUserProfiles(@Valid PageCriteria pageCriteria,
-      @Valid FindUsersRequest request) {
-    var users = userService.findAllUserProfile(pageCriteria, request);
+      @Valid FindUsersRequest request, @CurrentUser LocalUser localUser) {
+    var users = userService.findAllUserProfile(pageCriteria, request, localUser);
     var paging = Paging.builder().limit(pageCriteria.getLimit()).page(pageCriteria.getPage())
-        .total(users.size()).build();
-
-    var response = new PageResponse(users, paging);
+        .total(users.getTotalElements()).build();
+    var response = new PageResponse(users.getContent(), paging);
     return BaseResponseEntity.ok(response);
   }
 
   @GetMapping("/top-mentors")
-  public ResponseEntity<?> findTop10MentorProfiles() {
+  public ResponseEntity<?> findTop10MentorProfiles(@CurrentUser LocalUser localUser) {
     // TODO: build sort by ranking
     var sort = List.of("+createdDate");
     PageCriteria pageCriteria = PageCriteria.builder().limit(10).page(1).sort(sort).build();
     FindUsersRequest request = FindUsersRequest.builder().role(UserRole.ROLE_MENTOR).build();
 
-    return findAllUserProfiles(pageCriteria, request);
+    return findAllUserProfiles(pageCriteria, request, localUser);
   }
 }

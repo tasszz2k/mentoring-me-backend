@@ -8,13 +8,13 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
@@ -257,29 +257,26 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<UserDetails> findAllUserProfile(PageCriteria pageCriteria, FindUsersRequest request) {
+  public Page<UserDetails> findAllUserProfile(PageCriteria pageCriteria, FindUsersRequest request,
+      LocalUser localUser) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     var response = userRepository.findAllByConditions(request, pageable).map(item -> {
       var userDetails = UserMapper.buildUserDetails(item);
       return userDetails;
-    }).getContent();
+    });
 
-    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     var favoriteMentors = new ArrayList();
-    if (principal instanceof LocalUser) {
-      LocalUser localUser =
-          (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if (!Objects.isNull(localUser)) {
       if (localUser.getUser().getRole() == UserRole.ROLE_USER) {
         favoriteMentors =
             (ArrayList) favoriteMentorRepository.findAllByStudentId(localUser.getUserId());
         if (favoriteMentors.size() > 0) {
           Collections.sort(favoriteMentors, Comparator.comparing(FavoriteMentor::getMentorId));
-          for (UserDetails user : response) {
+          for (UserDetails user : response.getContent()) {
             var isLiked = isLiked(favoriteMentors, user.getId());
             user.setIsLiked(isLiked);
           }
         }
-
       }
     }
 
@@ -302,4 +299,27 @@ public class UserServiceImpl implements UserService {
     }
     return false;
   }
+
+  @Override
+  public UserDetails findUserProfileById(Long id, LocalUser localUser) {
+    var userOpt = userRepository.findById(id);
+    if (userOpt.isEmpty()) {
+      throw new UserNotFoundException("id = " + id);
+    }
+    var userDetails = UserMapper.buildUserDetails(userOpt.get());
+    if (userOpt.get().getRole() == UserRole.ROLE_MENTOR) {
+      if (!Objects.isNull(localUser)) {
+        if (localUser.getUser().getRole() == UserRole.ROLE_USER) {
+          var favoriteMentors =
+              favoriteMentorRepository.findAllByStudentIdAndMentorId(localUser.getUserId(), id);
+          if (favoriteMentors.size() > 0)
+            userDetails.setIsLiked(true);
+          else
+            userDetails.setIsLiked(false);
+        }
+      }
+    }
+    return userDetails;
+  }
+
 }

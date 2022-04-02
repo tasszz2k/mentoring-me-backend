@@ -46,8 +46,8 @@ public class UserProfileController {
 
   @GetMapping("/{userId}")
   public ResponseEntity<?> findUserProfileById(@PathVariable Long userId) {
-    return BaseResponseEntity
-        .ok(UserMapper.buildUserDetails(userService.findLocalUserById(userId)));
+    var userProfile = userService.findUserProfileById(userId);
+    return BaseResponseEntity.ok(userProfile);
   }
 
   @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true,

@@ -29,4 +29,6 @@ public interface FavoriteMentorRepository extends JpaRepository<FavoriteMentor, 
 
   List<FavoriteMentor> findAllByStudentIdAndMentorId(@Param("studentId") Long studentId,
       @Param("mentorId") Long mentorId);
+
+  Page<FavoriteMentor> findAllByStudentId(@Param("studentId") Long studentId, Pageable pageable);
 }

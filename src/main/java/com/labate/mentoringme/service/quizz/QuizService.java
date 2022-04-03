@@ -10,15 +10,16 @@ import com.labate.mentoringme.dto.request.quiz.FindQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.ResultQuizCheckingRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizOverviewRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizRequest;
-import com.labate.mentoringme.dto.response.QuizResponse;
+import com.labate.mentoringme.dto.response.QuizFavoriteResponse;
+import com.labate.mentoringme.dto.response.QuizOverviewResponse;
 import com.labate.mentoringme.dto.response.QuizResultResponse;
 import com.labate.mentoringme.dto.response.QuizTakingHistoryResponse;
 
 public interface QuizService {
-  Page<QuizResponse> findAllQuiz(FindQuizRequest request, PageCriteria pageCriteria,
+  Page<QuizFavoriteResponse> findAllQuiz(FindQuizRequest request, PageCriteria pageCriteria,
       LocalUser localUser);
 
-  QuizOverviewDto getQuizOverview(Long quizId);
+  QuizOverviewResponse getQuizOverview(Long quizId, LocalUser localUser);
 
   QuizOverviewDto updateQuizOverview(UpdateQuizOverviewRequest request);
 

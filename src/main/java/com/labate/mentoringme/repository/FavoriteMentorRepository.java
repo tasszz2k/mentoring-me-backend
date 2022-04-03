@@ -8,17 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import com.labate.mentoringme.dto.projection.UserProjection;
 import com.labate.mentoringme.model.FavoriteMentor;
 
 public interface FavoriteMentorRepository extends JpaRepository<FavoriteMentor, Long> {
-  @Query(
-      value = " SELECT DISTINCT(B.id), B.full_name AS fullName, B.email, B.phone_number as phoneNumber, B.image_url AS imageUrl, A.created "
-          + " FROM favorite_mentors A join users B ON A.mentor_id = B.id WHERE B.enabled = 1 AND A.is_deleted = 0 AND A.student_id = :userId",
-      countQuery = " SELECT DISTINCT(B.id), B.full_name AS fullName, B.email, B.phone_number as phoneNumber, B.image_url AS imageUrl, A.created "
-          + " FROM favorite_mentors A join users B ON A.mentor_id = B.id WHERE B.enabled = 1 AND A.is_deleted = 0 AND A.student_id = :userId",
-      nativeQuery = true)
-  Page<UserProjection> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
 
   @Transactional
   @Modifying

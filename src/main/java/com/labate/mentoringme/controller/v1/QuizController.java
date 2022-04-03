@@ -37,12 +37,13 @@ public class QuizController {
   private final QuizService quizService;
 
   @GetMapping("/{quizId}/overview")
-  public ResponseEntity<?> getQuizOverview(@PathVariable Long quizId) {
+  public ResponseEntity<?> getQuizOverview(@PathVariable Long quizId,
+      @CurrentUser LocalUser localUser) {
     var quiz = quizService.findById(quizId);
     if (quiz == null) {
       throw new QuizNotFoundException("id = " + quizId);
     }
-    return BaseResponseEntity.ok(quizService.getQuizOverview(quizId));
+    return BaseResponseEntity.ok(quizService.getQuizOverview(quizId, localUser));
   }
 
   @PatchMapping("/overview")

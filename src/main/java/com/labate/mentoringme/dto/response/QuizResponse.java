@@ -12,6 +12,6 @@ public class QuizResponse {
   private Integer time;
   private Boolean isDraft;
   private String author;
+  private Long createdBy;
   private Set<CategoryDto> categories;
-  private Boolean isLiked;
 }

@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import com.labate.mentoringme.dto.QuizOverviewDto;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
 import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
@@ -16,10 +14,12 @@ import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.AddFavoriteQuizRequest;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
+import com.labate.mentoringme.dto.response.QuizResponse;
 import com.labate.mentoringme.model.FavoriteMentor;
 import com.labate.mentoringme.model.quiz.FavoriteQuiz;
 import com.labate.mentoringme.repository.FavoriteMentorRepository;
 import com.labate.mentoringme.repository.FavoriteQuizRepository;
+import com.labate.mentoringme.repository.QuizRepository;
 import com.labate.mentoringme.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -33,19 +33,28 @@ public class FavoriteServiceImpl implements FavoriteService {
 
   private final UserRepository userRepository;
 
+  private final QuizRepository quizRepository;
+
   private final ModelMapper modelMapper = new ModelMapper();
 
   @Override
-  public Page<QuizOverviewDto> findFavoriteQuizByUserId(PageCriteria pageCriteria) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public PageResponse findFavoriteQuizByUserId(PageCriteria pageCriteria, LocalUser localUser) {
     var userId = localUser.getUserId();
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
-    var response = favoriteQuizRepository.findAllByUserId(userId, pageable).map(quiz -> {
-      var quizDto = modelMapper.map(quiz, QuizOverviewDto.class);
-      return quizDto;
-    });
-    return response;
+    var favoriteQuizzes = favoriteQuizRepository.findAllByUserId(userId, pageable);
+    List<Long> quizIds = new ArrayList();
+    for (FavoriteQuiz favoriteQuiz : favoriteQuizzes.getContent()) {
+      quizIds.add(favoriteQuiz.getQuizId());
+    }
+    var response = quizRepository.findAllByIds(quizIds).stream().map(quiz -> {
+      var quizResponse = modelMapper.map(quiz, QuizResponse.class);
+      return quizResponse;
+    }).collect(Collectors.toList());
+
+    var paging = Paging.builder().limit(pageCriteria.getLimit()).page(pageCriteria.getPage())
+        .total(favoriteQuizzes.getTotalElements()).build();
+    var pageResponse = new PageResponse(response, paging);
+    return pageResponse;
   }
 
 

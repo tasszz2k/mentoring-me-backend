@@ -27,7 +27,8 @@ import com.labate.mentoringme.dto.request.quiz.FindQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.ResultQuizCheckingRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizOverviewRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizRequest;
-import com.labate.mentoringme.dto.response.QuizResponse;
+import com.labate.mentoringme.dto.response.QuizFavoriteResponse;
+import com.labate.mentoringme.dto.response.QuizOverviewResponse;
 import com.labate.mentoringme.dto.response.QuizResultResponse;
 import com.labate.mentoringme.dto.response.QuizTakingHistoryResponse;
 import com.labate.mentoringme.model.Category;
@@ -57,11 +58,11 @@ public class QuizServiceImpl implements QuizService {
   private final ModelMapper modelMapper = new ModelMapper();
 
   @Override
-  public Page<QuizResponse> findAllQuiz(FindQuizRequest request, PageCriteria pageCriteria,
+  public Page<QuizFavoriteResponse> findAllQuiz(FindQuizRequest request, PageCriteria pageCriteria,
       LocalUser localUser) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     var response = quizRepository.findAllByConditions(request, pageable).map(quiz -> {
-      var quizResponse = modelMapper.map(quiz, QuizResponse.class);
+      var quizResponse = modelMapper.map(quiz, QuizFavoriteResponse.class);
       return quizResponse;
     });
 
@@ -71,7 +72,7 @@ public class QuizServiceImpl implements QuizService {
             (ArrayList<FavoriteQuiz>) favoriteQuizRepository.findAllByUserId(localUser.getUserId());
         if (favoriteQuizzes.size() > 0) {
           Collections.sort(favoriteQuizzes, Comparator.comparing(FavoriteQuiz::getQuizId));
-          for (QuizResponse quiz : response.getContent()) {
+          for (QuizFavoriteResponse quiz : response.getContent()) {
             var isLiked = isLiked(favoriteQuizzes, quiz.getId());
             quiz.setIsLiked(isLiked);
           }
@@ -83,24 +84,21 @@ public class QuizServiceImpl implements QuizService {
 
   @Transactional
   @Override
-  public QuizOverviewDto getQuizOverview(Long quizId) {
+  public QuizOverviewResponse getQuizOverview(Long quizId, LocalUser localUser) {
     var quizOpt = quizRepository.findById(quizId);
-    var quizOverview = ObjectMapperUtils.map(quizOpt.get(), QuizOverviewDto.class);
-    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    if (principal instanceof LocalUser) {
-      LocalUser localUser =
-          (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    var quizOverResponse = ObjectMapperUtils.map(quizOpt.get(), QuizOverviewResponse.class);
+    if (!Objects.isNull(localUser)) {
       var userId = localUser.getUserId();
       var favoriteQuiz = favoriteQuizRepository.findByUserIdAndQuizId(userId, quizId);
-      quizOverview.setIsLiked(false);
+      quizOverResponse.setIsLiked(false);
       if (favoriteQuiz != null)
-        quizOverview.setIsLiked(true);;
-
-      var user = userRepository.findById(quizOverview.getCreatedBy()).get();
-      quizOverview.setImageUrl(user.getImageUrl());
-      quizOverview.setRole(user.getRole().name());;
+        quizOverResponse.setIsLiked(true);;
     }
-    return quizOverview;
+    var user = userRepository.findById(quizOverResponse.getCreatedBy()).get();
+    quizOverResponse.setImageUrl(user.getImageUrl());
+    quizOverResponse.setRole(user.getRole());;
+    return quizOverResponse;
+
   }
 
   @Override

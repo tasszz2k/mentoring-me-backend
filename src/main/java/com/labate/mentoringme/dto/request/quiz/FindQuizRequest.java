@@ -1,11 +1,12 @@
 package com.labate.mentoringme.dto.request.quiz;
 
+import java.util.List;
 import lombok.Data;
 
 @Data
 public class FindQuizRequest {
   private Long userId;
-  private Long categoryId;
+  private List<Long> categoryIds;
   private String keyword;
   private Integer minNumberOfQuestion;
   private Integer maxNumberOfQuestion;

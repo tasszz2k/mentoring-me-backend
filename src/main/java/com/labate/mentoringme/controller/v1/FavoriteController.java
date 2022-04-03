@@ -16,8 +16,6 @@ import com.labate.mentoringme.dto.request.CreateFavoriteMentorRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.AddFavoriteQuizRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
-import com.labate.mentoringme.dto.response.PageResponse;
-import com.labate.mentoringme.dto.response.Paging;
 import com.labate.mentoringme.exception.FavoriteQuizNotFoundException;
 import com.labate.mentoringme.service.favorite.FavoriteService;
 import io.swagger.annotations.ApiImplicitParam;
@@ -34,13 +32,11 @@ public class FavoriteController {
       paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('MENTOR', 'USER')")
   @GetMapping("/quizzes")
-  public ResponseEntity<?> getListFavoriteQuiz(PageCriteria pageCriteria) {
-    pageCriteria.setSort(List.of("-created"));
-    var pageData = favoriteService.findFavoriteQuizByUserId(pageCriteria);
-    var paging = Paging.builder().limit(pageCriteria.getLimit()).page(pageCriteria.getPage())
-        .total(pageData.getTotalElements()).build();
-    var pageResponse = new PageResponse(pageData.getContent(), paging);
-    return BaseResponseEntity.ok(pageResponse);
+  public ResponseEntity<?> getListFavoriteQuiz(PageCriteria pageCriteria,
+      @CurrentUser LocalUser localUser) {
+    pageCriteria.setSort(List.of("-createdDate"));
+    var response = favoriteService.findFavoriteQuizByUserId(pageCriteria, localUser);
+    return BaseResponseEntity.ok(response);
   }
 
   @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true,

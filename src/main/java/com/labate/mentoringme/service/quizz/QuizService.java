@@ -21,21 +21,21 @@ public interface QuizService {
 
   QuizOverviewResponse getQuizOverview(Long quizId, LocalUser localUser);
 
-  QuizOverviewDto updateQuizOverview(UpdateQuizOverviewRequest request);
+  QuizOverviewDto updateQuizOverview(UpdateQuizOverviewRequest request, LocalUser localUser);
 
   QuizDto findById(Long quizId);
 
   void deleteById(Long quizId);
 
-  Page<QuizOverviewDto> getListDraftQuiz(PageCriteria pageCriteria);
+  Page<QuizOverviewDto> getListDraftQuiz(PageCriteria pageCriteria, LocalUser localUser);
 
-  QuizDto addQuiz(CreateQuizRequest createQuizRequest);
+  QuizDto addQuiz(CreateQuizRequest createQuizRequest, LocalUser localUser);
 
   QuizDto updateQuiz(UpdateQuizRequest updateQuizRequest);
 
   Page<QuizTakingHistoryResponse> getQuizTakingHistory(PageCriteria pageCriteria);
 
-  QuizResultResponse getQuizResult(ResultQuizCheckingRequest request);
+  QuizResultResponse getQuizResult(ResultQuizCheckingRequest request, LocalUser localUser);
 
   void publishQuiz(Long quizId);
 }

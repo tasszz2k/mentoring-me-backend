@@ -116,9 +116,7 @@ public class QuizServiceImpl implements QuizService {
   }
 
   @Override
-  public QuizDto addQuiz(CreateQuizRequest createQuizRequest) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public QuizDto addQuiz(CreateQuizRequest createQuizRequest, LocalUser localUser) {
     var quiz = modelMapper.map(createQuizRequest, Quiz.class);
     quiz.setCreatedBy(localUser.getUserId());
     quiz.setAuthor(localUser.getUser().getFullName());
@@ -165,21 +163,18 @@ public class QuizServiceImpl implements QuizService {
   }
 
   @Override
-  public QuizResultResponse getQuizResult(ResultQuizCheckingRequest request) {
+  public QuizResultResponse getQuizResult(ResultQuizCheckingRequest request, LocalUser localUser) {
     var results = questionRepository.getQuizResult(request.getQuizId()).stream().map(ele -> {
       var item = modelMapper.map(ele, QuizResultCheckingDto.class);
       return item;
     }).collect(Collectors.toList());
     var response = calculateUserResult(request, results);
-    saveToQuizResult(response, request.getQuizId());
+    saveToQuizResult(response, request.getQuizId(), localUser);
     return response;
   }
 
-  private void saveToQuizResult(QuizResultResponse response, Long quizId) {
-    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    if (principal instanceof LocalUser) {
-      LocalUser localUser =
-          (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  private void saveToQuizResult(QuizResultResponse response, Long quizId, LocalUser localUser) {
+    if (!Objects.isNull(localUser)) {
       var quizResult = modelMapper.map(response, QuizResult.class);
       quizResult.setQuizId(quizId);
       quizResult.setUserId(localUser.getUserId());
@@ -248,9 +243,7 @@ public class QuizServiceImpl implements QuizService {
   }
 
   @Override
-  public Page<QuizOverviewDto> getListDraftQuiz(PageCriteria pageCriteria) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public Page<QuizOverviewDto> getListDraftQuiz(PageCriteria pageCriteria, LocalUser localUser) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     var userId = localUser.getUserId();
     return quizRepository.findAllByCreatedByAndIsDraft(userId, true, pageable).map(quiz -> {
@@ -260,9 +253,8 @@ public class QuizServiceImpl implements QuizService {
   }
 
   @Override
-  public QuizOverviewDto updateQuizOverview(UpdateQuizOverviewRequest request) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public QuizOverviewDto updateQuizOverview(UpdateQuizOverviewRequest request,
+      LocalUser localUser) {
     var quiz = quizRepository.findById(request.getId()).get();
     quiz.setModifiedDate(new Date());
     quiz.setModifiedBy(localUser.getUserId());

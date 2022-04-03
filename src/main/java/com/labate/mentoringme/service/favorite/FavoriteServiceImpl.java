@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
 import com.labate.mentoringme.dto.mapper.UserMapper;
@@ -60,17 +59,13 @@ public class FavoriteServiceImpl implements FavoriteService {
 
 
   @Override
-  public FavoriteQuiz findByQuizIdAndUserId(Long quizId) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public FavoriteQuiz findByQuizIdAndUserId(Long quizId, LocalUser localUser) {
     var userId = localUser.getUserId();
     return favoriteQuizRepository.findByUserIdAndQuizId(userId, quizId);
   }
 
   @Override
-  public void deleteFavoriteQuiz(Long quizId) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public void deleteFavoriteQuiz(Long quizId, LocalUser localUser) {
     var userId = localUser.getUserId();
     favoriteQuizRepository.deleteFavoriteQuiz(userId, quizId);
   }
@@ -78,9 +73,8 @@ public class FavoriteServiceImpl implements FavoriteService {
 
 
   @Override
-  public FavoriteQuiz addFavoriteQuiz(AddFavoriteQuizRequest addFavoriteQuizRequest) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public FavoriteQuiz addFavoriteQuiz(AddFavoriteQuizRequest addFavoriteQuizRequest,
+      LocalUser localUser) {
     var userId = localUser.getUserId();
     var favoriteQuiz = new FavoriteQuiz();
     favoriteQuiz.setQuizId(addFavoriteQuizRequest.getQuizId());
@@ -102,6 +96,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     var mentors = userRepository.findAllById(userIds);
     var mentorInfos =
         mentors.stream().map(UserMapper::buildUserDetails).collect(Collectors.toList());
+    mentorInfos.forEach(item -> item.setIsLiked(true));
     var paging = Paging.builder().limit(pageCriteria.getLimit()).page(pageCriteria.getPage())
         .total(favoriteMentors.getTotalElements()).build();
     var pageResponse = new PageResponse(mentorInfos, paging);
@@ -111,9 +106,7 @@ public class FavoriteServiceImpl implements FavoriteService {
 
 
   @Override
-  public void deleteFavoriteMentor(Long mentorId) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public void deleteFavoriteMentor(Long mentorId, LocalUser localUser) {
     var userId = localUser.getUserId();
     favoriteMentorRepository.deleteFavoriteMentor(userId, mentorId);
   }
@@ -121,9 +114,8 @@ public class FavoriteServiceImpl implements FavoriteService {
 
 
   @Override
-  public FavoriteMentor addFavoriteMentor(CreateFavoriteMentorRequest createFavoriteMentorRequest) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public FavoriteMentor addFavoriteMentor(CreateFavoriteMentorRequest createFavoriteMentorRequest,
+      LocalUser localUser) {
     var userId = localUser.getUserId();
     var favoriteMentor = new FavoriteMentor();
     favoriteMentor.setMentorId(createFavoriteMentorRequest.getMentorId());

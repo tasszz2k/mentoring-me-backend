@@ -43,13 +43,14 @@ public class FavoriteController {
       paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('MENTOR', 'USER')")
   @DeleteMapping("/quizzes/{quizId}")
-  public ResponseEntity<?> deleteFavoriteQuiz(@PathVariable Long quizId) {
-    var favoriteQuiz = favoriteService.findByQuizIdAndUserId(quizId);
+  public ResponseEntity<?> deleteFavoriteQuiz(@PathVariable Long quizId,
+      @CurrentUser LocalUser localUser) {
+    var favoriteQuiz = favoriteService.findByQuizIdAndUserId(quizId, localUser);
     if (favoriteQuiz == null) {
       throw new FavoriteQuizNotFoundException("MSG-303",
           "FavoriteQuiz is not found! quizid = " + quizId);
     }
-    favoriteService.deleteFavoriteQuiz(quizId);
+    favoriteService.deleteFavoriteQuiz(quizId, localUser);
     return BaseResponseEntity.ok("Favorite Quiz deleted successfully");
   }
 
@@ -58,8 +59,9 @@ public class FavoriteController {
   @PreAuthorize("hasAnyRole('MENTOR', 'USER')")
   @PostMapping("/quizzes")
   public ResponseEntity<?> addFavoriteQuiz(
-      @RequestBody AddFavoriteQuizRequest addFavoriteQuizRequest) {
-    var favoriteQuiz = favoriteService.addFavoriteQuiz(addFavoriteQuizRequest);
+      @RequestBody AddFavoriteQuizRequest addFavoriteQuizRequest,
+      @CurrentUser LocalUser localUser) {
+    var favoriteQuiz = favoriteService.addFavoriteQuiz(addFavoriteQuizRequest, localUser);
     return BaseResponseEntity.ok(favoriteQuiz);
   }
 
@@ -77,8 +79,9 @@ public class FavoriteController {
       paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('USER')")
   @DeleteMapping("/mentors/{mentorId}")
-  public ResponseEntity<?> deleteFavoriteMentor(@PathVariable Long mentorId) {
-    favoriteService.deleteFavoriteMentor(mentorId);
+  public ResponseEntity<?> deleteFavoriteMentor(@PathVariable Long mentorId,
+      @CurrentUser LocalUser localUser) {
+    favoriteService.deleteFavoriteMentor(mentorId, localUser);
     return BaseResponseEntity.ok("Favorite Quiz deleted successfully");
   }
 
@@ -87,8 +90,9 @@ public class FavoriteController {
   @PreAuthorize("hasAnyRole('USER')")
   @PostMapping("/mentors")
   public ResponseEntity<?> addFavoriteMentor(
-      @RequestBody CreateFavoriteMentorRequest createFavoriteMentorRequest) {
-    var favoriteQuiz = favoriteService.addFavoriteMentor(createFavoriteMentorRequest);
+      @RequestBody CreateFavoriteMentorRequest createFavoriteMentorRequest,
+      @CurrentUser LocalUser localUser) {
+    var favoriteQuiz = favoriteService.addFavoriteMentor(createFavoriteMentorRequest, localUser);
     return BaseResponseEntity.ok(favoriteQuiz);
   }
 

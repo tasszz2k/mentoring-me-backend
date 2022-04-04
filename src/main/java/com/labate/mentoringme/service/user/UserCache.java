@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
-public class UserCaching {
+public class UserCache {
 
   private final UserRepository userRepository;
 
@@ -27,4 +27,10 @@ public class UserCaching {
   public Optional<User> findUserById(Long id) {
     return userRepository.findById(id);
   }
+
+  @Cacheable(value = "user", key = "#email")
+  public User findUserByEmail(String email) {
+    return userRepository.findByEmail(email);
+  }
+
 }

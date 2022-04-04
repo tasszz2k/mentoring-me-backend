@@ -30,7 +30,6 @@ import com.labate.mentoringme.service.userprofile.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.OidcIdToken;
@@ -55,7 +54,7 @@ public class UserServiceImpl implements UserService {
   private final TimetableService timetableService;
   private final GoogleCloudFileUpload googleCloudFileUpload;
   private final MentorVerificationService mentorVerificationService;
-  private final UserCaching userCaching;
+  private final UserCache userCache;
   private final FavoriteMentorRepository favoriteMentorRepository;
 
   @Value("${labate.security.default-password}")
@@ -111,10 +110,9 @@ public class UserServiceImpl implements UserService {
     return user;
   }
 
-  @Cacheable(cacheNames = "user", key = "#email")
   @Override
   public User findUserByEmail(final String email) {
-    return userRepository.findByEmail(email);
+    return userCache.findUserByEmail(email);
   }
 
   @Override
@@ -151,7 +149,7 @@ public class UserServiceImpl implements UserService {
     return LocalUser.create(user, attributes, idToken, userInfo);
   }
 
-  @CachePut("user")
+  @CachePut(value = "user", key = "{#user.email, #user.id}")
   @Transactional
   @Override
   public User save(User user) {
@@ -236,7 +234,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Optional<User> findUserById(Long id) {
-    return userCaching.findUserById(id);
+    return userCache.findUserById(id);
   }
 
   @Override
@@ -297,7 +295,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserDetails findUserProfileById(Long id, LocalUser localUser) {
-    var userOpt = userRepository.findById(id);
+    var userOpt = userCache.findUserById(id);
     if (userOpt.isEmpty()) {
       throw new UserNotFoundException("id = " + id);
     }

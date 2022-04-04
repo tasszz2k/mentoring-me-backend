@@ -1,27 +1,5 @@
 package com.labate.mentoringme.service.user;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.oidc.OidcIdToken;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 import com.labate.mentoringme.constant.MentorStatus;
 import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.constant.UserRole;
@@ -50,6 +28,20 @@ import com.labate.mentoringme.service.gcp.GoogleCloudFileUpload;
 import com.labate.mentoringme.service.timetable.TimetableService;
 import com.labate.mentoringme.service.userprofile.UserProfileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -62,7 +54,7 @@ public class UserServiceImpl implements UserService {
   private final TimetableService timetableService;
   private final GoogleCloudFileUpload googleCloudFileUpload;
   private final MentorVerificationService mentorVerificationService;
-  private final UserCaching userCaching;
+  private final UserCache userCache;
   private final FavoriteMentorRepository favoriteMentorRepository;
 
   @Value("${labate.security.default-password}")
@@ -83,8 +75,8 @@ public class UserServiceImpl implements UserService {
     user = save(user);
     userRepository.flush();
     Long userId = user.getId();
-    timetableService.createNewTimetable(userId,
-        String.format("Thời khóa biểu của %s", user.getFullName()));
+    timetableService.createNewTimetable(
+        userId, String.format("Thời khóa biểu của %s", user.getFullName()));
     mentorVerificationService.registerMentor(userId, null);
 
     return user;
@@ -118,16 +110,18 @@ public class UserServiceImpl implements UserService {
     return user;
   }
 
-  @Cacheable(cacheNames = "user", key = "#email")
   @Override
   public User findUserByEmail(final String email) {
-    return userRepository.findByEmail(email);
+    return userCache.findUserByEmail(email);
   }
 
   @Override
   @Transactional
-  public LocalUser processUserRegistration(String registrationId, Map<String, Object> attributes,
-      OidcIdToken idToken, OidcUserInfo userInfo) {
+  public LocalUser processUserRegistration(
+      String registrationId,
+      Map<String, Object> attributes,
+      OidcIdToken idToken,
+      OidcUserInfo userInfo) {
     OAuth2UserInfo oAuth2UserInfo =
         OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, attributes);
     if (!StringUtils.hasText(oAuth2UserInfo.getName())) {
@@ -141,8 +135,11 @@ public class UserServiceImpl implements UserService {
       if (!user.getProvider().equals(registrationId)
           && !user.getProvider().equals(SocialProvider.LOCAL.getProviderType())) {
         throw new OAuth2AuthenticationProcessingException(
-            "Looks like you're signed up with " + user.getProvider() + " account. Please use your "
-                + user.getProvider() + " account to login.");
+            "Looks like you're signed up with "
+                + user.getProvider()
+                + " account. Please use your "
+                + user.getProvider()
+                + " account to login.");
       }
       user = updateExistingUser(user, oAuth2UserInfo);
     } else {
@@ -152,7 +149,7 @@ public class UserServiceImpl implements UserService {
     return LocalUser.create(user, attributes, idToken, userInfo);
   }
 
-  @CachePut("user")
+  @CachePut(value = "user", key = "{#user.email, #user.id}")
   @Transactional
   @Override
   public User save(User user) {
@@ -205,10 +202,8 @@ public class UserServiceImpl implements UserService {
     save(user);
   }
 
-  // @Cacheable("basicUserInfo")
   @Override
   public BasicUserInfo findBasicUserInfoByUserId(Long id) {
-    // return userCaching.basicUserInfoCache.getUnchecked(id);
     var user = findUserById(id).orElseThrow(() -> new UserNotFoundException("id = " + id));
     return UserMapper.toBasicUserInfo(user);
   }
@@ -226,27 +221,22 @@ public class UserServiceImpl implements UserService {
     return save(existingUser);
   }
 
-  private SignUpRequest toUserRegistrationObject(String registrationId,
-      OAuth2UserInfo oAuth2UserInfo) {
-    return SignUpRequest.getBuilder().addProviderUserID(oAuth2UserInfo.getId())
-        .addFullName(oAuth2UserInfo.getName()).addEmail(oAuth2UserInfo.getEmail())
-        .addSocialProvider(UserMapper.toSocialProvider(registrationId)).addPassword(defaultPassword) // FIXME:
-                                                                                                     // change
-                                                                                                     // it
-                                                                                                     // to
-                                                                                                     // a
-                                                                                                     // random
-                                                                                                     // password
+  private SignUpRequest toUserRegistrationObject(
+      String registrationId, OAuth2UserInfo oAuth2UserInfo) {
+    return SignUpRequest.getBuilder()
+        .addProviderUserID(oAuth2UserInfo.getId())
+        .addFullName(oAuth2UserInfo.getName())
+        .addEmail(oAuth2UserInfo.getEmail())
+        .addSocialProvider(UserMapper.toSocialProvider(registrationId))
+        .addPassword(defaultPassword) // FIXME: change it to a random password
         .build();
   }
 
-  // @Cacheable(value = "user", key = "#id")
   @Override
   public Optional<User> findUserById(Long id) {
-    return userCaching.findUserById(id);
+    return userCache.findUserById(id);
   }
 
-  // @Cacheable("localUser")
   @Override
   public LocalUser findLocalUserById(Long id) {
     var user = findUserById(id).orElse(null);
@@ -257,13 +247,17 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Page<UserDetails> findAllUserProfile(PageCriteria pageCriteria, FindUsersRequest request,
-      LocalUser localUser) {
+  public Page<UserDetails> findAllUserProfile(
+      PageCriteria pageCriteria, FindUsersRequest request, LocalUser localUser) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
-    var response = userRepository.findAllByConditions(request, pageable).map(item -> {
-      var userDetails = UserMapper.buildUserDetails(item);
-      return userDetails;
-    });
+    var response =
+        userRepository
+            .findAllByConditions(request, pageable)
+            .map(
+                item -> {
+                  var userDetails = UserMapper.buildUserDetails(item);
+                  return userDetails;
+                });
 
     var favoriteMentors = new ArrayList();
     if (!Objects.isNull(localUser)) {
@@ -289,8 +283,7 @@ public class UserServiceImpl implements UserService {
     while (right >= left) {
       int mid = left + (right - left) / 2;
       var id = favoriteMentors.get(mid).getMentorId();
-      if (id == mentorId)
-        return true;
+      if (id == mentorId) return true;
       if (id > mentorId) {
         right = mid - 1;
       } else {
@@ -302,7 +295,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserDetails findUserProfileById(Long id, LocalUser localUser) {
-    var userOpt = userRepository.findById(id);
+    var userOpt = userCache.findUserById(id);
     if (userOpt.isEmpty()) {
       throw new UserNotFoundException("id = " + id);
     }
@@ -312,14 +305,14 @@ public class UserServiceImpl implements UserService {
         if (localUser.getUser().getRole() == UserRole.ROLE_USER) {
           var favoriteMentors =
               favoriteMentorRepository.findAllByStudentIdAndMentorId(localUser.getUserId(), id);
-          if (favoriteMentors.size() > 0)
+          if (favoriteMentors.size() > 0) {
             userDetails.setIsLiked(true);
-          else
+          } else {
             userDetails.setIsLiked(false);
+          }
         }
       }
     }
     return userDetails;
   }
-
 }

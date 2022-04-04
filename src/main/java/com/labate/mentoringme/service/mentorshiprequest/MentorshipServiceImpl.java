@@ -48,7 +48,7 @@ public class MentorshipServiceImpl implements MentorshipService {
     return mentorshipRepository.findAllByConditions(request, pageable);
   }
 
-  @CachePut("mentorship")
+  @CachePut(value = "mentorship", key = "#entity.id")
   @Transactional
   @Override
   public Mentorship saveMentorship(Mentorship entity) {

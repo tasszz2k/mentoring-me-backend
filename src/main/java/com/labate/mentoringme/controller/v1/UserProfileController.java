@@ -114,7 +114,8 @@ public class UserProfileController {
     // TODO: build sort by ranking
     var sort = List.of("-userProfile.rating", "+createdDate");
     PageCriteria pageCriteria = PageCriteria.builder().limit(10).page(1).sort(sort).build();
-    FindUsersRequest request = FindUsersRequest.builder().role(UserRole.ROLE_MENTOR).build();
+    FindUsersRequest request =
+        FindUsersRequest.builder().role(UserRole.ROLE_MENTOR).enabled(true).build();
 
     return findAllUserProfiles(pageCriteria, request, localUser);
   }

@@ -93,6 +93,20 @@ public class NotificationController {
       dataTypeClass = String.class,
       example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  @PatchMapping("mark-all-read-notification")
+  public ResponseEntity<?> markAllReadNotifications(@CurrentUser LocalUser localUser) {
+    notificationService.markAllReadNotifications(localUser.getUserId());
+    return BaseResponseEntity.ok(null, "Mark all read notification successfully");
+  }
+
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   @GetMapping("")
   public ResponseEntity<?> getAllNotifications(
       PageCriteria pageCriteria, @CurrentUser LocalUser localUser) {

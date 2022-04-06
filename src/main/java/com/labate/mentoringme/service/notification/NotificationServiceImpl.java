@@ -30,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.stream.Collectors;
 
@@ -213,5 +212,19 @@ public class NotificationServiceImpl implements NotificationService {
             .total(userNotificationPage.getTotalElements())
             .build();
     return new PageResponse(notificationsResponse, paging);
+  }
+
+  @Transactional
+  @Override
+  public void markAllReadNotifications(Long userId) {
+    var userNotifications = userNotificationRepository.findByUserId(userId);
+    if (!userNotifications.isEmpty()) {
+      userNotifications.forEach(userNotification -> userNotification.setIsRead(true));
+      userNotificationRepository.saveAll(userNotifications);
+
+      var unreadNotificationCounter = unreadNotificationsCounterRepository.findByUserId(userId);
+      unreadNotificationCounter.setCounter(0);
+      unreadNotificationsCounterRepository.save(unreadNotificationCounter);
+    }
   }
 }

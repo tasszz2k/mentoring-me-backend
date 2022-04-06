@@ -24,12 +24,14 @@ import com.labate.mentoringme.repository.UserNotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -47,13 +49,14 @@ public class NotificationServiceImpl implements NotificationService {
   private final UserNotificationRepository userNotificationRepository;
 
   @PostConstruct
-  private void initialize() {
+  private void initialize() throws Exception {
+    // TODO: Change this to read json file from classpath
+    InputStream inputStream = new URL(firebaseConfig).openStream();
+
     try {
       FirebaseOptions options =
           FirebaseOptions.builder()
-              .setCredentials(
-                  GoogleCredentials.fromStream(
-                      new ClassPathResource(firebaseConfig).getInputStream()))
+              .setCredentials(GoogleCredentials.fromStream(inputStream))
               .build();
 
       if (FirebaseApp.getApps().isEmpty()) {

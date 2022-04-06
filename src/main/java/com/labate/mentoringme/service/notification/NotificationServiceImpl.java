@@ -104,7 +104,10 @@ public class NotificationServiceImpl implements NotificationService {
     // Create a list containing up to 500 registration tokens.
     // These registration tokens come from the client FCM SDKs.
     var registrationTokens =
-        fcmTokens.stream().map(FcmToken::getToken).collect(Collectors.toList());
+        fcmTokens.stream()
+            .filter(fcmToken -> !fcmToken.getIsDeleted())
+            .map(FcmToken::getToken)
+            .collect(Collectors.toList());
 
     MulticastMessage message = buildMulticastMessage(request, registrationTokens);
     BatchResponse response = FirebaseMessaging.getInstance().sendMulticast(message);
@@ -152,10 +155,7 @@ public class NotificationServiceImpl implements NotificationService {
     return Message.builder()
         // .setToken(request.getUserId())
         .setNotification(
-            Notification.builder()
-                .setBody(request.getBody())
-                .setTitle(request.getTitle())
-                .build())
+            Notification.builder().setBody(request.getBody()).setTitle(request.getTitle()).build())
         .putData("content", request.getTitle())
         .putData("body", request.getBody())
         .build();
@@ -282,7 +282,5 @@ public class NotificationServiceImpl implements NotificationService {
   }
 
   @Override
-  public void sendAll(PushNotificationRequest request) {
-
-  }
+  public void sendAll(PushNotificationRequest request) {}
 }

@@ -6,7 +6,7 @@ import java.util.Date;
 
 @Data
 public class NotificationDto {
-  private String id;
+  private Long id;
   private String title;
   private String message;
   private boolean isRead;

@@ -4,10 +4,7 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.labate.mentoringme.config.CurrentUser;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.model.UnreadNotificationCounterDto;
-import com.labate.mentoringme.dto.request.MarkReadNotificationRequest;
-import com.labate.mentoringme.dto.request.NotificationRequestDto;
-import com.labate.mentoringme.dto.request.PageCriteria;
-import com.labate.mentoringme.dto.request.SubscriptionRequestDto;
+import com.labate.mentoringme.dto.request.*;
 import com.labate.mentoringme.dto.request.quiz.RegisterTokenRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.service.notification.NotificationService;
@@ -115,27 +112,30 @@ public class NotificationController {
     return BaseResponseEntity.ok(notifications);
   }
 
-  @PostMapping("/subscribe")
-  public void subscribeToTopic(@RequestBody SubscriptionRequestDto subscriptionRequestDto)
+  @PostMapping("/multicast")
+  public ResponseEntity<?> sendMulticast(@RequestBody PushNotificationToUserRequest request)
       throws FirebaseMessagingException {
-    notificationService.subscribeToTopic(subscriptionRequestDto);
+    notificationService.sendMulticast(request);
+    return BaseResponseEntity.ok(null, "Send multicast successfully");
   }
 
-  @PostMapping("/unsubscribe")
-  public void unsubscribeFromTopic(SubscriptionRequestDto subscriptionRequestDto)
-      throws FirebaseMessagingException {
-    notificationService.unsubscribeFromTopic(subscriptionRequestDto);
-  }
 
-  @PostMapping("/token")
-  public String sendPnsToDevice(@RequestBody NotificationRequestDto notificationRequestDto)
-      throws FirebaseMessagingException {
-    return notificationService.sendPnsToDevice(notificationRequestDto);
-  }
+  // @PostMapping("/topic")
+  // public String sendPnsToTopic(@RequestBody PushNotificationRequest pushNotificationRequest)
+  //     throws FirebaseMessagingException {
+  //   return notificationService.sendPnsToTopic(pushNotificationRequest);
+  // }
+  //
+  // @PostMapping("/subscribe")
+  // public void subscribeToTopic(@RequestBody SubscriptionRequestDto subscriptionRequestDto)
+  //     throws FirebaseMessagingException {
+  //   notificationService.subscribeToTopic(subscriptionRequestDto);
+  // }
+  //
+  // @PostMapping("/unsubscribe")
+  // public void unsubscribeFromTopic(SubscriptionRequestDto subscriptionRequestDto)
+  //     throws FirebaseMessagingException {
+  //   notificationService.unsubscribeFromTopic(subscriptionRequestDto);
+  // }
 
-  @PostMapping("/topic")
-  public String sendPnsToTopic(@RequestBody NotificationRequestDto notificationRequestDto)
-      throws FirebaseMessagingException {
-    return notificationService.sendPnsToTopic(notificationRequestDto);
-  }
 }

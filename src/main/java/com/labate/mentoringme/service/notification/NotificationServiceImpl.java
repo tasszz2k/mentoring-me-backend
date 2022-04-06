@@ -3,14 +3,12 @@ package com.labate.mentoringme.service.notification;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
+import com.google.firebase.messaging.*;
 import com.labate.mentoringme.dto.mapper.NotificationMapper;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
-import com.labate.mentoringme.dto.request.NotificationRequestDto;
 import com.labate.mentoringme.dto.request.PageCriteria;
+import com.labate.mentoringme.dto.request.PushNotificationRequest;
+import com.labate.mentoringme.dto.request.PushNotificationToUserRequest;
 import com.labate.mentoringme.dto.request.SubscriptionRequestDto;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
@@ -31,6 +29,8 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -68,6 +68,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
   }
 
+  @Override
   public void subscribeToTopic(SubscriptionRequestDto subscriptionRequestDto)
       throws FirebaseMessagingException {
     try {
@@ -80,6 +81,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
   }
 
+  @Override
   public void unsubscribeFromTopic(SubscriptionRequestDto subscriptionRequestDto)
       throws FirebaseMessagingException {
     try {
@@ -92,39 +94,90 @@ public class NotificationServiceImpl implements NotificationService {
     }
   }
 
-  public String sendPnsToDevice(NotificationRequestDto notificationRequestDto)
+  @Transactional
+  @Override
+  public void sendMulticast(PushNotificationToUserRequest request)
       throws FirebaseMessagingException {
-    Message message = buildMessage(notificationRequestDto);
+    var userIds = request.getUserIds();
+    var fcmTokens = fcmTokenRepository.findByUserIdIn(userIds);
+    // [START send_multicast]
+    // Create a list containing up to 500 registration tokens.
+    // These registration tokens come from the client FCM SDKs.
+    var registrationTokens =
+        fcmTokens.stream().map(FcmToken::getToken).collect(Collectors.toList());
 
-    String response = null;
-    try {
-      response = FirebaseMessaging.getInstance().send(message);
-    } catch (FirebaseMessagingException e) {
-      log.error("Fail to send firebase notification", e);
-      throw e;
-    }
+    MulticastMessage message = buildMulticastMessage(request, registrationTokens);
+    BatchResponse response = FirebaseMessaging.getInstance().sendMulticast(message);
+    // See the BatchResponse reference documentation for the contents of response.
+    log.info(response.getSuccessCount() + " messages were sent successfully");
+    // [END send_multicast]
 
-    return response;
+    // Save to database
+    saveNotifications(userIds, request.getTitle(), request.getBody());
   }
 
-  private Message buildMessage(NotificationRequestDto notificationRequestDto) {
-    Message message =
-        Message.builder()
-            .setToken(notificationRequestDto.getTarget())
-            .setNotification(
-                Notification.builder()
-                    .setBody(notificationRequestDto.getBody())
-                    .setTitle(notificationRequestDto.getTitle())
-                    .build())
-            .putData("content", notificationRequestDto.getTitle())
-            .putData("body", notificationRequestDto.getBody())
-            .build();
-    return message;
+  private void saveNotifications(Set<Long> userIds, String title, String body) {
+    var notification =
+        com.labate.mentoringme.model.Notification.builder().title(title).body(body).build();
+    var savedNotification = notificationRepository.save(notification);
+
+    var userNotifications =
+        userIds.stream()
+            .map(
+                userId ->
+                    UserNotification.builder()
+                        .userId(userId)
+                        .notificationId(savedNotification.getId())
+                        .build())
+            .collect(Collectors.toList());
+
+    userNotificationRepository.saveAll(userNotifications);
+
+    // Update unread notifications counter
+    unreadNotificationsCounterRepository.updateUnreadNotificationsCounter(userIds, 1);
   }
 
-  public String sendPnsToTopic(NotificationRequestDto notificationRequestDto)
+  private MulticastMessage buildMulticastMessage(
+      PushNotificationToUserRequest request, List<String> registrationTokens) {
+    return MulticastMessage.builder()
+        .setNotification(
+            Notification.builder().setBody(request.getBody()).setTitle(request.getTitle()).build())
+        .putData("content", request.getTitle())
+        .putData("body", request.getBody())
+        .addAllTokens(registrationTokens)
+        .build();
+  }
+
+  private Message buildMessage(PushNotificationToUserRequest request) {
+    return Message.builder()
+        // .setToken(request.getUserId())
+        .setNotification(
+            Notification.builder()
+                .setBody(request.getBody())
+                .setTitle(request.getTitle())
+                .build())
+        .putData("content", request.getTitle())
+        .putData("body", request.getBody())
+        .build();
+  }
+
+  private Message buildMessage(PushNotificationRequest pushNotificationRequest) {
+    return Message.builder()
+        .setToken(pushNotificationRequest.getTopic())
+        .setNotification(
+            Notification.builder()
+                .setBody(pushNotificationRequest.getBody())
+                .setTitle(pushNotificationRequest.getTitle())
+                .build())
+        .putData("content", pushNotificationRequest.getTitle())
+        .putData("body", pushNotificationRequest.getBody())
+        .build();
+  }
+
+  @Override
+  public String sendPnsToTopic(PushNotificationRequest pushNotificationRequest)
       throws FirebaseMessagingException {
-    Message message = buildMessage(notificationRequestDto);
+    Message message = buildMessage(pushNotificationRequest);
 
     String response = null;
     try {
@@ -226,5 +279,10 @@ public class NotificationServiceImpl implements NotificationService {
       unreadNotificationCounter.setCounter(0);
       unreadNotificationsCounterRepository.save(unreadNotificationCounter);
     }
+  }
+
+  @Override
+  public void sendAll(PushNotificationRequest request) {
+
   }
 }

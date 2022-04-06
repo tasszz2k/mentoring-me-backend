@@ -93,7 +93,7 @@ public class NotificationController {
       dataTypeClass = String.class,
       example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
-  @PatchMapping("mark-all-read-notification")
+  @PatchMapping("mark-all-read-notifications")
   public ResponseEntity<?> markAllReadNotifications(@CurrentUser LocalUser localUser) {
     notificationService.markAllReadNotifications(localUser.getUserId());
     return BaseResponseEntity.ok(null, "Mark all read notification successfully");

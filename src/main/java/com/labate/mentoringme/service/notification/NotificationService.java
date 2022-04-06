@@ -25,4 +25,6 @@ public interface NotificationService {
   void markReadNotification(Long userId, String notificationId);
 
   PageResponse getAllNotifications(Long userId, PageCriteria pageCriteria);
+
+  void markAllReadNotifications(Long userId);
 }

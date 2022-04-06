@@ -321,7 +321,7 @@ public class ExceptionHandleAdvice {
     return ResponseEntity.status(error.getStatus())
         .body(
             ErrorResponse.<Void>builder()
-                .code(error.getCode())
+                .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error(error.getName())
                 .message(e.getMessage())
                 .build());
@@ -603,16 +603,16 @@ public class ExceptionHandleAdvice {
 
   @ExceptionHandler(DisabledException.class)
   public ResponseEntity<ErrorResponse<Void>> handleDisabledException(
-          DisabledException e, HttpServletRequest request) {
+      DisabledException e, HttpServletRequest request) {
     ResponseError error = UnauthorizedError.DISABLED_USER_EXCEPTION;
     log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
     return ResponseEntity.status(error.getStatus())
-            .body(
-                    new InvalidInputResponse(
-                            error.getCode(),
-                            error.getMessage(),
-                            error.getName(),
-                            Collections.singleton(
-                                    FieldErrorResponse.builder().message(e.getMessage()).build())));
+        .body(
+            new InvalidInputResponse(
+                error.getCode(),
+                error.getMessage(),
+                error.getName(),
+                Collections.singleton(
+                    FieldErrorResponse.builder().message(e.getMessage()).build())));
   }
 }

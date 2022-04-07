@@ -78,7 +78,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     var userId = localUser.getUserId();
     var favoriteQuiz = new FavoriteQuiz();
     favoriteQuiz.setQuizId(addFavoriteQuizRequest.getQuizId());
-    favoriteQuiz.setUserId(userId);
+    favoriteQuiz.setUserId(localUser.getUserId());
     return favoriteQuizRepository.save(favoriteQuiz);
   }
 
@@ -121,6 +121,14 @@ public class FavoriteServiceImpl implements FavoriteService {
     favoriteMentor.setMentorId(createFavoriteMentorRequest.getMentorId());
     favoriteMentor.setStudentId(userId);
     return favoriteMentorRepository.save(favoriteMentor);
+  }
+
+
+
+  @Override
+  public FavoriteMentor findByStudentIdAndMentorId(Long mentorId, LocalUser localUser) {
+    var studentId = localUser.getUserId();
+    return favoriteMentorRepository.findByStudentIdAndMentorId(studentId, mentorId);
   }
 
 }

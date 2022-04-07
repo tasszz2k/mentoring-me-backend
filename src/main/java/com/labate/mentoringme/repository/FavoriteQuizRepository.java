@@ -14,7 +14,7 @@ import com.labate.mentoringme.model.quiz.FavoriteQuiz;
 @Repository
 public interface FavoriteQuizRepository extends JpaRepository<FavoriteQuiz, Long> {
 
-  FavoriteQuiz findByUserIdAndQuizId(Long userId, Long quizId);
+  FavoriteQuiz findByUserIdAndQuizId(@Param("userId") Long userId, @Param("quizId") Long quizId);
 
   @Transactional
   @Modifying

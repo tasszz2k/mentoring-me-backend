@@ -3,15 +3,16 @@ package com.labate.mentoringme.service.quizz;
 import org.springframework.data.domain.Page;
 import com.labate.mentoringme.dto.QuizOverviewDto;
 import com.labate.mentoringme.dto.model.LocalUser;
-import com.labate.mentoringme.dto.model.QuizDto;
+import com.labate.mentoringme.dto.model.QuizDetailDto;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.CreateQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.FindQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.ResultQuizCheckingRequest;
+import com.labate.mentoringme.dto.request.quiz.UpdateQuizDetailRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizOverviewRequest;
-import com.labate.mentoringme.dto.request.quiz.UpdateQuizRequest;
 import com.labate.mentoringme.dto.response.QuizFavoriteResponse;
 import com.labate.mentoringme.dto.response.QuizOverviewResponse;
+import com.labate.mentoringme.dto.response.QuizResponse;
 import com.labate.mentoringme.dto.response.QuizResultResponse;
 import com.labate.mentoringme.dto.response.QuizTakingHistoryResponse;
 
@@ -23,17 +24,19 @@ public interface QuizService {
 
   QuizOverviewDto updateQuizOverview(UpdateQuizOverviewRequest request, LocalUser localUser);
 
-  QuizDto findById(Long quizId);
+  QuizDetailDto findById(Long quizId);
 
   void deleteById(Long quizId);
 
   Page<QuizOverviewDto> getListDraftQuiz(PageCriteria pageCriteria, LocalUser localUser);
 
-  QuizDto addQuiz(CreateQuizRequest createQuizRequest, LocalUser localUser);
+  QuizResponse addQuiz(CreateQuizRequest createQuizRequest, LocalUser localUser);
 
-  QuizDto updateQuiz(UpdateQuizRequest updateQuizRequest);
+  QuizDetailDto updateQuizDetail(UpdateQuizDetailRequest updateQuizDetailRequest,
+      LocalUser localUser);
 
-  Page<QuizTakingHistoryResponse> getQuizTakingHistory(PageCriteria pageCriteria);
+  Page<QuizTakingHistoryResponse> getQuizTakingHistory(PageCriteria pageCriteria,
+      LocalUser localUser);
 
   QuizResultResponse getQuizResult(ResultQuizCheckingRequest request, LocalUser localUser);
 

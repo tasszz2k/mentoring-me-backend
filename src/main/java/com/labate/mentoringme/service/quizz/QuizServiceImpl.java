@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.modelmapper.ModelMapper;
@@ -20,18 +21,21 @@ import com.labate.mentoringme.dto.QuizResultCheckingDto;
 import com.labate.mentoringme.dto.UserSelectionDto;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
-import com.labate.mentoringme.dto.model.QuizDto;
+import com.labate.mentoringme.dto.model.QuestionDto;
+import com.labate.mentoringme.dto.model.QuizDetailDto;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.CreateQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.FindQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.ResultQuizCheckingRequest;
+import com.labate.mentoringme.dto.request.quiz.UpdateQuizDetailRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizOverviewRequest;
-import com.labate.mentoringme.dto.request.quiz.UpdateQuizRequest;
 import com.labate.mentoringme.dto.response.QuizFavoriteResponse;
 import com.labate.mentoringme.dto.response.QuizOverviewResponse;
+import com.labate.mentoringme.dto.response.QuizResponse;
 import com.labate.mentoringme.dto.response.QuizResultResponse;
 import com.labate.mentoringme.dto.response.QuizTakingHistoryResponse;
 import com.labate.mentoringme.model.Category;
+import com.labate.mentoringme.model.quiz.Answer;
 import com.labate.mentoringme.model.quiz.FavoriteQuiz;
 import com.labate.mentoringme.model.quiz.Question;
 import com.labate.mentoringme.model.quiz.Quiz;
@@ -90,9 +94,11 @@ public class QuizServiceImpl implements QuizService {
     if (!Objects.isNull(localUser)) {
       var userId = localUser.getUserId();
       var favoriteQuiz = favoriteQuizRepository.findByUserIdAndQuizId(userId, quizId);
-      quizOverResponse.setIsLiked(false);
-      if (favoriteQuiz != null)
-        quizOverResponse.setIsLiked(true);;
+      if (Objects.isNull(favoriteQuiz)) {
+        quizOverResponse.setIsLiked(false);
+      } else {
+        quizOverResponse.setIsLiked(true);
+      }
     }
     var user = userRepository.findById(quizOverResponse.getCreatedBy()).get();
     quizOverResponse.setImageUrl(user.getImageUrl());
@@ -102,12 +108,13 @@ public class QuizServiceImpl implements QuizService {
   }
 
   @Override
-  public QuizDto findById(Long quizId) {
-    var quizOpt = quizRepository.findById(quizId);
-    if (quizOpt.isEmpty())
-      return null;
-    var quizDto = modelMapper.map(quizOpt.get(), QuizDto.class);
-    return quizDto;
+  public QuizDetailDto findById(Long quizId) {
+    var questions = questionRepository.getByQuizId(quizId).stream().map(item -> {
+      var questionDto = modelMapper.map(item, QuestionDto.class);
+      return questionDto;
+    }).collect(Collectors.toSet());
+    var quizDetailDto = new QuizDetailDto(questions);
+    return quizDetailDto;
   }
 
   @Override
@@ -115,44 +122,49 @@ public class QuizServiceImpl implements QuizService {
     quizRepository.deleteById(quizId);
   }
 
+  @Transactional
   @Override
-  public QuizDto addQuiz(CreateQuizRequest createQuizRequest, LocalUser localUser) {
+  public QuizResponse addQuiz(CreateQuizRequest createQuizRequest, LocalUser localUser) {
     var quiz = modelMapper.map(createQuizRequest, Quiz.class);
     quiz.setCreatedBy(localUser.getUserId());
     quiz.setAuthor(localUser.getUser().getFullName());
-    quiz.getQuestions().forEach(question -> {
-      question.setQuiz(quiz);
-    });
-    for (Question question : quiz.getQuestions()) {
-      question.getAnswers().forEach(answer -> answer.setQuestion(question));
+    var insertedQuiz = quizRepository.save(quiz);
+    var questions = new ArrayList();
+    for (QuestionDto questionDto : createQuizRequest.getQuestions()) {
+      var question = modelMapper.map(questionDto, Question.class);
+      question.setQuizId(insertedQuiz.getId());
+      for (Answer answer : question.getAnswers()) {
+        answer.setQuestion(question);
+      }
+      questions.add(question);
     }
-    return modelMapper.map(questionRepository.save(quiz), QuizDto.class);
+    questionRepository.saveAll(questions);
+    return modelMapper.map(insertedQuiz, QuizResponse.class);
   }
 
   @Override
-  public QuizDto updateQuiz(UpdateQuizRequest updateQuizRequest) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    var quiz = modelMapper.map(updateQuizRequest, Quiz.class);
-    quiz.setModifiedBy(localUser.getUserId());
-    quiz.getQuestions().forEach(question -> {
-      question.setQuiz(quiz);
-    });
-    for (Question question : quiz.getQuestions()) {
-      question.getAnswers().forEach(answer -> answer.setQuestion(question));
+  public QuizDetailDto updateQuizDetail(UpdateQuizDetailRequest updateQuizDetailRequest,
+      LocalUser localUser) {
+    var questions = new ArrayList();
+    for (QuestionDto questionDto : updateQuizDetailRequest.getQuestions()) {
+      var question = modelMapper.map(questionDto, Question.class);
+      question.setQuizId(updateQuizDetailRequest.getQuizId());
+      for (Answer answer : question.getAnswers()) {
+        answer.setQuestion(question);
+      }
+      questions.add(question);
     }
-    var oldQuiz = quizRepository.findById(quiz.getId());
-    quiz.setAuthor(oldQuiz.get().getAuthor());
-    quiz.setCreatedBy(oldQuiz.get().getCreatedBy());
-    quiz.setCreatedDate(oldQuiz.get().getCreatedDate());
-    quiz.setAuthor(oldQuiz.get().getAuthor());
-    return modelMapper.map(questionRepository.save(quiz), QuizDto.class);
+    var questionDtos = questionRepository.saveAll(questions).stream().map(item -> {
+      var questionDto = modelMapper.map(item, QuestionDto.class);
+      return questionDto;
+    }).collect(Collectors.toSet());
+
+    return new QuizDetailDto((Set<QuestionDto>) questionDtos);
   }
 
   @Override
-  public Page<QuizTakingHistoryResponse> getQuizTakingHistory(PageCriteria pageCriteria) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public Page<QuizTakingHistoryResponse> getQuizTakingHistory(PageCriteria pageCriteria,
+      LocalUser localUser) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     var userId = localUser.getUserId();
     var response = quizResultRepository.getQuizTakingHistory(userId, pageable).map(item -> {

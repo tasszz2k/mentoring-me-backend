@@ -23,4 +23,6 @@ public interface FavoriteService {
 
   FavoriteMentor addFavoriteMentor(CreateFavoriteMentorRequest addFavoriteMentorRequest,
       LocalUser localUser);
+
+  FavoriteMentor findByStudentIdAndMentorId(Long mentorId, LocalUser localUser);
 }

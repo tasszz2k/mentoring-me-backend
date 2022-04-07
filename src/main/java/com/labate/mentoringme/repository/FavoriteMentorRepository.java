@@ -8,8 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 import com.labate.mentoringme.model.FavoriteMentor;
 
+@Repository
 public interface FavoriteMentorRepository extends JpaRepository<FavoriteMentor, Long> {
 
   @Transactional
@@ -23,4 +25,7 @@ public interface FavoriteMentorRepository extends JpaRepository<FavoriteMentor, 
       @Param("mentorId") Long mentorId);
 
   Page<FavoriteMentor> findAllByStudentId(@Param("studentId") Long studentId, Pageable pageable);
+
+  FavoriteMentor findByStudentIdAndMentorId(@Param("studentId") Long studentId,
+      @Param("mentorId") Long mentorId);
 }

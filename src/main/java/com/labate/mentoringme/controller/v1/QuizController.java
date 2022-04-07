@@ -19,8 +19,8 @@ import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.CreateQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.FindQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.ResultQuizCheckingRequest;
+import com.labate.mentoringme.dto.request.quiz.UpdateQuizDetailRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizOverviewRequest;
-import com.labate.mentoringme.dto.request.quiz.UpdateQuizRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
@@ -90,8 +90,10 @@ public class QuizController {
       paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR')")
   @PutMapping()
-  public ResponseEntity<?> updateQuiz(@RequestBody UpdateQuizRequest updateQuizRequest) {
-    var quiz = quizService.updateQuiz(updateQuizRequest);
+  public ResponseEntity<?> updateQuizDetail(
+      @RequestBody UpdateQuizDetailRequest updateQuizDetailRequest,
+      @CurrentUser LocalUser localUser) {
+    var quiz = quizService.updateQuizDetail(updateQuizDetailRequest, localUser);
     return BaseResponseEntity.ok(quiz);
   }
 
@@ -125,9 +127,10 @@ public class QuizController {
       paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('MENTOR', 'USER')")
   @GetMapping("/results")
-  public ResponseEntity<?> getQuizTakingHistory(@Valid PageCriteria pageCriteria) {
+  public ResponseEntity<?> getQuizTakingHistory(@Valid PageCriteria pageCriteria,
+      @CurrentUser LocalUser localUser) {
     pageCriteria.setSort(List.of("-created"));
-    var pageData = quizService.getQuizTakingHistory(pageCriteria);
+    var pageData = quizService.getQuizTakingHistory(pageCriteria, localUser);
     var paging = Paging.builder().limit(pageCriteria.getLimit()).page(pageCriteria.getPage())
         .total(pageData.getTotalElements()).build();
     var pageResponse = new PageResponse(pageData.getContent(), paging);

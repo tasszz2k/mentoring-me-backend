@@ -249,15 +249,13 @@ public class UserServiceImpl implements UserService {
   @Override
   public Page<UserDetails> findAllUserProfile(
       PageCriteria pageCriteria, FindUsersRequest request, LocalUser localUser) {
+    if (localUser == null || !UserRole.MANAGER_ROLES.contains(localUser.getUser().getRole())) {
+      request.setEnabled(true);
+    }
+
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     var response =
-        userRepository
-            .findAllByConditions(request, pageable)
-            .map(
-                item -> {
-                  var userDetails = UserMapper.buildUserDetails(item);
-                  return userDetails;
-                });
+        userRepository.findAllByConditions(request, pageable).map(UserMapper::buildUserDetails);
 
     var favoriteMentors = new ArrayList();
     if (!Objects.isNull(localUser)) {

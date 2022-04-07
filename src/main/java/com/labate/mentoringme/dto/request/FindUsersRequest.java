@@ -5,28 +5,28 @@ import com.labate.mentoringme.constant.Gender;
 import com.labate.mentoringme.constant.MentorStatus;
 import com.labate.mentoringme.constant.UserRole;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Builder
-@Value
+@Data
 public class FindUsersRequest {
-  String keyword;
+  private String keyword;
 
-  UserRole role;
-  Boolean enabled;
-  Set<Gender> genders;
-  Float minPrice;
-  Float maxPrice;
-  Boolean isOfflineStudy;
-  Boolean isOnlineStudy;
-  Float ratingFrom;
+  private UserRole role;
+  private Boolean enabled;
+  private Set<Gender> genders;
+  private Float minPrice;
+  private Float maxPrice;
+  private Boolean isOfflineStudy;
+  private Boolean isOnlineStudy;
+  private Float ratingFrom;
 
-  List<Long> categoryIds;
-  List<Long> addressIds;
+  private List<Long> categoryIds;
+  private List<Long> addressIds;
 
   @JsonIgnore // FIXME: config swagger to hidden this field
   public String getRoleName() {

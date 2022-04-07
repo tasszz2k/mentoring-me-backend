@@ -2,6 +2,7 @@ package com.labate.mentoringme.service.timetable;
 
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreateEventRequest;
+import com.labate.mentoringme.dto.request.DeleteEventRequest;
 import com.labate.mentoringme.dto.request.GetTimetableRequest;
 import com.labate.mentoringme.model.MentorshipRequest;
 import com.labate.mentoringme.model.Timetable;
@@ -19,5 +20,7 @@ public interface TimetableService {
 
   Timetable findByUserId(Long userId, GetTimetableRequest request);
 
-  void createNewEvent(CreateEventRequest request, LocalUser localUser);
+  void createNewEvents(CreateEventRequest request, LocalUser localUser);
+
+  void deleteEvents(DeleteEventRequest request, LocalUser localUser);
 }

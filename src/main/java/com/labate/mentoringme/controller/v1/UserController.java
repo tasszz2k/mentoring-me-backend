@@ -58,7 +58,7 @@ public class UserController {
   @PatchMapping("/{userId}/enable")
   public ResponseEntity<?> enableUser(@PathVariable Long userId) {
     userService.updateUserEnableStatus(userId, true);
-    return BaseResponseEntity.ok("User enabled");
+    return BaseResponseEntity.ok("User is enabled");
   }
 
   @ApiImplicitParam(
@@ -72,7 +72,7 @@ public class UserController {
   @PatchMapping("/{userId}/disable")
   public ResponseEntity<?> disableUser(@PathVariable Long userId) {
     userService.updateUserEnableStatus(userId, false);
-    return BaseResponseEntity.ok("User enabled");
+    return BaseResponseEntity.ok("User is disabled");
   }
 
   @GetMapping("")

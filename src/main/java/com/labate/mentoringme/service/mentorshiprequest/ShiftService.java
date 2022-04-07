@@ -9,5 +9,5 @@ public interface ShiftService {
 
   Set<Shift> findAllByIds(Set<Long> ids);
 
-  Set<Shift> saveAllShifts(Long mentorshipId, Set<Shift> shifts);
+  Set<Shift> saveAllShifts(Long mentorshipId, Long createdBy, Set<Shift> shifts);
 }

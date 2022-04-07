@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreateFeedbackRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
@@ -42,14 +43,15 @@ public class FeedbackController {
       paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('USER')")
   @PostMapping()
-  public ResponseEntity<?> addFeedback(@RequestBody CreateFeedbackRequest createFeedbackRequest) {
-    var feedback = feedbackService.createFeedback(createFeedbackRequest);
+  public ResponseEntity<?> addFeedback(@RequestBody CreateFeedbackRequest createFeedbackRequest,
+      LocalUser localUser) {
+    var feedback = feedbackService.createFeedback(createFeedbackRequest, localUser);
     return BaseResponseEntity.ok(feedback);
   }
 
   @GetMapping("/{toUserId}/overview")
-  public ResponseEntity<?> getFeedbackOverview(@PathVariable Long toUserId) {
-    var feedbackOverviewResponse = feedbackService.getFeedbackOverview(toUserId);
+  public ResponseEntity<?> getFeedbackOverview(@PathVariable Long toUserId, LocalUser localUser) {
+    var feedbackOverviewResponse = feedbackService.getFeedbackOverview(toUserId, localUser);
     return BaseResponseEntity.ok(feedbackOverviewResponse);
   }
 

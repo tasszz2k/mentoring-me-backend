@@ -22,13 +22,13 @@ public interface QuizService {
 
   QuizOverviewResponse getQuizOverview(Long quizId, LocalUser localUser);
 
-  QuizOverviewDto updateQuizOverview(UpdateQuizOverviewRequest request);
+  QuizOverviewDto updateQuizOverview(UpdateQuizOverviewRequest request, LocalUser localUser);
 
   QuizDetailDto findById(Long quizId);
 
   void deleteById(Long quizId);
 
-  Page<QuizOverviewDto> getListDraftQuiz(PageCriteria pageCriteria);
+  Page<QuizOverviewDto> getListDraftQuiz(PageCriteria pageCriteria, LocalUser localUser);
 
   QuizResponse addQuiz(CreateQuizRequest createQuizRequest, LocalUser localUser);
 

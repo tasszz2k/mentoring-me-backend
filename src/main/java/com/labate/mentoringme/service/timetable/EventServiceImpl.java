@@ -59,6 +59,26 @@ public class EventServiceImpl implements EventService {
   }
 
   @Override
+  public Event findById(Long eventId) {
+    return eventRepository.findById(eventId).orElse(null);
+  }
+
+  @Override
+  public void deleteById(Long eventId) {
+    eventRepository.deleteById(eventId);
+  }
+
+  @Override
+  public List<Event> findByShiftId(Long shiftId) {
+    return eventRepository.findByShiftId(shiftId);
+  }
+
+  @Override
+  public void deleteByShiftId(Long shiftId) {
+    eventRepository.deleteByShiftId(shiftId);
+  }
+
+  @Override
   public List<Event.Basic> createBasicEvents(Date startDate, Date endDate, Shift shift) {
     var start = DateUtils.toLocalDate(startDate);
     var end = DateUtils.toLocalDate(endDate);

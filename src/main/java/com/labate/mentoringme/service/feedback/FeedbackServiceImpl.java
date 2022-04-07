@@ -1,10 +1,10 @@
 package com.labate.mentoringme.service.feedback;
 
 import java.text.DecimalFormat;
+import java.util.Objects;
 import javax.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
@@ -40,9 +40,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 
   @Transactional
   @Override
-  public Feedback createFeedback(CreateFeedbackRequest createFeedbackRequest) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public Feedback createFeedback(CreateFeedbackRequest createFeedbackRequest, LocalUser localUser) {
     var oldFeedback = feedbackRepository
         .findByToUserIdAndFromUserId(createFeedbackRequest.getToUserId(), localUser.getUserId());
     if (oldFeedback != null) {
@@ -68,7 +66,7 @@ public class FeedbackServiceImpl implements FeedbackService {
   }
 
   @Override
-  public FeedbackOverviewResponse getFeedbackOverview(Long toUserId) {
+  public FeedbackOverviewResponse getFeedbackOverview(Long toUserId, LocalUser localUser) {
     var feedbacks = feedbackRepository.findByToUserId(toUserId);
     Double totalRating = (double) 0;
     for (Feedback feedback : feedbacks) {
@@ -114,11 +112,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         .proportionOfThreeRating(calculateProportion(numberOfThreeRating, numberOfFeedback))
         .proportionOfFourRating(calculateProportion(numberOfFourRating, numberOfFeedback))
         .proportionOfFiveRating(calculateProportion(numberOfFiveRating, numberOfFeedback)).build();
-
-    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    if (principal instanceof LocalUser) {
-      LocalUser localUser =
-          (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if (!Objects.isNull(localUser)) {
       var user = localUser.getUser();
       var feedback = feedbackRepository.findByToUserIdAndFromUserId(toUserId, user.getId());
       if (feedback != null) {

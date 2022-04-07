@@ -39,18 +39,17 @@ public class AuthService {
               });
 
   public Authentication getAuthentication(String email, String password) {
-    Authentication authenticate = null;
     try {
-      authenticate =
-          authenticationManager.authenticate(
-              new UsernamePasswordAuthenticationToken(email, password));
+      var authentication = new UsernamePasswordAuthenticationToken(email, password);
+      var authenticate = authenticationManager.authenticate(authentication);
+      loginFailCounterCache.put(email, 0);
+      return authenticate;
     } catch (DisabledException e) {
       throw new DisabledException(email);
     } catch (Exception e) {
       int times = increaseLoginFailCounter(email);
       throw new LoginFailException(String.valueOf(times));
     }
-    return authenticate;
   }
 
   private int increaseLoginFailCounter(String username) {

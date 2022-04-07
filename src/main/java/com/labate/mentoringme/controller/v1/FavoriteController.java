@@ -52,7 +52,7 @@ public class FavoriteController {
     if (Objects.isNull(favoriteQuiz)) {
       throw new FavoriteQuizNotFoundException("FavoriteQuiz is not found! quizid = " + quizId);
     }
-    favoriteService.deleteFavoriteQuiz(quizId);
+    favoriteService.deleteFavoriteQuiz(quizId, localUser);
     return BaseResponseEntity.ok("Favorite Quiz deleted successfully");
   }
 
@@ -87,8 +87,9 @@ public class FavoriteController {
       paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('USER')")
   @DeleteMapping("/mentors/{mentorId}")
-  public ResponseEntity<?> deleteFavoriteMentor(@PathVariable Long mentorId) {
-    favoriteService.deleteFavoriteMentor(mentorId);
+  public ResponseEntity<?> deleteFavoriteMentor(@PathVariable Long mentorId,
+      @CurrentUser LocalUser localUser) {
+    favoriteService.deleteFavoriteMentor(mentorId, localUser);
     return BaseResponseEntity.ok("Favorite Quiz deleted successfully");
   }
 

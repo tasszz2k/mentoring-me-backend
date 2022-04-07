@@ -255,9 +255,7 @@ public class QuizServiceImpl implements QuizService {
   }
 
   @Override
-  public Page<QuizOverviewDto> getListDraftQuiz(PageCriteria pageCriteria) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public Page<QuizOverviewDto> getListDraftQuiz(PageCriteria pageCriteria, LocalUser localUser) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     var userId = localUser.getUserId();
     return quizRepository.findAllByCreatedByAndIsDraft(userId, true, pageable).map(quiz -> {
@@ -267,9 +265,8 @@ public class QuizServiceImpl implements QuizService {
   }
 
   @Override
-  public QuizOverviewDto updateQuizOverview(UpdateQuizOverviewRequest request) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public QuizOverviewDto updateQuizOverview(UpdateQuizOverviewRequest request,
+      LocalUser localUser) {
     var quiz = quizRepository.findById(request.getId()).get();
     quiz.setModifiedDate(new Date());
     quiz.setModifiedBy(localUser.getUserId());

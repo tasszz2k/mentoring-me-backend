@@ -2,7 +2,6 @@ package com.labate.mentoringme.service.report;
 
 import java.util.Optional;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
@@ -29,9 +28,8 @@ public class ReportServiceImpl implements ReportService {
   }
 
   @Override
-  public Report createReport(CreateReportRequest createReportRequest) throws Exception {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public Report createReport(CreateReportRequest createReportRequest, LocalUser localUser)
+      throws Exception {
     var report = ObjectMapperUtils.map(createReportRequest, Report.class);
     report.setFromUserId(localUser.getUserId());
     var images = createReportRequest.getImages();

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.labate.mentoringme.config.CurrentUser;
+import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreateReportRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
@@ -43,8 +45,9 @@ public class ReportController {
       paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
   @PostMapping()
   @PreAuthorize("hasAnyRole('USER')")
-  public ResponseEntity<?> addReport(CreateReportRequest createReportRequest) throws Exception {
-    var report = reportService.createReport(createReportRequest);
+  public ResponseEntity<?> addReport(CreateReportRequest createReportRequest,
+      @CurrentUser LocalUser localUser) throws Exception {
+    var report = reportService.createReport(createReportRequest, localUser);
     return BaseResponseEntity.ok(report);
   }
 

@@ -26,6 +26,7 @@ class EventServiceImplTest {
         new Shift(
             null,
             null,
+            null,
             DayOfWeek.FRIDAY,
             1,
             Time.valueOf("08:00:00"),
@@ -53,6 +54,7 @@ class EventServiceImplTest {
     var endDate = DateUtils.toDate(LocalDate.of(2022, 5, 23));
     var shift =
         new Shift(
+            null,
             null,
             null,
             DayOfWeek.FRIDAY,

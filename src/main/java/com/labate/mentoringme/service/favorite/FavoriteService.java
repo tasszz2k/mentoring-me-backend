@@ -11,7 +11,7 @@ import com.labate.mentoringme.model.quiz.FavoriteQuiz;
 public interface FavoriteService {
   PageResponse findFavoriteQuizByUserId(PageCriteria pageCriteria, LocalUser localUser);
 
-  void deleteFavoriteQuiz(Long quizId);
+  void deleteFavoriteQuiz(Long quizId, LocalUser localUser);
 
   FavoriteQuiz findByQuizIdAndUserId(Long quizId, LocalUser localUser);
 
@@ -19,7 +19,7 @@ public interface FavoriteService {
 
   PageResponse findFavoriteMentor(PageCriteria pageCriteria, LocalUser localUser);
 
-  void deleteFavoriteMentor(Long mentorId);
+  void deleteFavoriteMentor(Long mentorId, LocalUser localUser);
 
   FavoriteMentor addFavoriteMentor(CreateFavoriteMentorRequest addFavoriteMentorRequest,
       LocalUser localUser);

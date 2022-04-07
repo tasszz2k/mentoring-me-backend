@@ -250,10 +250,15 @@ public class ExceptionHandleAdvice {
       HttpServletRequest request) {
     ResponseError error = InternalServerError.INTERNAL_SERVER_ERROR;
     log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
-    languageService.getMessage(InternalServerError.INTERNAL_SERVER_ERROR.getName(),
-        "There are somethings wrong: {0}", e);
-    return ResponseEntity.status(error.getStatus()).body(ErrorResponse.<Void>builder()
-        .code(error.getCode()).error(error.getName()).message(e.getMessage()).build());
+    languageService.getMessage(
+        InternalServerError.INTERNAL_SERVER_ERROR.getName(), "There are somethings wrong: {0}", e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            ErrorResponse.<Void>builder()
+                .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .error(error.getName())
+                .message(e.getMessage())
+                .build());
   }
 
   @ExceptionHandler(MissingServletRequestParameterException.class)
@@ -350,6 +355,34 @@ public class ExceptionHandleAdvice {
     return ResponseEntity.status(error.getStatus())
         .body(ErrorResponse.<Void>builder().code(error.getCode()).error(error.getName())
             .message(MessageFormat.format(error.getMessage(), e.getMessage())).build());
+  }
+
+  @ExceptionHandler(ShiftNotFoundException.class)
+  public ResponseEntity<ErrorResponse<Void>> ShiftNotFoundException(
+      ShiftNotFoundException e, HttpServletRequest request) {
+    ResponseError error = NotFoundError.SHIFT_NOT_FOUND;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            ErrorResponse.<Void>builder()
+                .code(error.getCode())
+                .error(error.getName())
+                .message(MessageFormat.format(error.getMessage(), e.getMessage()))
+                .build());
+  }
+
+  @ExceptionHandler(EventNotFoundException.class)
+  public ResponseEntity<ErrorResponse<Void>> EventNotFoundException(
+      EventNotFoundException e, HttpServletRequest request) {
+    ResponseError error = NotFoundError.EVENT_NOT_FOUND;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            ErrorResponse.<Void>builder()
+                .code(error.getCode())
+                .error(error.getName())
+                .message(MessageFormat.format(error.getMessage(), e.getMessage()))
+                .build());
   }
 
   @ExceptionHandler(PostNotFoundException.class)

@@ -47,12 +47,13 @@ public class QuizController {
   }
 
   @PatchMapping("/overview")
-  public ResponseEntity<?> updateQuizOverview(@RequestBody UpdateQuizOverviewRequest request) {
+  public ResponseEntity<?> updateQuizOverview(@RequestBody UpdateQuizOverviewRequest request,
+      @CurrentUser LocalUser localUser) {
     var quiz = quizService.findById(request.getId());
     if (quiz == null) {
       throw new QuizNotFoundException("id = " + request.getId());
     }
-    return BaseResponseEntity.ok(quizService.updateQuizOverview(request));
+    return BaseResponseEntity.ok(quizService.updateQuizOverview(request, localUser));
   }
 
   @GetMapping()
@@ -100,8 +101,9 @@ public class QuizController {
       paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR')")
   @GetMapping("/drafts")
-  public ResponseEntity<?> getListDraftQuiz(@Valid PageCriteria pageCriteria) {
-    var pageData = quizService.getListDraftQuiz(pageCriteria);
+  public ResponseEntity<?> getListDraftQuiz(@Valid PageCriteria pageCriteria,
+      @CurrentUser LocalUser localUser) {
+    var pageData = quizService.getListDraftQuiz(pageCriteria, localUser);
     var paging = Paging.builder().limit(pageCriteria.getLimit()).page(pageCriteria.getPage())
         .total(pageData.getTotalElements()).build();
     var pageResponse = new PageResponse(pageData.getContent(), paging);

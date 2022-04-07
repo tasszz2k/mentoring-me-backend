@@ -28,4 +28,14 @@ public interface UnreadNotificationsCounterRepository
               + "WHERE user_id IN (:userIds)",
       nativeQuery = true)
   void updateUnreadNotificationsCounter(Set<Long> userIds, int modifiedCounter);
+
+  @Transactional
+  @Modifying
+  @Query(
+          value =
+                  "UPDATE unread_notifications_counters\n"
+                          + "SET unread_notifications_counter = unread_notifications_counter + :modifiedCounter\n"
+                          + "WHERE user_id = :userId",
+          nativeQuery = true)
+  void updateUnreadNotificationsCounter(Long userId, int modifiedCounter);
 }

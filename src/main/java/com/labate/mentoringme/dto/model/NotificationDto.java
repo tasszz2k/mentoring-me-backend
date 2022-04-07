@@ -10,7 +10,7 @@ import java.util.Date;
 public class NotificationDto {
   private Long id;
   private String title;
-  private String message;
+  private String body;
   private boolean isRead;
 
   @JsonFormat(

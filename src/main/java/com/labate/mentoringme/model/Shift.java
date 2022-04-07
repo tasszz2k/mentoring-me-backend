@@ -30,6 +30,7 @@ public class Shift {
   private Long id;
 
   private Long mentorshipId;
+  private Long createdBy;
 
   @Enumerated(EnumType.STRING)
   private DayOfWeek dayOfWeek;

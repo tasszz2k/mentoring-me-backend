@@ -4,6 +4,7 @@ import com.labate.mentoringme.config.CurrentUser;
 import com.labate.mentoringme.dto.mapper.TimetableMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreateEventRequest;
+import com.labate.mentoringme.dto.request.DeleteEventRequest;
 import com.labate.mentoringme.dto.request.GetTimetableRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.exception.TimetableNotFoundException;
@@ -82,12 +83,12 @@ public class TimetableController {
       example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   @PostMapping("/events")
-  public ResponseEntity<?> createNewEvent(
+  public ResponseEntity<?> createNewEvents(
       @Valid @RequestBody CreateEventRequest request, @CurrentUser LocalUser localUser) {
 
-    timetableService.createNewEvent(request, localUser);
+    timetableService.createNewEvents(request, localUser);
 
-    return BaseResponseEntity.ok(null, "Event created successfully");
+    return BaseResponseEntity.ok(null, "Events created successfully");
   }
 
   @ApiImplicitParam(
@@ -99,11 +100,11 @@ public class TimetableController {
           example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
   @DeleteMapping("/events")
-  public ResponseEntity<?> deleteEvent(
-          @Valid @RequestBody CreateEventRequest request, @CurrentUser LocalUser localUser) {
+  public ResponseEntity<?> deleteEvents(
+          @Valid @RequestBody DeleteEventRequest request, @CurrentUser LocalUser localUser) {
 
-    timetableService.createNewEvent(request, localUser);
+    timetableService.deleteEvents(request, localUser);
 
-    return BaseResponseEntity.ok(null, "Event created successfully");
+    return BaseResponseEntity.ok(null, "Events deleted successfully");
   }
 }

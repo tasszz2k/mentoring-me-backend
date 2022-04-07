@@ -29,8 +29,12 @@ public class ShiftServiceImpl implements ShiftService {
   }
 
   @Override
-  public Set<Shift> saveAllShifts(Long mentorshipId, Set<Shift> shifts) {
-    shifts.forEach(shift -> shift.setMentorshipId(mentorshipId));
+  public Set<Shift> saveAllShifts(Long mentorshipId, Long createdBy, Set<Shift> shifts) {
+    shifts.forEach(
+        shift -> {
+          shift.setMentorshipId(mentorshipId);
+          shift.setCreatedBy(createdBy);
+        });
     return new HashSet<>(shiftRepository.saveAll(shifts));
   }
 }

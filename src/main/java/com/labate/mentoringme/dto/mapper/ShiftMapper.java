@@ -26,8 +26,7 @@ public class ShiftMapper {
       return null;
     }
 
-    Shift entity = ObjectMapperUtils.map(dto, Shift.class);
-    return entity;
+    return ObjectMapperUtils.map(dto, Shift.class);
   }
 
   public static List<ShiftDto> toDtos(Collection<Shift> entities) {

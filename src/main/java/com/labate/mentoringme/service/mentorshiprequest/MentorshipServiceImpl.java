@@ -56,7 +56,8 @@ public class MentorshipServiceImpl implements MentorshipService {
     entity.setShifts(null);
     var savedMentorship = mentorshipRepository.save(entity);
 
-    Set<Shift> savedShifts = shiftService.saveAllShifts(savedMentorship.getId(), shifts);
+    Set<Shift> savedShifts =
+        shiftService.saveAllShifts(savedMentorship.getId(), savedMentorship.getCreatedBy(), shifts);
     savedMentorship.setShifts(savedShifts);
     return savedMentorship;
   }

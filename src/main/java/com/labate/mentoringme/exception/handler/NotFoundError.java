@@ -19,6 +19,8 @@ public enum NotFoundError implements ResponseError {
   POST_NOT_FOUND(4040012, "Post not found: {0}"),
   MENTORSHIP_REQUEST_NOT_FOUND(4040013, "Mentorship request not found: {0}"),
   TIMETABLE_NOT_FOUND(4040014, "Timetable not found: {0}"),
+  SHIFT_NOT_FOUND(4040015, "Shift not found: {0}"),
+  EVENT_NOT_FOUND(4040016, "Event not found: {0}"),
   ;
 
   private final Integer code;

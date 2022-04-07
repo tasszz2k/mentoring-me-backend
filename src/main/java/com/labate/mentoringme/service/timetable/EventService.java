@@ -23,4 +23,12 @@ public interface EventService {
   void save(List<Event> events);
 
   void saveAll(List<Event> events);
+
+  Event findById(Long eventId);
+
+  void deleteById(Long eventId);
+
+  List<Event> findByShiftId(Long shiftId);
+
+  void deleteByShiftId(Long shiftId);
 }

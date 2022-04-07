@@ -22,7 +22,7 @@ public interface NotificationService {
 
   int countUnreadNotifications(Long userId);
 
-  void markReadNotification(Long userId, String notificationId);
+  void markReadNotification(Long userId, Long notificationId);
 
   PageResponse getAllNotifications(Long userId, PageCriteria pageCriteria);
 

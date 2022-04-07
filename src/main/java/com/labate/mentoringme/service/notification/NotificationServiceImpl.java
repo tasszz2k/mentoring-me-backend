@@ -232,7 +232,7 @@ public class NotificationServiceImpl implements NotificationService {
 
   @Transactional
   @Override
-  public void markReadNotification(Long userId, String notificationId) {
+  public void markReadNotification(Long userId, Long notificationId) {
     var userNotification =
         userNotificationRepository.findByUserIdAndNotificationId(userId, notificationId);
     if (userNotification != null) {

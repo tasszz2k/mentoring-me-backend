@@ -5,7 +5,9 @@ import lombok.Getter;
 
 @Getter
 public enum BusinessError implements ResponseError {
-  USER_ALREADY_FEEDBACK_MENTOR(500001, "User already feedbacked mentor}"),;
+  USER_ALREADY_FEEDBACK_MENTOR(500001, "User already feedback mentor"), USER_ALREADY_LIKE_MENTOR(
+      500002,
+      "User already like mentor"), USER_ALREADY_LIKE_QUIZ(500003, "User already like quiz"),;
 
   private final Integer code;
   private final String message;

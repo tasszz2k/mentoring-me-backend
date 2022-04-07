@@ -1,6 +1,7 @@
 package com.labate.mentoringme.controller.v1;
 
 import java.util.List;
+import java.util.Objects;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +18,8 @@ import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.AddFavoriteQuizRequest;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.exception.FavoriteQuizNotFoundException;
+import com.labate.mentoringme.exception.UserAlreadyLikeMentorException;
+import com.labate.mentoringme.exception.UserAlreadyLikeQuizException;
 import com.labate.mentoringme.service.favorite.FavoriteService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
@@ -43,11 +46,11 @@ public class FavoriteController {
       paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('MENTOR', 'USER')")
   @DeleteMapping("/quizzes/{quizId}")
-  public ResponseEntity<?> deleteFavoriteQuiz(@PathVariable Long quizId) {
-    var favoriteQuiz = favoriteService.findByQuizIdAndUserId(quizId);
-    if (favoriteQuiz == null) {
-      throw new FavoriteQuizNotFoundException("MSG-303",
-          "FavoriteQuiz is not found! quizid = " + quizId);
+  public ResponseEntity<?> deleteFavoriteQuiz(@PathVariable Long quizId,
+      @CurrentUser LocalUser localUser) {
+    var favoriteQuiz = favoriteService.findByQuizIdAndUserId(quizId, localUser);
+    if (Objects.isNull(favoriteQuiz)) {
+      throw new FavoriteQuizNotFoundException("FavoriteQuiz is not found! quizid = " + quizId);
     }
     favoriteService.deleteFavoriteQuiz(quizId);
     return BaseResponseEntity.ok("Favorite Quiz deleted successfully");
@@ -58,9 +61,16 @@ public class FavoriteController {
   @PreAuthorize("hasAnyRole('MENTOR', 'USER')")
   @PostMapping("/quizzes")
   public ResponseEntity<?> addFavoriteQuiz(
-      @RequestBody AddFavoriteQuizRequest addFavoriteQuizRequest) {
-    var favoriteQuiz = favoriteService.addFavoriteQuiz(addFavoriteQuizRequest);
-    return BaseResponseEntity.ok(favoriteQuiz);
+      @RequestBody AddFavoriteQuizRequest addFavoriteQuizRequest,
+      @CurrentUser LocalUser localUser) {
+    var favoriteQuiz =
+        favoriteService.findByQuizIdAndUserId(addFavoriteQuizRequest.getQuizId(), localUser);
+    if (!Objects.isNull(favoriteQuiz)) {
+      throw new UserAlreadyLikeQuizException(
+          "User already like quiz! quizid = " + addFavoriteQuizRequest.getQuizId());
+    }
+    var favoriteQuizResponse = favoriteService.addFavoriteQuiz(addFavoriteQuizRequest, localUser);
+    return BaseResponseEntity.ok(favoriteQuizResponse);
   }
 
   @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true,
@@ -87,9 +97,17 @@ public class FavoriteController {
   @PreAuthorize("hasAnyRole('USER')")
   @PostMapping("/mentors")
   public ResponseEntity<?> addFavoriteMentor(
-      @RequestBody CreateFavoriteMentorRequest createFavoriteMentorRequest) {
-    var favoriteQuiz = favoriteService.addFavoriteMentor(createFavoriteMentorRequest);
-    return BaseResponseEntity.ok(favoriteQuiz);
+      @RequestBody CreateFavoriteMentorRequest createFavoriteMentorRequest,
+      @CurrentUser LocalUser localUser) {
+    var favoriteMentor = favoriteService
+        .findByStudentIdAndMentorId(createFavoriteMentorRequest.getMentorId(), localUser);
+    if (!Objects.isNull(favoriteMentor)) {
+      throw new UserAlreadyLikeMentorException(
+          "User already like mentor! mentorid = " + createFavoriteMentorRequest.getMentorId());
+    }
+    var favoriteMentorResponse =
+        favoriteService.addFavoriteMentor(createFavoriteMentorRequest, localUser);
+    return BaseResponseEntity.ok(favoriteMentorResponse);
   }
 
 

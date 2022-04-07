@@ -13,13 +13,16 @@ public interface FavoriteService {
 
   void deleteFavoriteQuiz(Long quizId);
 
-  FavoriteQuiz findByQuizIdAndUserId(Long quizId);
+  FavoriteQuiz findByQuizIdAndUserId(Long quizId, LocalUser localUser);
 
-  FavoriteQuiz addFavoriteQuiz(AddFavoriteQuizRequest addFavoriteQuizRequest);
+  FavoriteQuiz addFavoriteQuiz(AddFavoriteQuizRequest addFavoriteQuizRequest, LocalUser localUser);
 
   PageResponse findFavoriteMentor(PageCriteria pageCriteria, LocalUser localUser);
 
   void deleteFavoriteMentor(Long mentorId);
 
-  FavoriteMentor addFavoriteMentor(CreateFavoriteMentorRequest addFavoriteMentorRequest);
+  FavoriteMentor addFavoriteMentor(CreateFavoriteMentorRequest addFavoriteMentorRequest,
+      LocalUser localUser);
+
+  FavoriteMentor findByStudentIdAndMentorId(Long mentorId, LocalUser localUser);
 }

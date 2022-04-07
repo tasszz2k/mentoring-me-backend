@@ -60,9 +60,7 @@ public class FavoriteServiceImpl implements FavoriteService {
 
 
   @Override
-  public FavoriteQuiz findByQuizIdAndUserId(Long quizId) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public FavoriteQuiz findByQuizIdAndUserId(Long quizId, LocalUser localUser) {
     var userId = localUser.getUserId();
     return favoriteQuizRepository.findByUserIdAndQuizId(userId, quizId);
   }
@@ -78,13 +76,11 @@ public class FavoriteServiceImpl implements FavoriteService {
 
 
   @Override
-  public FavoriteQuiz addFavoriteQuiz(AddFavoriteQuizRequest addFavoriteQuizRequest) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    var userId = localUser.getUserId();
+  public FavoriteQuiz addFavoriteQuiz(AddFavoriteQuizRequest addFavoriteQuizRequest,
+      LocalUser localUser) {
     var favoriteQuiz = new FavoriteQuiz();
     favoriteQuiz.setQuizId(addFavoriteQuizRequest.getQuizId());
-    favoriteQuiz.setUserId(userId);
+    favoriteQuiz.setUserId(localUser.getUserId());
     return favoriteQuizRepository.save(favoriteQuiz);
   }
 
@@ -121,14 +117,21 @@ public class FavoriteServiceImpl implements FavoriteService {
 
 
   @Override
-  public FavoriteMentor addFavoriteMentor(CreateFavoriteMentorRequest createFavoriteMentorRequest) {
-    LocalUser localUser =
-        (LocalUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public FavoriteMentor addFavoriteMentor(CreateFavoriteMentorRequest createFavoriteMentorRequest,
+      LocalUser localUser) {
     var userId = localUser.getUserId();
     var favoriteMentor = new FavoriteMentor();
     favoriteMentor.setMentorId(createFavoriteMentorRequest.getMentorId());
     favoriteMentor.setStudentId(userId);
     return favoriteMentorRepository.save(favoriteMentor);
+  }
+
+
+
+  @Override
+  public FavoriteMentor findByStudentIdAndMentorId(Long mentorId, LocalUser localUser) {
+    var studentId = localUser.getUserId();
+    return favoriteMentorRepository.findByStudentIdAndMentorId(studentId, mentorId);
   }
 
 }

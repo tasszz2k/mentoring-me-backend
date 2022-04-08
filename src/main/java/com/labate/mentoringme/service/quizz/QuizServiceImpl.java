@@ -8,15 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import com.labate.mentoringme.constant.UserRole;
-import com.labate.mentoringme.dto.QuizOverviewDto;
 import com.labate.mentoringme.dto.QuizResultCheckingDto;
 import com.labate.mentoringme.dto.UserSelectionDto;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
@@ -34,7 +33,6 @@ import com.labate.mentoringme.dto.response.QuizOverviewResponse;
 import com.labate.mentoringme.dto.response.QuizResponse;
 import com.labate.mentoringme.dto.response.QuizResultResponse;
 import com.labate.mentoringme.dto.response.QuizTakingHistoryResponse;
-import com.labate.mentoringme.model.Category;
 import com.labate.mentoringme.model.quiz.Answer;
 import com.labate.mentoringme.model.quiz.FavoriteQuiz;
 import com.labate.mentoringme.model.quiz.Question;
@@ -108,7 +106,7 @@ public class QuizServiceImpl implements QuizService {
   }
 
   @Override
-  public QuizDetailDto findById(Long quizId) {
+  public QuizDetailDto getQuizDetail(Long quizId) {
     var questions = questionRepository.getByQuizId(quizId).stream().map(item -> {
       var questionDto = modelMapper.map(item, QuestionDto.class);
       return questionDto;
@@ -117,9 +115,12 @@ public class QuizServiceImpl implements QuizService {
     return quizDetailDto;
   }
 
+  @Transactional
   @Override
   public void deleteById(Long quizId) {
     quizRepository.deleteById(quizId);
+    var questions = questionRepository.getByQuizId(quizId);
+    questionRepository.deleteAll(questions);
   }
 
   @Transactional
@@ -148,7 +149,6 @@ public class QuizServiceImpl implements QuizService {
     var questions = new ArrayList();
     for (QuestionDto questionDto : updateQuizDetailRequest.getQuestions()) {
       var question = modelMapper.map(questionDto, Question.class);
-      question.setQuizId(updateQuizDetailRequest.getQuizId());
       for (Answer answer : question.getAnswers()) {
         answer.setQuestion(question);
       }
@@ -255,30 +255,24 @@ public class QuizServiceImpl implements QuizService {
   }
 
   @Override
-  public Page<QuizOverviewDto> getListDraftQuiz(PageCriteria pageCriteria, LocalUser localUser) {
+  public Page<QuizResponse> getListDraftQuiz(PageCriteria pageCriteria, LocalUser localUser) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     var userId = localUser.getUserId();
     return quizRepository.findAllByCreatedByAndIsDraft(userId, true, pageable).map(quiz -> {
-      var quizOverviewDto = modelMapper.map(quiz, QuizOverviewDto.class);
+      var quizOverviewDto = modelMapper.map(quiz, QuizResponse.class);
       return quizOverviewDto;
     });
   }
 
   @Override
-  public QuizOverviewDto updateQuizOverview(UpdateQuizOverviewRequest request,
-      LocalUser localUser) {
-    var quiz = quizRepository.findById(request.getId()).get();
+  public QuizResponse updateQuizOverview(UpdateQuizOverviewRequest request, LocalUser localUser) {
+    var oldQuiz = quizRepository.findById(request.getId()).get();
+    var quiz = modelMapper.map(request, Quiz.class);
     quiz.setModifiedDate(new Date());
     quiz.setModifiedBy(localUser.getUserId());
-    quiz.setTime(request.getTime());
-    quiz.setTitle(request.getTitle());
-    quiz.setIsDraft(request.getIsDraft());
-    var categories = request.getCategories().stream().map(ele -> {
-      var category = modelMapper.map(ele, Category.class);
-      return category;
-    }).collect(Collectors.toSet());
-    quiz.setCategories(categories);
-    return modelMapper.map(quizRepository.save(quiz), QuizOverviewDto.class);
+    quiz.setAuthor(oldQuiz.getAuthor());
+    quiz.setCreatedBy(oldQuiz.getCreatedBy());
+    return modelMapper.map(quizRepository.save(quiz), QuizResponse.class);
   }
 
   @Override
@@ -301,5 +295,14 @@ public class QuizServiceImpl implements QuizService {
       }
     }
     return false;
+  }
+
+  @Override
+  public Optional<Quiz> findById(Long id) {
+    var quiz = quizRepository.findById(id);
+    if (quiz.isPresent()) {
+      return Optional.of(quiz.get());
+    }
+    return Optional.empty();
   }
 }

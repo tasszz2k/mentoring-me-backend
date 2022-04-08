@@ -39,18 +39,18 @@ public class QuizController {
   @GetMapping("/{quizId}/overview")
   public ResponseEntity<?> getQuizOverview(@PathVariable Long quizId,
       @CurrentUser LocalUser localUser) {
-    var quiz = quizService.findById(quizId);
-    if (quiz == null) {
+    var quizOptional = quizService.findById(quizId);
+    if (quizOptional.isEmpty()) {
       throw new QuizNotFoundException("id = " + quizId);
     }
     return BaseResponseEntity.ok(quizService.getQuizOverview(quizId, localUser));
   }
 
-  @PatchMapping("/overview")
+  @PutMapping("/overview")
   public ResponseEntity<?> updateQuizOverview(@RequestBody UpdateQuizOverviewRequest request,
       @CurrentUser LocalUser localUser) {
-    var quiz = quizService.findById(request.getId());
-    if (quiz == null) {
+    var quizOptional = quizService.findById(request.getId());
+    if (quizOptional == null) {
       throw new QuizNotFoundException("id = " + request.getId());
     }
     return BaseResponseEntity.ok(quizService.updateQuizOverview(request, localUser));
@@ -115,8 +115,8 @@ public class QuizController {
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR')")
   @DeleteMapping("/{quizId}")
   public ResponseEntity<?> deleteQuiz(@PathVariable Long quizId) {
-    var quiz = quizService.findById(quizId);
-    if (quiz == null) {
+    var quizOptional = quizService.findById(quizId);
+    if (quizOptional.isEmpty()) {
       throw new QuizNotFoundException("id = " + quizId);
     }
     quizService.deleteById(quizId);

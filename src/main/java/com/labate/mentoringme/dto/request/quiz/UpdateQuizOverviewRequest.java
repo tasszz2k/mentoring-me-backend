@@ -7,14 +7,15 @@ import lombok.Data;
 
 @Data
 public class UpdateQuizOverviewRequest {
-  @NotNull
+  @NotNull(message = "id must not be null")
   private Long id;
-  @NotNull
+  @NotNull(message = "title must not be null")
   private String title;
-  @NotNull
+  @NotNull(message = "numberOfQuestion must not be null")
+  private Integer numberOfQuestion;
+  @NotNull(message = "time must not be null")
   private Integer time;
-  @NotNull
+  @NotNull(message = "isDraft must not be null")
   private Boolean isDraft;
-  @NotNull
   private Set<CategoryDto> categories;
 }

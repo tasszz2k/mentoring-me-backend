@@ -13,7 +13,7 @@ import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.AddFavoriteQuizRequest;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
-import com.labate.mentoringme.dto.response.QuizResponse;
+import com.labate.mentoringme.dto.response.QuizFavoriteResponse;
 import com.labate.mentoringme.model.FavoriteMentor;
 import com.labate.mentoringme.model.quiz.FavoriteQuiz;
 import com.labate.mentoringme.repository.FavoriteMentorRepository;
@@ -46,7 +46,8 @@ public class FavoriteServiceImpl implements FavoriteService {
       quizIds.add(favoriteQuiz.getQuizId());
     }
     var response = quizRepository.findAllByIds(quizIds).stream().map(quiz -> {
-      var quizResponse = modelMapper.map(quiz, QuizResponse.class);
+      var quizResponse = modelMapper.map(quiz, QuizFavoriteResponse.class);
+      quizResponse.setIsLiked(true);
       return quizResponse;
     }).collect(Collectors.toList());
 

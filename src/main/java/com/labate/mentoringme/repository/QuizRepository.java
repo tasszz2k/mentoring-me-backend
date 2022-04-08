@@ -48,4 +48,5 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
       countQuery = "SELECT COUNT (DISTINCT quiz) FROM Quiz quiz JOIN quiz.categories category"
           + " WHERE quiz.isDraft = 0 AND quiz.id IN :ids ")
   List<Quiz> findAllByIds(@Param("ids") List<Long> ids);
+
 }

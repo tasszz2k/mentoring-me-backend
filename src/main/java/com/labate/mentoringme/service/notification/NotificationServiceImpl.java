@@ -253,7 +253,7 @@ public class NotificationServiceImpl implements NotificationService {
         userNotificationPage.stream()
             .map(UserNotification::getNotificationId)
             .collect(Collectors.toList());
-    var notifications = notificationRepository.findAllById(notificationIds);
+    var notifications = notificationRepository.findAllByIdInOrderByCreatedDateDesc(notificationIds);
     var unreadNotificationCounter = countUnreadNotifications(userId);
     var notificationsResponse =
         NotificationMapper.toNotificationResponse(

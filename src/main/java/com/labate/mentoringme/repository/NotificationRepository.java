@@ -1,7 +1,9 @@
 package com.labate.mentoringme.repository;
 
+import com.google.api.Page;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.model.Notification;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -18,4 +20,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
               + "WHERE users_notifications.user_id = 1",
       nativeQuery = true)
   List<Notification> findByUserId(Long userId, PageCriteria pageCriteria);
+
+  List<Notification> findAllByIdInOrderByCreatedDateDesc(List<Long> notificationIds);
 }

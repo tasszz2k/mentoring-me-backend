@@ -69,8 +69,8 @@ public class QuizController {
 
   @GetMapping("/{quizId}")
   public ResponseEntity<?> getQuizDetail(@PathVariable Long quizId) {
-    var quiz = quizService.findById(quizId);
-    if (quiz == null) {
+    var quizOptional = quizService.findById(quizId);
+    if (quizOptional.isEmpty()) {
       throw new QuizNotFoundException("id = " + quizId);
     }
     return BaseResponseEntity.ok(quizService.getQuizDetail(quizId));

@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Collections;
 
 @RequiredArgsConstructor
 @RestController
@@ -107,6 +108,7 @@ public class NotificationController {
   @GetMapping("")
   public ResponseEntity<?> getAllNotifications(
       PageCriteria pageCriteria, @CurrentUser LocalUser localUser) {
+    pageCriteria.setSort(Collections.singletonList("-id"));
     var notifications =
         notificationService.getAllNotifications(localUser.getUserId(), pageCriteria);
     return BaseResponseEntity.ok(notifications);

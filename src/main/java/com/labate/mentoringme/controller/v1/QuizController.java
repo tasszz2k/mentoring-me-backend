@@ -73,7 +73,7 @@ public class QuizController {
     if (quiz == null) {
       throw new QuizNotFoundException("id = " + quizId);
     }
-    return BaseResponseEntity.ok(quiz);
+    return BaseResponseEntity.ok(quizService.getQuizDetail(quizId));
   }
 
   @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true,

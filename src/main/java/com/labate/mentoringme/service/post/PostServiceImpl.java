@@ -165,7 +165,7 @@ public class PostServiceImpl implements PostService {
     if (localUser != null) {
       var key = new UserLikePost.Key(postId, localUser.getUserId());
       var isLiked = userLikePostRepository.existsByKey(key);
-      dto.setLiked(isLiked);
+      dto.setIsLiked(isLiked);
     }
     return dto;
   }
@@ -200,6 +200,11 @@ public class PostServiceImpl implements PostService {
     var userLikePosts = userLikePostRepository.findAllByKeyIn(keys);
     var map =
         userLikePosts.stream().collect(Collectors.toMap(u -> u.getKey().getPostId(), u -> true));
-    dtos.forEach(dto -> dto.setLiked(map.get(dto.getId())));
+    dtos.forEach(
+        dto -> {
+          var isLiked = map.get(dto.getId());
+          isLiked = isLiked != null && isLiked;
+          dto.setIsLiked(isLiked);
+        });
   }
 }

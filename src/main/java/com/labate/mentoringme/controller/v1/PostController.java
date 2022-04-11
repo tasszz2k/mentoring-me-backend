@@ -9,7 +9,6 @@ import com.labate.mentoringme.dto.request.*;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
-import com.labate.mentoringme.exception.PostNotFoundException;
 import com.labate.mentoringme.model.Post;
 import com.labate.mentoringme.service.post.CommentService;
 import com.labate.mentoringme.service.post.PostService;
@@ -32,37 +31,28 @@ public class PostController {
   private final CommentService commentService;
 
   @GetMapping("/{id}")
-  public ResponseEntity<?> findPostById(@PathVariable Long id) {
-    var post = postService.findPostById(id);
-    if (post == null) {
-      throw new PostNotFoundException("id = " + id);
-    }
-    return BaseResponseEntity.ok(PostMapper.toDto(post));
+  public ResponseEntity<?> findPostById(@PathVariable Long id, @CurrentUser LocalUser localUser) {
+    var dto = postService.findPostDtoById(id, localUser);
+    return BaseResponseEntity.ok(dto);
   }
 
   @GetMapping("")
   public ResponseEntity<?> findAllPostsByConditions(
-      @Valid PageCriteria pageCriteria, @Valid GetPostsRequest request) {
-    var page = postService.findAllPosts(pageCriteria, request);
-    var posts = page.getContent();
-
-    var paging =
-        Paging.builder()
-            .limit(pageCriteria.getLimit())
-            .page(pageCriteria.getPage())
-            .total(page.getTotalElements())
-            .build();
-    var response = new PageResponse(PostMapper.toDtos(posts), paging);
+      @Valid PageCriteria pageCriteria,
+      @Valid GetPostsRequest request,
+      @CurrentUser LocalUser localUser) {
+    PageResponse response =
+        postService.findAllPostDtosByConditions(pageCriteria, request, localUser);
     return BaseResponseEntity.ok(response);
   }
 
   @GetMapping("/top-posts")
-  public ResponseEntity<?> findTop10Posts() {
+  public ResponseEntity<?> findTop10Posts(@CurrentUser LocalUser localUser) {
 
     var sort = List.of("-createdDate");
     PageCriteria pageCriteria = PageCriteria.builder().limit(10).page(1).sort(sort).build();
     GetPostsRequest request = GetPostsRequest.builder().status(Post.Status.ON_GOING).build();
-    return findAllPostsByConditions(pageCriteria, request);
+    return findAllPostsByConditions(pageCriteria, request, localUser);
   }
 
   @ApiImplicitParam(

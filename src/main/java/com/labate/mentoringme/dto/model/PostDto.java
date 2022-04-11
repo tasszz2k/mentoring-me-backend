@@ -33,6 +33,7 @@ public class PostDto {
   private AddressDto address;
   private int likeCount;
   private int commentCount;
+  private Boolean isLiked = false;
 
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private BasicUserInfo createdBy;

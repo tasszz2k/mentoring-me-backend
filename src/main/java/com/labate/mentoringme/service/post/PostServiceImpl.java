@@ -4,9 +4,12 @@ import com.labate.mentoringme.constant.UserRole;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
 import com.labate.mentoringme.dto.mapper.PostMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
+import com.labate.mentoringme.dto.model.PostDto;
 import com.labate.mentoringme.dto.request.CreatePostRequest;
 import com.labate.mentoringme.dto.request.GetPostsRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
+import com.labate.mentoringme.dto.response.PageResponse;
+import com.labate.mentoringme.dto.response.Paging;
 import com.labate.mentoringme.exception.CannotLikeOrUnlikeException;
 import com.labate.mentoringme.exception.PostNotFoundException;
 import com.labate.mentoringme.model.Post;
@@ -140,7 +143,7 @@ public class PostServiceImpl implements PostService {
 
   @Override
   public void updateCommentCount(Long postId, int number) {
-      postRepository.updateCommentCount(postId, number);
+    postRepository.updateCommentCount(postId, number);
   }
 
   public void checkPermissionToUpdate(Post entity, LocalUser localUser) {
@@ -150,5 +153,53 @@ public class PostServiceImpl implements PostService {
     if (!userId.equals(entity.getCreatedBy()) && !UserRole.MANAGER_ROLES.contains(role)) {
       throw new AccessDeniedException("You are not allowed to update this post");
     }
+  }
+
+  @Override
+  public PostDto findPostDtoById(Long postId, LocalUser localUser) {
+    var post = findPostById(postId);
+    if (post == null) {
+      throw new PostNotFoundException("id = " + postId);
+    }
+    var dto = PostMapper.toDto(post);
+    if (localUser != null) {
+      var key = new UserLikePost.Key(postId, localUser.getUserId());
+      var isLiked = userLikePostRepository.existsByKey(key);
+      dto.setLiked(isLiked);
+    }
+    return dto;
+  }
+
+  @Override
+  public PageResponse findAllPostDtosByConditions(
+      PageCriteria pageCriteria, GetPostsRequest request, LocalUser localUser) {
+
+    var page = findAllPosts(pageCriteria, request);
+    var posts = page.getContent();
+
+    var paging =
+        Paging.builder()
+            .limit(pageCriteria.getLimit())
+            .page(pageCriteria.getPage())
+            .total(page.getTotalElements())
+            .build();
+    var dtos = PostMapper.toDtos(posts);
+    if (localUser != null) {
+      updateUserLikePosts(localUser, posts, dtos);
+    }
+
+    var response = new PageResponse(dtos, paging);
+    return response;
+  }
+
+  private void updateUserLikePosts(LocalUser localUser, List<Post> posts, List<PostDto> dtos) {
+    var postIds = posts.stream().map(Post::getId).collect(Collectors.toSet());
+    var userId = localUser.getUserId();
+    var keys =
+        postIds.stream().map(id -> new UserLikePost.Key(id, userId)).collect(Collectors.toSet());
+    var userLikePosts = userLikePostRepository.findAllByKeyIn(keys);
+    var map =
+        userLikePosts.stream().collect(Collectors.toMap(u -> u.getKey().getPostId(), u -> true));
+    dtos.forEach(dto -> dto.setLiked(map.get(dto.getId())));
   }
 }

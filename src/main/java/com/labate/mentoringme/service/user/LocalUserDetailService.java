@@ -5,6 +5,7 @@ import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.exception.ResourceNotFoundException;
 import com.labate.mentoringme.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,9 @@ public class LocalUserDetailService implements UserDetailsService {
         userService
             .findUserById(id)
             .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+    if (!user.isEnabled()) {
+      throw new DisabledException("userId= " + id);
+    }
     return createLocalUser(user);
   }
 

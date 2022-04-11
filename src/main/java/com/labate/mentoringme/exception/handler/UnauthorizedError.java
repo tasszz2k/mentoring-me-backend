@@ -8,9 +8,7 @@ import org.springframework.http.HttpStatus;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 @Getter
 public enum UnauthorizedError implements ResponseError {
-  // AUTHENTICATION_IS_REQUIRED(4010000, "Null or not supported authentication"),
   FORBIDDEN_ACCESS_TOKEN(4010001, "Access token has been forbidden due to user has logged out"),
-  // FORBIDDEN_REFRESH_TOKEN(4010002, "Refresh token has been forbidden: {0}"),
   LOGIN_FAIL_WARNING_BEFORE_BLOCK(
       4010003, "Login fail, the account will be blocked if login invalid more than 5 times"),
   LOGIN_FAIL(4010004, "Login fail, please try again. {0} times"),

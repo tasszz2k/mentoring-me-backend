@@ -1,9 +1,11 @@
 package com.labate.mentoringme.security.jwt;
 
+import com.labate.mentoringme.exception.UserNotFoundException;
 import com.labate.mentoringme.service.user.LocalUserDetailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -44,10 +46,15 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
       }
+    } catch (DisabledException | UserNotFoundException ex1) {
+      logger.error(
+          "Could not set user authentication in security context. User not found or have been deactivate.",
+          ex1);
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      return;
     } catch (Exception ex) {
       logger.error("Could not set user authentication in security context", ex);
     }
-
     filterChain.doFilter(request, response);
   }
 

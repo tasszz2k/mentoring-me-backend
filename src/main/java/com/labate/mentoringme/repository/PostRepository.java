@@ -5,7 +5,9 @@ import com.labate.mentoringme.model.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
   @Query(
@@ -21,4 +23,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
           + "or p.content like %:#{#request.keyword}% "
           + ") ")
   Page<Post> findAllByConditions(GetPostsRequest request, Pageable pageable);
+
+  @Transactional
+  @Modifying
+  @Query("UPDATE Post p SET p.commentCount = p.commentCount + :number WHERE p.id = :postId")
+  void updateCommentCount(Long postId, int number);
 }

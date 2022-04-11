@@ -13,13 +13,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
 public class CommentServiceImpl implements CommentService {
+  public static final int INCREASE_NUMBER = 1;
+  public static final int DECREASE_NUMBER = -1;
   private final PostService postService;
   private final CommentRepository commentRepository;
 
+  @Transactional
   @Override
   public Comment addNewComment(Long postId, CreateCommentRequest request, LocalUser localUser) {
     var post = postService.findPostById(postId);
@@ -32,7 +36,9 @@ public class CommentServiceImpl implements CommentService {
             .content(request.getContent())
             .createdBy(localUser.getUserId())
             .build();
-    return save(comment);
+    Comment newComment = save(comment);
+    postService.updateCommentCount(postId, INCREASE_NUMBER);
+    return newComment;
   }
 
   @Override
@@ -41,14 +47,17 @@ public class CommentServiceImpl implements CommentService {
     return commentRepository.findAllByPostId(postId, pageable);
   }
 
+  @Transactional
   @Override
   public void deleteComment(Long commentId, LocalUser localUser) {
     var comment = findById(commentId);
     if (comment == null) {
       throw new CommentNotFoundException("id: " + commentId);
     }
+    var postId = comment.getPostId();
     checkPermissionToUpdate(comment, localUser);
     commentRepository.delete(comment);
+    postService.updateCommentCount(postId, DECREASE_NUMBER);
   }
 
   @Override

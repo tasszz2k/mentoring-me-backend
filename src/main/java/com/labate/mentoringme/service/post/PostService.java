@@ -28,4 +28,6 @@ public interface PostService {
   Post updateStatus(Long postId, Post.Status status, LocalUser localUser);
 
   List<User> getAllUserLikePost(Long id);
+
+  void updateCommentCount(Long postId, int number);
 }

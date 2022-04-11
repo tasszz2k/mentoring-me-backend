@@ -199,7 +199,7 @@ public class PostController {
       dataTypeClass = String.class,
       example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
-  @PostMapping("comments/{commentId}")
+  @DeleteMapping("comments/{commentId}")
   public ResponseEntity<?> deleteComment(
       @PathVariable Long commentId, @CurrentUser LocalUser localUser) {
 

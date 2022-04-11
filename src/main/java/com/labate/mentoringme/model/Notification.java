@@ -28,6 +28,9 @@ public class Notification {
   private String title;
   private String body;
 
+  @Enumerated(EnumType.ORDINAL)
+  private Type type;
+
   @Builder.Default
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
   private Boolean isDeleted = false;
@@ -41,4 +44,14 @@ public class Notification {
   @Column(name = "modified")
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
+
+  public enum Type {// TODO: Update notification types
+    NOTIFICATION,
+    MENTORSHIP_REQUEST,
+    POST,
+    FEEDBACK,
+    POST_,
+    QUIZ,
+    SCHEDULE,
+  }
 }

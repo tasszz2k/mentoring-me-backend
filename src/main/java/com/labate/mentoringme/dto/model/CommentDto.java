@@ -12,7 +12,6 @@ public class CommentDto {
   @JsonProperty(access = JsonProperty.Access.READ_ONLY)
   private Long id;
 
-  private String title;
   private Long postId;
   private String content;
 

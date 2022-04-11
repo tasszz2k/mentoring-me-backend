@@ -197,8 +197,11 @@ public class UserServiceImpl implements UserService {
     if (MentorStatus.ACCEPTED.equals(status) && UserRole.ROLE_USER.equals(user.getRole())) {
       var roleMentor = roleRepository.findByName(UserRole.ROLE_MENTOR.name());
       user.setRoles(new HashSet<>(List.of(roleMentor)));
+    } else if (MentorStatus.REJECTED.equals(status)
+        && UserRole.ROLE_MENTOR.equals(user.getRole())) {
+      var roleUser = roleRepository.findByName(UserRole.ROLE_USER.name());
+      user.setRoles(new HashSet<>(List.of(roleUser)));
     }
-
     save(user);
   }
 

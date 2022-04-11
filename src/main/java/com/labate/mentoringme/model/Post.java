@@ -53,6 +53,7 @@ public class Post {
   // private Address address;
 
   private int likeCount;
+  private int commentCount;
 
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
   private Boolean isDeleted = false;

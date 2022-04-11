@@ -1,4 +1,4 @@
-package com.labate.mentoringme.dto;
+package com.labate.mentoringme.dto.model;
 
 import lombok.Data;
 

@@ -1,6 +1,7 @@
 package com.labate.mentoringme.dto.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.labate.mentoringme.model.Notification;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -12,6 +13,7 @@ public class NotificationDto {
   private String title;
   private String body;
   private boolean isRead;
+  private Notification.Type type;
 
   @JsonFormat(
       shape = JsonFormat.Shape.STRING,

@@ -116,12 +116,20 @@ public class NotificationServiceImpl implements NotificationService {
     // [END send_multicast]
 
     // Save to database
-    saveNotifications(userIds, request.getTitle(), request.getBody());
+    saveNotifications(userIds, request.getTitle(), request.getBody(), request.getType());
   }
 
-  private void saveNotifications(Set<Long> userIds, String title, String body) {
+  private void saveNotifications(
+      Set<Long> userIds,
+      String title,
+      String body,
+      com.labate.mentoringme.model.Notification.Type type) {
     var notification =
-        com.labate.mentoringme.model.Notification.builder().title(title).body(body).build();
+        com.labate.mentoringme.model.Notification.builder()
+            .title(title)
+            .body(body)
+            .type(type)
+            .build();
     var savedNotification = notificationRepository.save(notification);
 
     var userNotifications =

@@ -21,6 +21,7 @@ public enum NotFoundError implements ResponseError {
   TIMETABLE_NOT_FOUND(4040014, "Timetable not found: {0}"),
   SHIFT_NOT_FOUND(4040015, "Shift not found: {0}"),
   EVENT_NOT_FOUND(4040016, "Event not found: {0}"),
+  COMMENT_NOT_FOUND(4040017, "Comment not found: {0}"),
   ;
 
   private final Integer code;

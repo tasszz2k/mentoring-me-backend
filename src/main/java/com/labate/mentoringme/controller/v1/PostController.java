@@ -1,18 +1,17 @@
 package com.labate.mentoringme.controller.v1;
 
 import com.labate.mentoringme.config.CurrentUser;
+import com.labate.mentoringme.dto.mapper.CommentMapper;
 import com.labate.mentoringme.dto.mapper.PostMapper;
 import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
-import com.labate.mentoringme.dto.request.CreatePostRequest;
-import com.labate.mentoringme.dto.request.GetPostsRequest;
-import com.labate.mentoringme.dto.request.PageCriteria;
-import com.labate.mentoringme.dto.request.UpdatePostStatusRequest;
+import com.labate.mentoringme.dto.request.*;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
 import com.labate.mentoringme.exception.PostNotFoundException;
 import com.labate.mentoringme.model.Post;
+import com.labate.mentoringme.service.post.CommentService;
 import com.labate.mentoringme.service.post.PostService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +29,7 @@ import java.util.List;
 @RequestMapping("/api/v1/posts")
 public class PostController {
   private final PostService postService;
+  private final CommentService commentService;
 
   @GetMapping("/{id}")
   public ResponseEntity<?> findPostById(@PathVariable Long id) {
@@ -44,7 +44,7 @@ public class PostController {
   public ResponseEntity<?> findAllPostsByConditions(
       @Valid PageCriteria pageCriteria, @Valid GetPostsRequest request) {
     var page = postService.findAllPosts(pageCriteria, request);
-    var classes = page.getContent();
+    var posts = page.getContent();
 
     var paging =
         Paging.builder()
@@ -52,7 +52,7 @@ public class PostController {
             .page(pageCriteria.getPage())
             .total(page.getTotalElements())
             .build();
-    var response = new PageResponse(PostMapper.toDtos(classes), paging);
+    var response = new PageResponse(PostMapper.toDtos(posts), paging);
     return BaseResponseEntity.ok(response);
   }
 
@@ -152,5 +152,78 @@ public class PostController {
   public ResponseEntity<?> getAllUsersLikePost(@PathVariable Long id) {
     var users = postService.getAllUserLikePost(id);
     return BaseResponseEntity.ok(UserMapper.toUserInfos(users));
+  }
+
+  // ============================ COMMENTS ===========================//
+  @GetMapping("{postId}/comments")
+  public ResponseEntity<?> getAllCommentsOfPost(
+      @PathVariable Long postId, @Valid PageCriteria pageCriteria) {
+    var page = commentService.getAllCommentsOfPost(postId, pageCriteria);
+    var comments = page.getContent();
+
+    var paging =
+        Paging.builder()
+            .limit(pageCriteria.getLimit())
+            .page(pageCriteria.getPage())
+            .total(page.getTotalElements())
+            .build();
+    var response = new PageResponse(CommentMapper.toDtos(comments), paging);
+    return BaseResponseEntity.ok(response);
+  }
+
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  @PostMapping("{postId}/comments")
+  public ResponseEntity<?> addNewComment(
+      @PathVariable Long postId,
+      @Valid @RequestBody CreateCommentRequest request,
+      @CurrentUser LocalUser localUser) {
+
+    var savedEntity = commentService.addNewComment(postId, request, localUser);
+
+    return BaseResponseEntity.ok(
+        CommentMapper.toDto(savedEntity), "Comment has been created successfully");
+  }
+
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  @DeleteMapping("comments/{commentId}")
+  public ResponseEntity<?> deleteComment(
+      @PathVariable Long commentId, @CurrentUser LocalUser localUser) {
+
+    commentService.deleteComment(commentId, localUser);
+
+    return BaseResponseEntity.ok("Comment has been deleted successfully");
+  }
+
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      required = true,
+      paramType = "header",
+      dataTypeClass = String.class,
+      example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR', 'USER')")
+  @PatchMapping("comments/{commentId}")
+  public ResponseEntity<?> updateComment(
+      @PathVariable Long commentId,
+      @Valid @RequestBody CreateCommentRequest request,
+      @CurrentUser LocalUser localUser) {
+
+    commentService.updateComment(commentId, request, localUser);
+
+    return BaseResponseEntity.ok(null, "Comment has been updated successfully");
   }
 }

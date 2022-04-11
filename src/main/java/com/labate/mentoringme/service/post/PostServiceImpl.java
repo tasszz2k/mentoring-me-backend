@@ -138,6 +138,11 @@ public class PostServiceImpl implements PostService {
     return userService.findAllByIds(userIds);
   }
 
+  @Override
+  public void updateCommentCount(Long postId, int number) {
+      postRepository.updateCommentCount(postId, number);
+  }
+
   public void checkPermissionToUpdate(Post entity, LocalUser localUser) {
     var userId = localUser.getUserId();
     var role = localUser.getUser().getRole();

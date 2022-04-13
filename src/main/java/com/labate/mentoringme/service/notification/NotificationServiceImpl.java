@@ -22,6 +22,7 @@ import com.labate.mentoringme.repository.UserNotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,6 +95,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
   }
 
+  @Async
   @Transactional
   @Override
   public void sendMulticast(PushNotificationToUserRequest request)
@@ -182,6 +184,7 @@ public class NotificationServiceImpl implements NotificationService {
         .build();
   }
 
+  @Async
   @Override
   public String sendPnsToTopic(PushNotificationRequest pushNotificationRequest)
       throws FirebaseMessagingException {

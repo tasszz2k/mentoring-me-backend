@@ -33,4 +33,9 @@ public class UserCache {
     return userRepository.findByEmail(email);
   }
 
+  @Cacheable(value = "user_key", key = "#email")
+  public Long findUserIdByEmail(String email) {
+    return userRepository.findUserIdByEmail(email);
+  }
+
 }

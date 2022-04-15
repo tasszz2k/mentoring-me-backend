@@ -112,7 +112,9 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User findUserByEmail(final String email) {
-    return userCache.findUserByEmail(email);
+    // Stupid way :)))
+    var userId = userCache.findUserIdByEmail(email);
+    return userCache.findUserById(userId).orElse(null);
   }
 
   @Override
@@ -149,7 +151,7 @@ public class UserServiceImpl implements UserService {
     return LocalUser.create(user, attributes, idToken, userInfo);
   }
 
-  @CachePut(value = "user", key = "{#user.email, #user.id}")
+  @CachePut(value = "user", key = "{#user.id}")
   @Transactional
   @Override
   public User save(User user) {

@@ -126,4 +126,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
               + "WHERE users.id IN (:userIds)",
       nativeQuery = true)
   List<BasicUserInfoProjection> findBasicUserInfoByIdIn(List<Long> userIds);
+
+  @Query("SELECT u.id FROM User u WHERE u.email = :email")
+  Long findUserIdByEmail(String email);
 }

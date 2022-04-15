@@ -1,15 +1,16 @@
 package com.labate.mentoringme.dto.request;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.constant.UserRole;
 import com.labate.mentoringme.validator.AcceptableRoles;
 import com.labate.mentoringme.validator.ValidPassword;
 import lombok.Data;
-
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class SignUpRequest {
 
   // private Long userID;
@@ -18,22 +19,21 @@ public class SignUpRequest {
 
   private SocialProvider socialProvider;
 
-  @NotBlank private String fullName;
+  @NotBlank
+  private String fullName;
 
-  @NotBlank @Email private String email;
+  @NotBlank
+  @Email
+  private String email;
 
-  @ValidPassword private String password;
+  @ValidPassword
+  private String password;
 
-  @AcceptableRoles(
-      roles = {UserRole.ROLE_USER, UserRole.ROLE_MENTOR},
+  @AcceptableRoles(roles = {UserRole.ROLE_USER, UserRole.ROLE_MENTOR},
       message = "You only can be user or mentor")
   private UserRole role;
 
-  public SignUpRequest(
-      String providerUserId,
-      String fullName,
-      String email,
-      String password,
+  public SignUpRequest(String providerUserId, String fullName, String email, String password,
       SocialProvider socialProvider) {
     this.providerUserId = providerUserId;
     this.fullName = fullName;

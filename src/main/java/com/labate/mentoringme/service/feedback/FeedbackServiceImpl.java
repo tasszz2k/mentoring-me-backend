@@ -30,9 +30,15 @@ public class FeedbackServiceImpl implements FeedbackService {
   private ModelMapper modelMapper = new ModelMapper();
 
   @Override
-  public Page<FeedbackResponse> getByUserId(Long toUserId, PageCriteria pageCriteria) {
+  public Page<FeedbackResponse> getByUserId(Long toUserId, PageCriteria pageCriteria,
+      LocalUser localUser) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
-    return feedbackRepository.findByToUserId(toUserId, pageable).map(ele -> {
+    Long fromUserId = null;
+    if (!Objects.isNull(localUser)) {
+      fromUserId = localUser.getUserId();
+    }
+
+    return feedbackRepository.findByToUserId(toUserId, fromUserId, pageable).map(ele -> {
       var feedbackResponse = ObjectMapperUtils.map(ele, FeedbackResponse.class);
       return feedbackResponse;
     });
@@ -130,6 +136,11 @@ public class FeedbackServiceImpl implements FeedbackService {
       return (double) 0;
     var result = (double) (value * 100) / sampleSize;
     return Double.parseDouble(new DecimalFormat("#.#").format(result));
+  }
+
+  @Override
+  public void deleteFeedback(Long id, LocalUser localUser) {
+    var feedback = feedbackRepository.findByToUserIdAndFromUserId(id, localUser.getUserId());
   }
 
 }

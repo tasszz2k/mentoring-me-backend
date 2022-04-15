@@ -10,11 +10,12 @@ import com.labate.mentoringme.model.Feedback;
 
 public interface FeedbackService {
 
-  Page<FeedbackResponse> getByUserId(Long toUserId, PageCriteria pageCriteria);
+  Page<FeedbackResponse> getByUserId(Long toUserId, PageCriteria pageCriteria, LocalUser localUser);
 
   Feedback createFeedback(CreateFeedbackRequest createFeedbackRequest, LocalUser localUser);
 
   FeedbackOverviewResponse getFeedbackOverview(Long toUserId, LocalUser localUser);
 
+  void deleteFeedback(Long id, LocalUser localUser);
 
 }

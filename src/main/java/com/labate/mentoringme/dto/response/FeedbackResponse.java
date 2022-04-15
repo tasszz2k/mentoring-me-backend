@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FeedbackResponse {
+  private Long toUserId;
   private String fullName;
   private String imageUrl;
   private Integer rating;

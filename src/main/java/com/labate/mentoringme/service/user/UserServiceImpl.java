@@ -27,6 +27,7 @@ import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfoFactory;
 import com.labate.mentoringme.service.gcp.GoogleCloudFileUpload;
 import com.labate.mentoringme.service.timetable.TimetableService;
 import com.labate.mentoringme.service.userprofile.UserProfileService;
+import io.getstream.chat.java.exceptions.StreamException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import io.getstream.chat.java.models.User.UserRequestObject;
 
 import java.io.IOException;
 import java.util.*;
@@ -80,10 +82,24 @@ public class UserServiceImpl implements UserService {
     timetableService.createNewTimetable(
         userId, String.format("Thời khóa biểu của %s", user.getFullName()));
     mentorVerificationService.registerMentor(userId, null);
-
+    syncUserToStream(user);
     return user;
   }
 
+  private void syncUserToStream(User user){
+    try {
+      io.getstream.chat.java.models.User.upsert()
+              .user(
+                     UserRequestObject.builder()
+                              .id(user.getId().toString())
+                              .role("user")
+                              .name(user.getFullName())
+                              .build())
+              .request();
+    } catch (StreamException e) {
+      log.error(e.getMessage());
+    }
+  }
   @Override
   public boolean existsByEmail(String email) {
     return userRepository.existsByEmail(email);

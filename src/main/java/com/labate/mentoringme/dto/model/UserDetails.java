@@ -24,6 +24,6 @@ public class UserDetails extends UserInfo {
     super(userInfo.getId(), userInfo.getFullName(), userInfo.getEmail(), userInfo.getPhoneNumber(),
         userInfo.getImageUrl(), userInfo.getGender(), userInfo.getDob(), userInfo.getProvider(),
         userInfo.getStatus(), userInfo.getVerifiedEmail(), userInfo.getVerifiedPhoneNumber(),
-        userInfo.getEnabled(), userInfo.getRoles());
+        userInfo.getEnabled(), userInfo.getRoles(), userInfo.getStreamToken());
   }
 }

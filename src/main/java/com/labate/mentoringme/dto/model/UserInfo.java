@@ -34,4 +34,6 @@ public class UserInfo {
   private final Boolean enabled;
 
   private final List<String> roles;
+
+  private String streamToken;
 }

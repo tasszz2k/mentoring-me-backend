@@ -49,4 +49,8 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
           + " WHERE quiz.isDraft = 0 AND quiz.id IN :ids ")
   List<Quiz> findAllByIds(@Param("ids") List<Long> ids);
 
+  @Transactional
+  @Modifying
+  @Query("UPDATE Quiz q SET q.numberOfQuestion = :numberOfQuestion WHERE q.id = :id")
+  void updateNumberOfQuestion(@Param("id") Long id, @Param("numberOfQuestion") Integer numberOfQuestion);
 }

@@ -119,6 +119,10 @@ public class QuizServiceImpl implements QuizService {
   @Override
   public void deleteById(Long quizId) {
     quizRepository.deleteById(quizId);
+    deleteQuestionByQuizId(quizId);
+  }
+
+  public void deleteQuestionByQuizId(Long quizId) {
     var questions = questionRepository.getByQuizId(quizId);
     questionRepository.deleteAll(questions);
   }
@@ -146,6 +150,8 @@ public class QuizServiceImpl implements QuizService {
   @Override
   public QuizDetailDto updateQuizDetail(UpdateQuizDetailRequest updateQuizDetailRequest,
       LocalUser localUser) {
+    var quizId = updateQuizDetailRequest.getQuizId();
+    deleteQuestionByQuizId(quizId);
     var questions = new ArrayList();
     for (QuestionDto questionDto : updateQuizDetailRequest.getQuestions()) {
       var question = modelMapper.map(questionDto, Question.class);
@@ -159,6 +165,7 @@ public class QuizServiceImpl implements QuizService {
       return questionDto;
     }).collect(Collectors.toSet());
 
+    quizRepository.updateNumberOfQuestion(quizId, questions.size());
     return new QuizDetailDto((Set<QuestionDto>) questionDtos);
   }
 

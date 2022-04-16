@@ -3,6 +3,8 @@ package com.labate.mentoringme.service.feedback;
 import java.text.DecimalFormat;
 import java.util.Objects;
 import javax.transaction.Transactional;
+
+import com.labate.mentoringme.config.CurrentUser;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -30,9 +32,13 @@ public class FeedbackServiceImpl implements FeedbackService {
   private ModelMapper modelMapper = new ModelMapper();
 
   @Override
-  public Page<FeedbackResponse> getByUserId(Long toUserId, PageCriteria pageCriteria) {
+  public Page<FeedbackResponse> getByUserId(Long toUserId, PageCriteria pageCriteria, LocalUser localUser) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
-    return feedbackRepository.findByToUserId(toUserId, pageable).map(ele -> {
+    Long fromUserId = null;
+    if (!Objects.isNull(localUser)) {
+      fromUserId = localUser.getUserId();
+    }
+    return feedbackRepository.findByToUserId(toUserId, fromUserId, pageable).map(ele -> {
       var feedbackResponse = ObjectMapperUtils.map(ele, FeedbackResponse.class);
       return feedbackResponse;
     });
@@ -123,6 +129,14 @@ public class FeedbackServiceImpl implements FeedbackService {
       }
     }
     return feedbackOverviewResponse;
+  }
+
+  @Override
+  public void deleteFeedback(Long id, LocalUser localUser) {
+    var feedback = feedbackRepository.findByToUserIdAndFromUserId(id, localUser.getUserId());
+    if (!Objects.isNull(feedback)){
+      feedbackRepository.delete(feedback);
+    }
   }
 
   private Double calculateProportion(int value, int sampleSize) {

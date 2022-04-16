@@ -48,7 +48,6 @@ public class FeedbackController {
   @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true,
           paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
   @PreAuthorize("hasAnyRole('USER')")
-  @PostMapping()
   @GetMapping("/{toUserId}/overview")
   public ResponseEntity<?> getFeedbackOverview(@PathVariable Long toUserId,
       @CurrentUser LocalUser localUser) {

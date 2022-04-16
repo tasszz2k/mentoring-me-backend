@@ -6,5 +6,6 @@ import lombok.Data;
 
 @Data
 public class UpdateQuizDetailRequest {
+  private Long quizId;
   private Set<QuestionDto> questions;
 }

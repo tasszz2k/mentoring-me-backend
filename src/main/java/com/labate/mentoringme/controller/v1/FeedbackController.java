@@ -45,6 +45,10 @@ public class FeedbackController {
     return BaseResponseEntity.ok(feedback);
   }
 
+  @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true,
+          paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('USER')")
+  @PostMapping()
   @GetMapping("/{toUserId}/overview")
   public ResponseEntity<?> getFeedbackOverview(@PathVariable Long toUserId,
       @CurrentUser LocalUser localUser) {
@@ -57,7 +61,7 @@ public class FeedbackController {
   @PreAuthorize("hasAnyRole('USER')")
   @DeleteMapping ("/{toUserId}")
   public ResponseEntity<?> deleteFeedback(@PathVariable Long toUserId,
-                                          @CurrentUser LocalUser localUser) {
+      @CurrentUser LocalUser localUser) {
     feedbackService.deleteFeedback(toUserId, localUser);
     return BaseResponseEntity.ok("Delete successfully");
   }

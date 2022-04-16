@@ -28,6 +28,7 @@ import com.labate.mentoringme.service.gcp.GoogleCloudFileUpload;
 import com.labate.mentoringme.service.timetable.TimetableService;
 import com.labate.mentoringme.service.userprofile.UserProfileService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
@@ -45,6 +46,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Log4j2
 public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
@@ -166,6 +168,18 @@ public class UserServiceImpl implements UserService {
     if (user.isEnabled() != enable) {
       user.setEnabled(enable);
       save(user);
+      // active/inactive in stream chat
+      try {
+        if (enable) {
+          io.getstream.chat.java.models.User.delete(userId.toString()).markMessagesDeleted(true)
+                  .request();
+        } else {
+          io.getstream.chat.java.models.User.delete(userId.toString()).markMessagesDeleted(false)
+                  .request();
+        }
+      } catch (Exception ex) {
+        log.error("Request stream update fail!");
+      }
     }
   }
 

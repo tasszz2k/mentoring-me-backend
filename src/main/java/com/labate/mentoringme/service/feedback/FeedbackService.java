@@ -1,5 +1,6 @@
 package com.labate.mentoringme.service.feedback;
 
+import com.labate.mentoringme.config.CurrentUser;
 import org.springframework.data.domain.Page;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreateFeedbackRequest;
@@ -10,11 +11,11 @@ import com.labate.mentoringme.model.Feedback;
 
 public interface FeedbackService {
 
-  Page<FeedbackResponse> getByUserId(Long toUserId, PageCriteria pageCriteria);
+  Page<FeedbackResponse> getByUserId(Long toUserId, PageCriteria pageCriteria, LocalUser localUser);
 
   Feedback createFeedback(CreateFeedbackRequest createFeedbackRequest, LocalUser localUser);
 
   FeedbackOverviewResponse getFeedbackOverview(Long toUserId, LocalUser localUser);
 
-
+  void deleteFeedback(Long toUserid, LocalUser localUser);
 }

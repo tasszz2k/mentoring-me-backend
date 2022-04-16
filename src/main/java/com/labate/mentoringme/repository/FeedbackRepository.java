@@ -14,12 +14,15 @@ import com.labate.mentoringme.model.Feedback;
 public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
 
   @Query(
-      value = "SELECT rating, comment, A.created, B.full_name AS fullName, B.image_url AS imageUrl from feedback_users A JOIN users B"
-          + " ON A.from_user_id = B.id" + " WHERE A.is_deleted = 0 AND to_user_id = :toUserId ",
-      countQuery = "SELECT count(A.id) from feedback_users A JOIN users B"
-          + " ON A.from_user_id = B.id" + " WHERE A.is_deleted = 0 AND to_user_id = :toUserId ",
-      nativeQuery = true)
-  Page<FeedbackProjection> findByToUserId(@Param("toUserId") Long toUserId, Pageable pageable);
+          value = "SELECT rating, comment, A.created, B.full_name AS fullName, B.image_url AS imageUrl, to_user_id AS toUserId from feedback_users A JOIN users B"
+                  + " ON A.from_user_id = B.id" + " WHERE A.is_deleted = 0 AND to_user_id = :toUserId "
+                  + " AND (:fromUserId is NULL OR from_user_id <> :fromUserId )",
+          countQuery = "SELECT count(A.id) from feedback_users A JOIN users B"
+                  + " ON A.from_user_id = B.id" + " WHERE A.is_deleted = 0 AND to_user_id = :toUserId "
+                  + " AND (:fromUserId is NULL OR from_user_id <> :fromUserId )",
+          nativeQuery = true)
+  Page<FeedbackProjection> findByToUserId(@Param("toUserId") Long toUserId,
+                                          @Param("fromUserId") Long fromUserId, Pageable pageable);
 
   List<Feedback> findByToUserId(Long toUserId);
 

@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
           .user(
               UserRequestObject.builder()
                   .id(user.getId().toString())
-                  .role("user")
+                  .role("admin")
                   .name(user.getFullName())
                   .build())
           .request();

@@ -3,6 +3,7 @@ package com.labate.mentoringme.service.notification;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.messaging.Notification;
 import com.google.firebase.messaging.*;
 import com.labate.mentoringme.constant.MentorStatus;
 import com.labate.mentoringme.dto.mapper.NotificationMapper;
@@ -13,13 +14,13 @@ import com.labate.mentoringme.dto.request.PushNotificationToUserRequest;
 import com.labate.mentoringme.dto.request.SubscriptionRequestDto;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
-import com.labate.mentoringme.model.FcmToken;
-import com.labate.mentoringme.model.UnreadNotificationsCounter;
-import com.labate.mentoringme.model.UserNotification;
+import com.labate.mentoringme.model.*;
 import com.labate.mentoringme.repository.*;
-import lombok.RequiredArgsConstructor;
+import com.labate.mentoringme.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
+// @RequiredArgsConstructor
 @Slf4j
 @Service
 public class NotificationServiceImpl implements NotificationService {
@@ -47,6 +48,23 @@ public class NotificationServiceImpl implements NotificationService {
   private final UnreadNotificationsCounterRepository unreadNotificationsCounterRepository;
   private final UserNotificationRepository userNotificationRepository;
   private final UserTopicRepository userTopicRepository;
+  private final UserService userService;
+
+  @Autowired
+  public NotificationServiceImpl(
+      FcmTokenRepository fcmTokenRepository,
+      NotificationRepository notificationRepository,
+      UnreadNotificationsCounterRepository unreadNotificationsCounterRepository,
+      UserNotificationRepository userNotificationRepository,
+      UserTopicRepository userTopicRepository,
+      @Lazy UserService userService) {
+    this.fcmTokenRepository = fcmTokenRepository;
+    this.notificationRepository = notificationRepository;
+    this.unreadNotificationsCounterRepository = unreadNotificationsCounterRepository;
+    this.userNotificationRepository = userNotificationRepository;
+    this.userTopicRepository = userTopicRepository;
+    this.userService = userService;
+  }
 
   @PostConstruct
   private void initialize() throws Exception {
@@ -302,6 +320,7 @@ public class NotificationServiceImpl implements NotificationService {
   @Override
   public void sendAll(PushNotificationRequest request) {}
 
+  @Async
   @Override
   public void sendMentorVerificationNotification(Long mentorId, MentorStatus mentorStatus) {
     var request =
@@ -328,8 +347,118 @@ public class NotificationServiceImpl implements NotificationService {
 
     try {
       sendMulticast(request);
-    } catch (FirebaseMessagingException e) {
+    } catch (Exception e) {
       log.error("Error sending notification to mentor {}", mentorId, e);
+    }
+  }
+
+  @Async
+  @Override
+  public void sendMentorshipRequestNotification(MentorshipRequest mentorshipRequest) {
+    var request =
+        PushNotificationToUserRequest.builder()
+            .objectType(com.labate.mentoringme.model.Notification.ObjectType.MENTORSHIP_REQUEST)
+            .objectId(mentorshipRequest.getId())
+            .build();
+
+    Long creatorId = mentorshipRequest.getMentorship().getCreatedBy();
+    Long mentorId = mentorshipRequest.getApproverId();
+    switch (mentorshipRequest.getStatus()) {
+      case ON_GOING:
+        var creatorName = userService.findBasicUserInfoByUserId(creatorId).getFullName();
+        var categoryName = mentorshipRequest.getMentorship().getCategory().getName();
+        request.setUserIds(Collections.singleton(mentorId));
+        request.setTitle("Yêu cầu gia sư mới");
+        request.setBody(
+            String.format(
+                "%s vừa gửi tới bạn yêu cầu được học môn %s. Phản hồi học sinh ngay nào!",
+                creatorName, categoryName));
+        break;
+      case REJECTED:
+        var mentorName = userService.findBasicUserInfoByUserId(mentorId).getFullName();
+        request.setUserIds(Collections.singleton(creatorId));
+        request.setTitle("Yêu cầu gia sư của bạn bị từ chối");
+        request.setBody(
+            String.format(
+                "Rất tiếc, gia sư %s không tiếp nhận yêu cầu từ bạn. Hãy gửi yêu cầu đến gia sư khác, hoặc gửi yêu cầu mới phù hợp với hồ sơ của gia sư này nhé!",
+                mentorName));
+        break;
+      case APPROVED:
+        request.setUserIds(Collections.singleton(creatorId));
+        request.setTitle("Yêu cầu gia sư của bạn đã được gia sư đồng ý");
+        request.setBody(
+            "Lịch học của bạn đã được cập nhật trong lịch trình. Hãy trao đổi thêm với gia sư của bạn nhé.");
+        break;
+      default:
+        return;
+    }
+
+    try {
+      sendMulticast(request);
+    } catch (Exception e) {
+      log.error("Error sending mentorship request notification.", e);
+    }
+  }
+
+  @Async
+  @Override
+  public void sendFeedbackNotification(Feedback feedback) {
+    var studentName = userService.findBasicUserInfoByUserId(feedback.getFromUserId()).getFullName();
+
+    var request =
+        PushNotificationToUserRequest.builder()
+            .userIds(Collections.singleton(feedback.getToUserId()))
+            .objectType(com.labate.mentoringme.model.Notification.ObjectType.FEEDBACK)
+            .objectId(feedback.getId())
+            .title(String.format("Đánh giá mới từ %s", studentName))
+            .body(String.format("%s vừa đăng một nhận xét mới về bạn", studentName))
+            .build();
+
+    try {
+      sendMulticast(request);
+    } catch (Exception e) {
+      log.error("Error sending feedback notification.", e);
+    }
+  }
+
+  @Async
+  @Override
+  public void sendCommentNotification(Comment comment, Post post) {
+    var commenterName = userService.findBasicUserInfoByUserId(comment.getCreatedBy()).getFullName();
+
+    var request =
+        PushNotificationToUserRequest.builder()
+            .userIds(Collections.singleton(post.getCreatedBy()))
+            .objectType(com.labate.mentoringme.model.Notification.ObjectType.POST)
+            .objectId(post.getId())
+            .title(String.format("%s vừa bình luận về bài đăng của bạn", commenterName))
+            .body(comment.getContent())
+            .build();
+
+    try {
+      sendMulticast(request);
+    } catch (Exception e) {
+      log.error("Error sending comment notification.", e);
+    }
+  }
+
+  @Override
+  public void sendLikePostNotification(Post post, Long userId) {
+    var username = userService.findBasicUserInfoByUserId(userId).getFullName();
+
+    var request =
+        PushNotificationToUserRequest.builder()
+            .userIds(Collections.singleton(post.getCreatedBy()))
+            .objectType(com.labate.mentoringme.model.Notification.ObjectType.POST)
+            .objectId(post.getId())
+            .title(String.format("%s vừa quan tâm về bài đăng của bạn", username))
+            .body("")
+            .build();
+
+    try {
+      sendMulticast(request);
+    } catch (Exception e) {
+      log.error("Error sending like post notification.", e);
     }
   }
 }

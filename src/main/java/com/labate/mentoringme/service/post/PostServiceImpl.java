@@ -17,6 +17,7 @@ import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.model.UserLikePost;
 import com.labate.mentoringme.repository.PostRepository;
 import com.labate.mentoringme.repository.UserLikePostRepository;
+import com.labate.mentoringme.service.notification.NotificationService;
 import com.labate.mentoringme.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,7 @@ public class PostServiceImpl implements PostService {
   private final PostRepository postRepository;
   private final UserLikePostRepository userLikePostRepository;
   private final UserService userService;
+  private final NotificationService notificationService;
 
   @Override
   public Post savePost(Post post) {
@@ -86,6 +88,7 @@ public class PostServiceImpl implements PostService {
       var newUserLikePost = new UserLikePost();
       newUserLikePost.setKey(userLikePostKey);
       userLikePostRepository.save(newUserLikePost);
+      notificationService.sendLikePostNotification(post, userId);
     } else {
       if (userLikePost.getIsDeleted()) {
         userLikePost.setIsDeleted(false);

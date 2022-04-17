@@ -400,6 +400,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
   }
 
+  @Async
   @Override
   public void sendFeedbackNotification(Feedback feedback) {
     var studentName = userService.findBasicUserInfoByUserId(feedback.getFromUserId()).getFullName();
@@ -417,6 +418,47 @@ public class NotificationServiceImpl implements NotificationService {
       sendMulticast(request);
     } catch (Exception e) {
       log.error("Error sending feedback notification.", e);
+    }
+  }
+
+  @Async
+  @Override
+  public void sendCommentNotification(Comment comment, Post post) {
+    var commenterName = userService.findBasicUserInfoByUserId(comment.getCreatedBy()).getFullName();
+
+    var request =
+        PushNotificationToUserRequest.builder()
+            .userIds(Collections.singleton(post.getCreatedBy()))
+            .objectType(com.labate.mentoringme.model.Notification.ObjectType.POST)
+            .objectId(post.getId())
+            .title(String.format("%s vừa bình luận về bài đăng của bạn", commenterName))
+            .body(comment.getContent())
+            .build();
+
+    try {
+      sendMulticast(request);
+    } catch (Exception e) {
+      log.error("Error sending comment notification.", e);
+    }
+  }
+
+  @Override
+  public void sendLikePostNotification(Post post, Long userId) {
+    var username = userService.findBasicUserInfoByUserId(userId).getFullName();
+
+    var request =
+        PushNotificationToUserRequest.builder()
+            .userIds(Collections.singleton(post.getCreatedBy()))
+            .objectType(com.labate.mentoringme.model.Notification.ObjectType.POST)
+            .objectId(post.getId())
+            .title(String.format("%s vừa quan tâm về bài đăng của bạn", username))
+            .body("")
+            .build();
+
+    try {
+      sendMulticast(request);
+    } catch (Exception e) {
+      log.error("Error sending like post notification.", e);
     }
   }
 }

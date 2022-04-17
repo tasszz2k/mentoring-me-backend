@@ -451,8 +451,8 @@ public class NotificationServiceImpl implements NotificationService {
             .userIds(Collections.singleton(post.getCreatedBy()))
             .objectType(com.labate.mentoringme.model.Notification.ObjectType.POST)
             .objectId(post.getId())
-            .title(String.format("%s vừa quan tâm về bài đăng của bạn", username))
-            .body("")
+            .title("Bạn có thông báo mới")
+            .body(String.format("%s vừa quan tâm về bài đăng của bạn", username))
             .build();
 
     try {

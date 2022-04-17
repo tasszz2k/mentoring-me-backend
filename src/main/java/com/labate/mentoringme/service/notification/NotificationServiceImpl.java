@@ -442,6 +442,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
   }
 
+  @Async
   @Override
   public void sendLikePostNotification(Post post, Long userId) {
     var username = userService.findBasicUserInfoByUserId(userId).getFullName();

@@ -47,7 +47,6 @@ public class NotificationServiceImpl implements NotificationService {
   private final NotificationRepository notificationRepository;
   private final UnreadNotificationsCounterRepository unreadNotificationsCounterRepository;
   private final UserNotificationRepository userNotificationRepository;
-  private final UserTopicRepository userTopicRepository;
   private final UserService userService;
 
   @Autowired
@@ -56,13 +55,11 @@ public class NotificationServiceImpl implements NotificationService {
       NotificationRepository notificationRepository,
       UnreadNotificationsCounterRepository unreadNotificationsCounterRepository,
       UserNotificationRepository userNotificationRepository,
-      UserTopicRepository userTopicRepository,
       @Lazy UserService userService) {
     this.fcmTokenRepository = fcmTokenRepository;
     this.notificationRepository = notificationRepository;
     this.unreadNotificationsCounterRepository = unreadNotificationsCounterRepository;
     this.userNotificationRepository = userNotificationRepository;
-    this.userTopicRepository = userTopicRepository;
     this.userService = userService;
   }
 

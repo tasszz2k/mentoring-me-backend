@@ -4,6 +4,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.*;
+import com.labate.mentoringme.constant.MentorStatus;
 import com.labate.mentoringme.dto.mapper.NotificationMapper;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
 import com.labate.mentoringme.dto.request.PageCriteria;
@@ -15,10 +16,7 @@ import com.labate.mentoringme.dto.response.Paging;
 import com.labate.mentoringme.model.FcmToken;
 import com.labate.mentoringme.model.UnreadNotificationsCounter;
 import com.labate.mentoringme.model.UserNotification;
-import com.labate.mentoringme.repository.FcmTokenRepository;
-import com.labate.mentoringme.repository.NotificationRepository;
-import com.labate.mentoringme.repository.UnreadNotificationsCounterRepository;
-import com.labate.mentoringme.repository.UserNotificationRepository;
+import com.labate.mentoringme.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +28,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -47,6 +46,7 @@ public class NotificationServiceImpl implements NotificationService {
   private final NotificationRepository notificationRepository;
   private final UnreadNotificationsCounterRepository unreadNotificationsCounterRepository;
   private final UserNotificationRepository userNotificationRepository;
+  private final UserTopicRepository userTopicRepository;
 
   @PostConstruct
   private void initialize() throws Exception {
@@ -72,27 +72,27 @@ public class NotificationServiceImpl implements NotificationService {
   @Override
   public void subscribeToTopic(SubscriptionRequestDto subscriptionRequestDto)
       throws FirebaseMessagingException {
-    try {
-      FirebaseMessaging.getInstance(firebaseApp)
-          .subscribeToTopic(
-              subscriptionRequestDto.getTokens(), subscriptionRequestDto.getTopicName());
-    } catch (FirebaseMessagingException e) {
-      log.error("Firebase subscribe to topic fail", e);
-      throw e;
-    }
+    // try {
+    //   FirebaseMessaging.getInstance(firebaseApp)
+    //       .subscribeToTopic(
+    //           subscriptionRequestDto.getTokens(), subscriptionRequestDto.getTopic());
+    // } catch (FirebaseMessagingException e) {
+    //   log.error("Firebase subscribe to topic fail", e);
+    //   throw e;
+    // }
   }
 
   @Override
   public void unsubscribeFromTopic(SubscriptionRequestDto subscriptionRequestDto)
       throws FirebaseMessagingException {
-    try {
-      FirebaseMessaging.getInstance(firebaseApp)
-          .unsubscribeFromTopic(
-              subscriptionRequestDto.getTokens(), subscriptionRequestDto.getTopicName());
-    } catch (FirebaseMessagingException e) {
-      log.error("Firebase unsubscribe from topic fail", e);
-      throw e;
-    }
+    // try {
+    //   FirebaseMessaging.getInstance(firebaseApp)
+    //       .unsubscribeFromTopic(
+    //           subscriptionRequestDto.getTokens(), subscriptionRequestDto.getTopicName());
+    // } catch (FirebaseMessagingException e) {
+    //   log.error("Firebase unsubscribe from topic fail", e);
+    //   throw e;
+    // }
   }
 
   @Async
@@ -118,19 +118,26 @@ public class NotificationServiceImpl implements NotificationService {
     // [END send_multicast]
 
     // Save to database
-    saveNotifications(userIds, request.getTitle(), request.getBody(), request.getType());
+    saveNotifications(
+        userIds,
+        request.getTitle(),
+        request.getBody(),
+        request.getObjectType(),
+        request.getObjectId());
   }
 
   private void saveNotifications(
       Set<Long> userIds,
       String title,
       String body,
-      com.labate.mentoringme.model.Notification.Type type) {
+      com.labate.mentoringme.model.Notification.ObjectType objectType,
+      Long objectId) {
     var notification =
         com.labate.mentoringme.model.Notification.builder()
             .title(title)
             .body(body)
-            .type(type)
+            .objectType(objectType)
+            .objectId(objectId)
             .build();
     var savedNotification = notificationRepository.save(notification);
 
@@ -294,4 +301,35 @@ public class NotificationServiceImpl implements NotificationService {
 
   @Override
   public void sendAll(PushNotificationRequest request) {}
+
+  @Override
+  public void sendMentorVerificationNotification(Long mentorId, MentorStatus mentorStatus) {
+    var request =
+        PushNotificationToUserRequest.builder()
+            .userIds(Collections.singleton(mentorId))
+            .objectType(com.labate.mentoringme.model.Notification.ObjectType.MENTOR_VERIFICATION)
+            .objectId(mentorId)
+            .build();
+
+    switch (mentorStatus) {
+      case ACCEPTED:
+        request.setTitle("Hồ sơ của bạn đã được duyệt thành công");
+        request.setBody(
+            "Bạn đã trở thành mentor chính thức của MentoringMe! Kết nối với các học sinh ngay!");
+        break;
+      case REJECTED:
+        request.setTitle("Hồ sơ của bạn bị từ chối");
+        request.setBody(
+            "Rất tiếc, bạn chưa đáp ứng yêu cầu của đội ngũ chúng tôi. Hãy học hỏi thêm các kiến thức từ các gia sư chất lượng tại MentoringMe bạn nhé!");
+        break;
+      default:
+        return;
+    }
+
+    try {
+      sendMulticast(request);
+    } catch (FirebaseMessagingException e) {
+      log.error("Error sending notification to mentor {}", mentorId, e);
+    }
+  }
 }

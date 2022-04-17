@@ -1,6 +1,7 @@
 package com.labate.mentoringme.service.notification;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
+import com.labate.mentoringme.constant.MentorStatus;
 import com.labate.mentoringme.dto.request.PushNotificationRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.PushNotificationToUserRequest;
@@ -29,4 +30,6 @@ public interface NotificationService {
   void markAllReadNotifications(Long userId);
 
   void sendAll(PushNotificationRequest request);
+
+  void sendMentorVerificationNotification(Long mentorId, MentorStatus mentorStatus);
 }

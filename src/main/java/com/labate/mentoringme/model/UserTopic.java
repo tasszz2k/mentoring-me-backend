@@ -1,8 +1,6 @@
 package com.labate.mentoringme.model;
 
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -17,21 +15,13 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "notifications")
-@SQLDelete(sql = "update notifications set is_deleted = true where id=?")
-@Where(clause = "is_deleted = false")
-public class Notification {
+@Table(name = "users_topics")
+public class UserTopic {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private String title;
-  private String body;
-
-  @Enumerated(EnumType.ORDINAL)
-  private ObjectType objectType;
-
-  private Long objectId;
+  @Embedded private UserLikePost.Key key;
 
   @Builder.Default
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
@@ -47,13 +37,12 @@ public class Notification {
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
 
-  public enum ObjectType {// TODO: Update notification types
-    NOTIFICATION,
-    MENTOR_VERIFICATION,
-    MENTORSHIP_REQUEST,
-    SCHEDULE,
-    FEEDBACK,
-    POST,
-    QUIZ,
+  @Data
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Embeddable
+  public static class Key {
+    private Long postId;
+    private Long userId;
   }
 }

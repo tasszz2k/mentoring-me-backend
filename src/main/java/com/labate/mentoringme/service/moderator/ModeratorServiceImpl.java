@@ -3,13 +3,14 @@ package com.labate.mentoringme.service.moderator;
 import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.constant.UserRole;
 import com.labate.mentoringme.dto.request.CreateModeratorRequest;
+import com.labate.mentoringme.dto.response.BasicInforResponse;
 import com.labate.mentoringme.exception.UserAlreadyExistAuthenticationException;
 import com.labate.mentoringme.model.Role;
 import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.model.UserProfile;
 import com.labate.mentoringme.repository.RoleRepository;
-import com.labate.mentoringme.repository.UserRepository;
 import com.labate.mentoringme.service.user.UserService;
+import com.labate.mentoringme.util.ObjectMapperUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,14 +26,15 @@ public class ModeratorServiceImpl implements ModeratorService {
   private final PasswordEncoder passwordEncoder;
 
   @Override
-  public User createModerator(CreateModeratorRequest request) {
+  public BasicInforResponse createModerator(CreateModeratorRequest request) {
     if (userService.existsByEmail(request.getEmail())) {
       throw new UserAlreadyExistAuthenticationException("email = " + request.getEmail());
     }
     User user = buildUser(request);
     user = userService.save(user);
+    var basicInforResponse = ObjectMapperUtils.map(user, BasicInforResponse.class);
     // userService.flush();
-    return user;
+    return basicInforResponse;
   }
 
   private User buildUser(CreateModeratorRequest request) {

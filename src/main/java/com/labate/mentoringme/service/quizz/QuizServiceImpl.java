@@ -12,16 +12,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
+
+import com.labate.mentoringme.dto.model.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import com.labate.mentoringme.constant.UserRole;
-import com.labate.mentoringme.dto.model.QuizResultCheckingDto;
-import com.labate.mentoringme.dto.model.UserSelectionDto;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
-import com.labate.mentoringme.dto.model.LocalUser;
-import com.labate.mentoringme.dto.model.QuestionDto;
-import com.labate.mentoringme.dto.model.QuizDetailDto;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.CreateQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.FindQuizRequest;
@@ -65,6 +62,8 @@ public class QuizServiceImpl implements QuizService {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     var response = quizRepository.findAllByConditions(request, pageable).map(quiz -> {
       var quizResponse = modelMapper.map(quiz, QuizFavoriteResponse.class);
+      var sortedCategory = quizResponse.getCategories().stream().sorted(Comparator.comparing(CategoryDto::getId)).collect(Collectors.toSet());
+      quizResponse.setCategories(sortedCategory);
       return quizResponse;
     });
 
@@ -89,6 +88,8 @@ public class QuizServiceImpl implements QuizService {
   public QuizOverviewResponse getQuizOverview(Long quizId, LocalUser localUser) {
     var quizOpt = quizRepository.findById(quizId);
     var quizOverResponse = ObjectMapperUtils.map(quizOpt.get(), QuizOverviewResponse.class);
+    var sortedCategory = quizOverResponse.getCategories().stream().sorted(Comparator.comparing(CategoryDto::getId)).collect(Collectors.toSet());
+    quizOverResponse.setCategories(sortedCategory);
     if (!Objects.isNull(localUser)) {
       var userId = localUser.getUserId();
       var favoriteQuiz = favoriteQuizRepository.findByUserIdAndQuizId(userId, quizId);
@@ -266,8 +267,10 @@ public class QuizServiceImpl implements QuizService {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     var userId = localUser.getUserId();
     return quizRepository.findAllByCreatedByAndIsDraft(userId, true, pageable).map(quiz -> {
-      var quizOverviewDto = modelMapper.map(quiz, QuizResponse.class);
-      return quizOverviewDto;
+      var quizResponse = modelMapper.map(quiz, QuizResponse.class);
+      var sortedCategory = quizResponse.getCategories().stream().sorted(Comparator.comparing(CategoryDto::getId)).collect(Collectors.toSet());
+      quizResponse.setCategories(sortedCategory);
+      return quizResponse;
     });
   }
 

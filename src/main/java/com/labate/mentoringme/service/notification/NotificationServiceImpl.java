@@ -14,12 +14,15 @@ import com.labate.mentoringme.dto.request.SubscriptionRequestDto;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
 import com.labate.mentoringme.model.FcmToken;
+import com.labate.mentoringme.model.MentorshipRequest;
 import com.labate.mentoringme.model.UnreadNotificationsCounter;
 import com.labate.mentoringme.model.UserNotification;
 import com.labate.mentoringme.repository.*;
-import lombok.RequiredArgsConstructor;
+import com.labate.mentoringme.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
+// @RequiredArgsConstructor
 @Slf4j
 @Service
 public class NotificationServiceImpl implements NotificationService {
@@ -47,6 +50,23 @@ public class NotificationServiceImpl implements NotificationService {
   private final UnreadNotificationsCounterRepository unreadNotificationsCounterRepository;
   private final UserNotificationRepository userNotificationRepository;
   private final UserTopicRepository userTopicRepository;
+  private final UserService userService;
+
+  @Autowired
+  public NotificationServiceImpl(
+      FcmTokenRepository fcmTokenRepository,
+      NotificationRepository notificationRepository,
+      UnreadNotificationsCounterRepository unreadNotificationsCounterRepository,
+      UserNotificationRepository userNotificationRepository,
+      UserTopicRepository userTopicRepository,
+      @Lazy UserService userService) {
+    this.fcmTokenRepository = fcmTokenRepository;
+    this.notificationRepository = notificationRepository;
+    this.unreadNotificationsCounterRepository = unreadNotificationsCounterRepository;
+    this.userNotificationRepository = userNotificationRepository;
+    this.userTopicRepository = userTopicRepository;
+    this.userService = userService;
+  }
 
   @PostConstruct
   private void initialize() throws Exception {
@@ -302,6 +322,7 @@ public class NotificationServiceImpl implements NotificationService {
   @Override
   public void sendAll(PushNotificationRequest request) {}
 
+  @Async
   @Override
   public void sendMentorVerificationNotification(Long mentorId, MentorStatus mentorStatus) {
     var request =
@@ -328,8 +349,57 @@ public class NotificationServiceImpl implements NotificationService {
 
     try {
       sendMulticast(request);
-    } catch (FirebaseMessagingException e) {
+    } catch (Exception e) {
       log.error("Error sending notification to mentor {}", mentorId, e);
+    }
+  }
+
+  @Async
+  @Override
+  public void sendMentorshipRequestNotification(MentorshipRequest mentorshipRequest) {
+    var request =
+        PushNotificationToUserRequest.builder()
+            .objectType(com.labate.mentoringme.model.Notification.ObjectType.MENTORSHIP_REQUEST)
+            .objectId(mentorshipRequest.getId())
+            .build();
+
+    Long creatorId = mentorshipRequest.getMentorship().getCreatedBy();
+    Long mentorId = mentorshipRequest.getApproverId();
+    switch (mentorshipRequest.getStatus()) {
+      case ON_GOING:
+        var creatorName = userService.findBasicUserInfoByUserId(creatorId).getFullName();
+        var categoryName = mentorshipRequest.getMentorship().getCategory().getName();
+        request.setUserIds(Collections.singleton(mentorId));
+        request.setTitle("Yêu cầu gia sư mới");
+        request.setBody(
+            String.format(
+                "%s vừa gửi tới bạn yêu cầu được học môn %s. Phản hồi học sinh ngay nào!",
+                creatorName, categoryName));
+        break;
+      case REJECTED:
+        var mentorName =
+            userService.findBasicUserInfoByUserId(mentorId).getFullName();
+        request.setUserIds(Collections.singleton(creatorId));
+        request.setTitle("Yêu cầu gia sư của bạn bị từ chối");
+        request.setBody(
+            String.format(
+                "Rất tiếc, gia sư %s không tiếp nhận yêu cầu từ bạn. Hãy gửi yêu cầu đến gia sư khác, hoặc gửi yêu cầu mới phù hợp với hồ sơ của gia sư này nhé!",
+                mentorName));
+        break;
+      case APPROVED:
+        request.setUserIds(Collections.singleton(creatorId));
+        request.setTitle("Yêu cầu gia sư của bạn đã được gia sư đồng ý");
+        request.setBody(
+            "Lịch học của bạn đã được cập nhật trong lịch trình. Hãy trao đổi thêm với gia sư của bạn nhé.");
+        break;
+      default:
+        return;
+    }
+
+    try {
+      sendMulticast(request);
+    } catch (Exception e) {
+      log.error("Error sending mentorship request notification.", e);
     }
   }
 }

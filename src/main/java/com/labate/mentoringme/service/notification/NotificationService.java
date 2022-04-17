@@ -7,6 +7,7 @@ import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.PushNotificationToUserRequest;
 import com.labate.mentoringme.dto.request.SubscriptionRequestDto;
 import com.labate.mentoringme.dto.response.PageResponse;
+import com.labate.mentoringme.model.MentorshipRequest;
 
 public interface NotificationService {
   void subscribeToTopic(SubscriptionRequestDto subscriptionRequestDto) throws FirebaseMessagingException;
@@ -32,4 +33,6 @@ public interface NotificationService {
   void sendAll(PushNotificationRequest request);
 
   void sendMentorVerificationNotification(Long mentorId, MentorStatus mentorStatus);
+
+  void sendMentorshipRequestNotification(MentorshipRequest request);
 }

@@ -3,6 +3,7 @@ package com.labate.mentoringme.service.notification;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.messaging.Notification;
 import com.google.firebase.messaging.*;
 import com.labate.mentoringme.constant.MentorStatus;
 import com.labate.mentoringme.dto.mapper.NotificationMapper;
@@ -13,10 +14,7 @@ import com.labate.mentoringme.dto.request.PushNotificationToUserRequest;
 import com.labate.mentoringme.dto.request.SubscriptionRequestDto;
 import com.labate.mentoringme.dto.response.PageResponse;
 import com.labate.mentoringme.dto.response.Paging;
-import com.labate.mentoringme.model.FcmToken;
-import com.labate.mentoringme.model.MentorshipRequest;
-import com.labate.mentoringme.model.UnreadNotificationsCounter;
-import com.labate.mentoringme.model.UserNotification;
+import com.labate.mentoringme.model.*;
 import com.labate.mentoringme.repository.*;
 import com.labate.mentoringme.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -377,8 +375,7 @@ public class NotificationServiceImpl implements NotificationService {
                 creatorName, categoryName));
         break;
       case REJECTED:
-        var mentorName =
-            userService.findBasicUserInfoByUserId(mentorId).getFullName();
+        var mentorName = userService.findBasicUserInfoByUserId(mentorId).getFullName();
         request.setUserIds(Collections.singleton(creatorId));
         request.setTitle("Yêu cầu gia sư của bạn bị từ chối");
         request.setBody(
@@ -400,6 +397,26 @@ public class NotificationServiceImpl implements NotificationService {
       sendMulticast(request);
     } catch (Exception e) {
       log.error("Error sending mentorship request notification.", e);
+    }
+  }
+
+  @Override
+  public void sendFeedbackNotification(Feedback feedback) {
+    var studentName = userService.findBasicUserInfoByUserId(feedback.getFromUserId()).getFullName();
+
+    var request =
+        PushNotificationToUserRequest.builder()
+            .userIds(Collections.singleton(feedback.getToUserId()))
+            .objectType(com.labate.mentoringme.model.Notification.ObjectType.FEEDBACK)
+            .objectId(feedback.getId())
+            .title(String.format("Đánh giá mới từ %s", studentName))
+            .body(String.format("%s vừa đăng một nhận xét mới về bạn", studentName))
+            .build();
+
+    try {
+      sendMulticast(request);
+    } catch (Exception e) {
+      log.error("Error sending feedback notification.", e);
     }
   }
 }

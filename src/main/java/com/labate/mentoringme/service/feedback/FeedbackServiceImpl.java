@@ -76,6 +76,9 @@ public class FeedbackServiceImpl implements FeedbackService {
       profileRepository.updateRating(newRating, createFeedbackRequest.getToUserId());
     }
     Feedback savedFeedback = feedbackRepository.save(feedback);
+
+    notificationService.sendFeedbackNotification(savedFeedback);
+
     return savedFeedback;
   }
 

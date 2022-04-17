@@ -164,7 +164,7 @@ public class PostServiceImpl implements PostService {
     var dto = PostMapper.toDto(post);
     if (localUser != null) {
       var key = new UserLikePost.Key(postId, localUser.getUserId());
-      var isLiked = userLikePostRepository.existsByKey(key);
+      var isLiked = userLikePostRepository.existsByKeyAndIsDeletedIsFalse(key);
       dto.setIsLiked(isLiked);
     }
     return dto;
@@ -199,7 +199,8 @@ public class PostServiceImpl implements PostService {
         postIds.stream().map(id -> new UserLikePost.Key(id, userId)).collect(Collectors.toSet());
     var userLikePosts = userLikePostRepository.findAllByKeyIn(keys);
     var map =
-        userLikePosts.stream().collect(Collectors.toMap(u -> u.getKey().getPostId(), u -> true));
+        userLikePosts.stream()
+            .collect(Collectors.toMap(u -> u.getKey().getPostId(), u -> !u.getIsDeleted()));
     dtos.forEach(
         dto -> {
           var isLiked = map.get(dto.getId());

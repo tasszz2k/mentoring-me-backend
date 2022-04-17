@@ -88,7 +88,9 @@ public class PostServiceImpl implements PostService {
       var newUserLikePost = new UserLikePost();
       newUserLikePost.setKey(userLikePostKey);
       userLikePostRepository.save(newUserLikePost);
-      notificationService.sendLikePostNotification(post, userId);
+      if (!post.getCreatedBy().equals(userId)) {
+        notificationService.sendLikePostNotification(post, userId);
+      }
     } else {
       if (userLikePost.getIsDeleted()) {
         userLikePost.setIsDeleted(false);

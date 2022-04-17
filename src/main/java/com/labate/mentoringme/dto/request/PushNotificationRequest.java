@@ -1,6 +1,7 @@
 package com.labate.mentoringme.dto.request;
 
 import com.labate.mentoringme.model.Notification;
+import lombok.Builder;
 import lombok.Data;
 
 @Data

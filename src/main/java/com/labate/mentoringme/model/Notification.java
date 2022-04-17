@@ -49,11 +49,11 @@ public class Notification {
 
   public enum ObjectType {// TODO: Update notification types
     NOTIFICATION,
+    MENTOR_VERIFICATION,
     MENTORSHIP_REQUEST,
-    POST,
-    FEEDBACK,
-    POST_,
-    QUIZ,
     SCHEDULE,
+    FEEDBACK,
+    POST,
+    QUIZ,
   }
 }

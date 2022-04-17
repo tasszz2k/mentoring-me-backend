@@ -11,6 +11,7 @@ import com.labate.mentoringme.exception.UserAlreadyExistAuthenticationException;
 import com.labate.mentoringme.exception.UserNotFoundException;
 import com.labate.mentoringme.model.MentorVerification;
 import com.labate.mentoringme.repository.MentorVerificationRepository;
+import com.labate.mentoringme.service.notification.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -24,11 +25,16 @@ public class MentorVerificationServiceImpl implements MentorVerificationService 
   private final MentorVerificationRepository mentorVerificationRepository;
   private final UserService userService;
 
+  private final NotificationService notificationService;
+
   @Autowired
   public MentorVerificationServiceImpl(
-      MentorVerificationRepository mentorVerificationRepository, @Lazy UserService userService) {
+      MentorVerificationRepository mentorVerificationRepository,
+      @Lazy UserService userService,
+      NotificationService notificationService) {
     this.mentorVerificationRepository = mentorVerificationRepository;
     this.userService = userService;
+    this.notificationService = notificationService;
   }
 
   @Override
@@ -62,6 +68,8 @@ public class MentorVerificationServiceImpl implements MentorVerificationService 
 
     MentorStatus mentorStatus = MentorStatus.valueOf(status.name());
     userService.updateMentorStatus(mentorId, mentorStatus);
+
+    notificationService.sendMentorVerificationNotification(mentorId, mentorStatus);
   }
 
   @Override

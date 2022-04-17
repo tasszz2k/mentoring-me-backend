@@ -42,7 +42,9 @@ public class CommentServiceImpl implements CommentService {
     Comment newComment = save(comment);
     postService.updateCommentCount(postId, INCREASE_NUMBER);
 
-    notificationService.sendCommentNotification(newComment, post);
+    if (!post.getCreatedBy().equals(comment.getCreatedBy())) {
+      notificationService.sendCommentNotification(newComment, post);
+    }
     return newComment;
   }
 

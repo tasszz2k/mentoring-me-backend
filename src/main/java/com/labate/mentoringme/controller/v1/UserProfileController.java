@@ -110,10 +110,11 @@ public class UserProfileController {
   }
 
   @GetMapping("/top-mentors")
-  public ResponseEntity<?> findTop10MentorProfiles(@CurrentUser LocalUser localUser) {
+  public ResponseEntity<?> findTop10MentorProfiles(
+      @CurrentUser LocalUser localUser, @Valid PageCriteria pageCriteria) {
     // TODO: build sort by ranking
     var sort = List.of("-userProfile.rating", "+createdDate");
-    PageCriteria pageCriteria = PageCriteria.builder().limit(10).page(1).sort(sort).build();
+    pageCriteria.setSort(sort);
     FindUsersRequest request =
         FindUsersRequest.builder().role(UserRole.ROLE_MENTOR).enabled(true).build();
 

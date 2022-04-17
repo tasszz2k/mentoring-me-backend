@@ -8,5 +8,6 @@ public class PushNotificationRequest {
   private String topic;
   private String title;
   private String body;
-  private Notification.Type type;
+  private Notification.ObjectType objectType;
+  private Long objectId;
 }

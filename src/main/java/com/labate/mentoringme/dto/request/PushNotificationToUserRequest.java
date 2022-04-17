@@ -10,5 +10,6 @@ public class PushNotificationToUserRequest {
   private Set<Long> userIds;
   private String title;
   private String body;
-  private Notification.Type type;
+  private Notification.ObjectType objectType;
+  private Long objectId;
 }

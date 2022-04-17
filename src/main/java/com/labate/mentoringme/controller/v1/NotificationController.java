@@ -122,22 +122,22 @@ public class NotificationController {
   }
 
 
-  // @PostMapping("/topic")
-  // public String sendPnsToTopic(@RequestBody PushNotificationRequest pushNotificationRequest)
-  //     throws FirebaseMessagingException {
-  //   return notificationService.sendPnsToTopic(pushNotificationRequest);
-  // }
-  //
-  // @PostMapping("/subscribe")
-  // public void subscribeToTopic(@RequestBody SubscriptionRequestDto subscriptionRequestDto)
-  //     throws FirebaseMessagingException {
-  //   notificationService.subscribeToTopic(subscriptionRequestDto);
-  // }
-  //
-  // @PostMapping("/unsubscribe")
-  // public void unsubscribeFromTopic(SubscriptionRequestDto subscriptionRequestDto)
-  //     throws FirebaseMessagingException {
-  //   notificationService.unsubscribeFromTopic(subscriptionRequestDto);
-  // }
+  @PostMapping("/topic")
+  public String sendPnsToTopic(@RequestBody PushNotificationRequest pushNotificationRequest)
+      throws FirebaseMessagingException {
+    return notificationService.sendPnsToTopic(pushNotificationRequest);
+  }
+
+  @PostMapping("/subscribe")
+  public void subscribeToTopic(@RequestBody SubscriptionRequestDto subscriptionRequestDto)
+      throws FirebaseMessagingException {
+    notificationService.subscribeToTopic(subscriptionRequestDto);
+  }
+
+  @PostMapping("/unsubscribe")
+  public void unsubscribeFromTopic(SubscriptionRequestDto subscriptionRequestDto)
+      throws FirebaseMessagingException {
+    notificationService.unsubscribeFromTopic(subscriptionRequestDto);
+  }
 
 }

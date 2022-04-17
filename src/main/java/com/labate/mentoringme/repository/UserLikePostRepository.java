@@ -11,7 +11,7 @@ public interface UserLikePostRepository extends JpaRepository<UserLikePost, Long
 
   Set<UserLikePost> findAllByKeyPostIdAndIsDeletedIsFalse(Long id);
 
-  boolean existsByKey(UserLikePost.Key key);
+  boolean existsByKeyAndIsDeletedIsFalse(UserLikePost.Key key);
 
   Set<UserLikePost> findAllByKeyIn(Collection<UserLikePost.Key> keys);
 }

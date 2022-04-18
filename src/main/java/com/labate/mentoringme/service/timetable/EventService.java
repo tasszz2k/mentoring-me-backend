@@ -22,7 +22,7 @@ public interface EventService {
 
   void save(List<Event> events);
 
-  void saveAll(List<Event> events);
+  List<Event> saveAll(List<Event> events);
 
   Event findById(Long eventId);
 
@@ -31,4 +31,6 @@ public interface EventService {
   List<Event> findByShiftId(Long shiftId);
 
   void deleteByShiftId(Long shiftId);
+
+  List<Event> getAllActiveEventsFrom(Date now);
 }

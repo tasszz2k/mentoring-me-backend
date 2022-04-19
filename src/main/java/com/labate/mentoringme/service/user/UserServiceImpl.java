@@ -91,8 +91,8 @@ public class UserServiceImpl implements UserService {
       io.getstream.chat.java.models.User.upsert()
               .user(
                      UserRequestObject.builder()
-                              .id(user.getId().toString())
-                              .role("user")
+                              .id("labate" + user.getId())
+                              .role("admin")
                               .name(user.getFullName())
                               .build())
               .request();

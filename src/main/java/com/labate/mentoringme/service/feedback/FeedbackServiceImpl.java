@@ -5,6 +5,7 @@ import java.util.Objects;
 import javax.transaction.Transactional;
 
 import com.labate.mentoringme.config.CurrentUser;
+import com.labate.mentoringme.constant.UserRole;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -119,13 +120,15 @@ public class FeedbackServiceImpl implements FeedbackService {
         .proportionOfFourRating(calculateProportion(numberOfFourRating, numberOfFeedback))
         .proportionOfFiveRating(calculateProportion(numberOfFiveRating, numberOfFeedback)).build();
     if (!Objects.isNull(localUser)) {
-      var user = localUser.getUser();
-      var feedback = feedbackRepository.findByToUserIdAndFromUserId(toUserId, user.getId());
-      if (feedback != null) {
-        var feedbackResponse = modelMapper.map(feedback, FeedbackResponse.class);
-        feedbackResponse.setFullName(user.getFullName());
-        feedbackResponse.setImageUrl(user.getImageUrl());
-        feedbackOverviewResponse.setMyFeedback(feedbackResponse);
+      if (localUser.getUser().getRole() == UserRole.ROLE_USER){
+        var user = localUser.getUser();
+        var feedback = feedbackRepository.findByToUserIdAndFromUserId(toUserId, user.getId());
+        if (feedback != null) {
+          var feedbackResponse = modelMapper.map(feedback, FeedbackResponse.class);
+          feedbackResponse.setFullName(user.getFullName());
+          feedbackResponse.setImageUrl(user.getImageUrl());
+          feedbackOverviewResponse.setMyFeedback(feedbackResponse);
+        }
       }
     }
     return feedbackOverviewResponse;

@@ -89,13 +89,13 @@ public class UserServiceImpl implements UserService {
   private void syncUserToStream(User user) {
     try {
       io.getstream.chat.java.models.User.upsert()
-          .user(
-              UserRequestObject.builder()
-                  .id(user.getId().toString())
-                  .role("user")
-                  .name(user.getFullName())
-                  .build())
-          .request();
+              .user(
+                     UserRequestObject.builder()
+                              .id("labate" + user.getId())
+                              .role("admin")
+                              .name(user.getFullName())
+                              .build())
+              .request();
     } catch (StreamException e) {
       log.error(e.getMessage());
     }

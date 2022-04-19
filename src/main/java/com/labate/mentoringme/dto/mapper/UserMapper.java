@@ -86,7 +86,7 @@ public class UserMapper {
         .status(user.getStatus())
         .gender(profile.getGender())
         .dob(dob)
-            .streamToken(io.getstream.chat.java.models.User.createToken("labate" +user.getId(), null, null))
+            .streamToken(io.getstream.chat.java.models.User.createToken("labate" + user.getId(), null, null))
         .build();
   }
 

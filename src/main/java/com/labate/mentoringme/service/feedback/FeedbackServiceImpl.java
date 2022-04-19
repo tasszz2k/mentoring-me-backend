@@ -133,13 +133,15 @@ public class FeedbackServiceImpl implements FeedbackService {
             .proportionOfFiveRating(calculateProportion(numberOfFiveRating, numberOfFeedback))
             .build();
     if (!Objects.isNull(localUser)) {
-      var user = localUser.getUser();
-      var feedback = feedbackRepository.findByToUserIdAndFromUserId(toUserId, user.getId());
-      if (feedback != null) {
-        var feedbackResponse = modelMapper.map(feedback, FeedbackResponse.class);
-        feedbackResponse.setFullName(user.getFullName());
-        feedbackResponse.setImageUrl(user.getImageUrl());
-        feedbackOverviewResponse.setMyFeedback(feedbackResponse);
+      if (localUser.getUser().getRole() == UserRole.ROLE_USER){
+        var user = localUser.getUser();
+        var feedback = feedbackRepository.findByToUserIdAndFromUserId(toUserId, user.getId());
+        if (feedback != null) {
+          var feedbackResponse = modelMapper.map(feedback, FeedbackResponse.class);
+          feedbackResponse.setFullName(user.getFullName());
+          feedbackResponse.setImageUrl(user.getImageUrl());
+          feedbackOverviewResponse.setMyFeedback(feedbackResponse);
+        }
       }
     }
     return feedbackOverviewResponse;

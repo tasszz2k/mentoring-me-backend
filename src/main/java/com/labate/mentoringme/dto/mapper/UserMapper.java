@@ -1,5 +1,12 @@
 package com.labate.mentoringme.dto.mapper;
 
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.stereotype.Component;
 import com.labate.mentoringme.constant.Gender;
 import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.dto.model.BasicUserInfo;
@@ -12,14 +19,6 @@ import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.service.address.AddressService;
 import com.labate.mentoringme.service.category.CategoryService;
 import com.labate.mentoringme.service.user.LocalUserDetailService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.stereotype.Component;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class UserMapper {
@@ -29,9 +28,7 @@ public class UserMapper {
   private static LocalUserDetailService localUserDetailService;
 
   @Autowired
-  public UserMapper(
-      AddressService addressService,
-      CategoryService categoryService,
+  public UserMapper(AddressService addressService, CategoryService categoryService,
       LocalUserDetailService localUserDetailService) {
     UserMapper.addressService = addressService;
     UserMapper.categoryService = categoryService;
@@ -62,32 +59,19 @@ public class UserMapper {
   }
 
   public static UserInfo buildUserInfo(LocalUser localUser) {
-    var roles =
-        localUser.getAuthorities().stream()
-            .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.toList());
+    var roles = localUser.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+        .collect(Collectors.toList());
 
     var user = localUser.getUser();
     var profile = user.getUserProfile();
 
     Date dob = profile.getDob();
 
-    return UserInfo.builder()
-        .id(user.getId())
-        .fullName(user.getFullName())
-        .email(user.getEmail())
-        .phoneNumber(user.getPhoneNumber())
-        .imageUrl(user.getImageUrl())
-        .enabled(user.isEnabled())
-        .roles(roles)
-        .verifiedEmail(user.isVerifiedEmail())
-        .verifiedPhoneNumber(user.isVerifiedPhoneNumber())
-        .provider(user.getProvider())
-        .status(user.getStatus())
-        .gender(profile.getGender())
-        .dob(dob)
-            .streamToken(io.getstream.chat.java.models.User.createToken("labate" + user.getId(), null, null))
-        .build();
+    return UserInfo.builder().id(user.getId()).fullName(user.getFullName()).email(user.getEmail())
+        .phoneNumber(user.getPhoneNumber()).imageUrl(user.getImageUrl()).enabled(user.isEnabled())
+        .roles(roles).verifiedEmail(user.isVerifiedEmail())
+        .verifiedPhoneNumber(user.isVerifiedPhoneNumber()).provider(user.getProvider())
+        .status(user.getStatus()).gender(profile.getGender()).dob(dob).build();
   }
 
   public static UserDetails buildUserDetails(LocalUser localUser) {
@@ -139,27 +123,16 @@ public class UserMapper {
     if (prj.getId() == null) {
       return null;
     }
-    return new BasicUserInfo(
-        prj.getId(),
-        prj.getEmail(),
-        prj.getFullName(),
-        prj.getPhoneNumber(),
-        prj.getImageUrl(),
-        Gender.of(prj.getGender()),
-        prj.getRoles());
+    return new BasicUserInfo(prj.getId(), prj.getEmail(), prj.getFullName(), prj.getPhoneNumber(),
+        prj.getImageUrl(), Gender.of(prj.getGender()), prj.getRoles());
   }
 
   public static BasicUserInfo toBasicUserInfo(User entity) {
     if (entity == null) {
       return null;
     }
-    return new BasicUserInfo(
-        entity.getId(),
-        entity.getEmail(),
-        entity.getFullName(),
-        entity.getPhoneNumber(),
-        entity.getImageUrl(),
-        entity.getUserProfile().getGender(),
+    return new BasicUserInfo(entity.getId(), entity.getEmail(), entity.getFullName(),
+        entity.getPhoneNumber(), entity.getImageUrl(), entity.getUserProfile().getGender(),
         List.of(entity.getRole().name()));
   }
 }

@@ -29,7 +29,9 @@ public class Notification {
   private String body;
 
   @Enumerated(EnumType.ORDINAL)
-  private Type type;
+  private ObjectType objectType;
+
+  private Long objectId;
 
   @Builder.Default
   @Column(columnDefinition = "BIT", length = 1, nullable = false)
@@ -45,13 +47,13 @@ public class Notification {
   @Temporal(TemporalType.TIMESTAMP)
   private Date modifiedDate;
 
-  public enum Type {// TODO: Update notification types
+  public enum ObjectType {// TODO: Update notification types
     NOTIFICATION,
+    MENTOR_VERIFICATION,
     MENTORSHIP_REQUEST,
-    POST,
-    FEEDBACK,
-    POST_,
-    QUIZ,
     SCHEDULE,
+    FEEDBACK,
+    POST,
+    QUIZ,
   }
 }

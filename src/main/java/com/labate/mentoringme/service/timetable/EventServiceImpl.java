@@ -4,6 +4,7 @@ import com.labate.mentoringme.exception.http.CannotCreateEventsException;
 import com.labate.mentoringme.model.Event;
 import com.labate.mentoringme.model.Shift;
 import com.labate.mentoringme.repository.EventRepository;
+import com.labate.mentoringme.service.cronjob.TaskSchedulingService;
 import com.labate.mentoringme.util.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @Service
 public class EventServiceImpl implements EventService {
   private final EventRepository eventRepository;
+  private final TaskSchedulingService taskSchedulingService;
 
   @Override
   public List<Event.Basic> createBasicEvents(Date fromDate, Date toDate, List<Shift> shifts) {
@@ -50,9 +52,11 @@ public class EventServiceImpl implements EventService {
   public void save(List<Event> events) {}
 
   @Override
-  public void saveAll(List<Event> events) {
+  public List<Event> saveAll(List<Event> events) {
     try {
-      eventRepository.saveAll(events);
+      var savedEvents = eventRepository.saveAll(events);
+      taskSchedulingService.scheduleTasks(savedEvents);
+      return savedEvents;
     } catch (Exception e) {
       throw new CannotCreateEventsException("duplicate events");
     }
@@ -66,6 +70,7 @@ public class EventServiceImpl implements EventService {
   @Override
   public void deleteById(Long eventId) {
     eventRepository.deleteById(eventId);
+    taskSchedulingService.removeScheduledTask(eventId);
   }
 
   @Override
@@ -76,6 +81,13 @@ public class EventServiceImpl implements EventService {
   @Override
   public void deleteByShiftId(Long shiftId) {
     eventRepository.deleteByShiftId(shiftId);
+    var ids = eventRepository.findIdsByShiftId(shiftId);
+    taskSchedulingService.removeScheduledTasks(ids);
+  }
+
+  @Override
+  public List<Event> getAllActiveEventsFrom(Date now) {
+    return eventRepository.findAllByStartTimeAfter(now);
   }
 
   @Override

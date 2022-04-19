@@ -9,6 +9,7 @@ import com.labate.mentoringme.exception.CommentNotFoundException;
 import com.labate.mentoringme.exception.PostNotFoundException;
 import com.labate.mentoringme.model.Comment;
 import com.labate.mentoringme.repository.CommentRepository;
+import com.labate.mentoringme.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
@@ -22,6 +23,7 @@ public class CommentServiceImpl implements CommentService {
   public static final int DECREASE_NUMBER = -1;
   private final PostService postService;
   private final CommentRepository commentRepository;
+  private final NotificationService notificationService;
 
   @Transactional
   @Override
@@ -30,14 +32,19 @@ public class CommentServiceImpl implements CommentService {
     if (post == null) {
       throw new PostNotFoundException("id: " + postId);
     }
+    Long commenterId = localUser.getUserId();
     var comment =
         Comment.builder()
             .postId(postId)
             .content(request.getContent())
-            .createdBy(localUser.getUserId())
+            .createdBy(commenterId)
             .build();
     Comment newComment = save(comment);
     postService.updateCommentCount(postId, INCREASE_NUMBER);
+
+    if (!post.getCreatedBy().equals(comment.getCreatedBy())) {
+      notificationService.sendCommentNotification(newComment, post);
+    }
     return newComment;
   }
 

@@ -17,6 +17,7 @@ import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.model.UserLikePost;
 import com.labate.mentoringme.repository.PostRepository;
 import com.labate.mentoringme.repository.UserLikePostRepository;
+import com.labate.mentoringme.service.notification.NotificationService;
 import com.labate.mentoringme.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,7 @@ public class PostServiceImpl implements PostService {
   private final PostRepository postRepository;
   private final UserLikePostRepository userLikePostRepository;
   private final UserService userService;
+  private final NotificationService notificationService;
 
   @Override
   public Post savePost(Post post) {
@@ -86,6 +88,9 @@ public class PostServiceImpl implements PostService {
       var newUserLikePost = new UserLikePost();
       newUserLikePost.setKey(userLikePostKey);
       userLikePostRepository.save(newUserLikePost);
+      if (!post.getCreatedBy().equals(userId)) {
+        notificationService.sendLikePostNotification(post, userId);
+      }
     } else {
       if (userLikePost.getIsDeleted()) {
         userLikePost.setIsDeleted(false);
@@ -164,7 +169,7 @@ public class PostServiceImpl implements PostService {
     var dto = PostMapper.toDto(post);
     if (localUser != null) {
       var key = new UserLikePost.Key(postId, localUser.getUserId());
-      var isLiked = userLikePostRepository.existsByKey(key);
+      var isLiked = userLikePostRepository.existsByKeyAndIsDeletedIsFalse(key);
       dto.setIsLiked(isLiked);
     }
     return dto;
@@ -199,7 +204,8 @@ public class PostServiceImpl implements PostService {
         postIds.stream().map(id -> new UserLikePost.Key(id, userId)).collect(Collectors.toSet());
     var userLikePosts = userLikePostRepository.findAllByKeyIn(keys);
     var map =
-        userLikePosts.stream().collect(Collectors.toMap(u -> u.getKey().getPostId(), u -> true));
+        userLikePosts.stream()
+            .collect(Collectors.toMap(u -> u.getKey().getPostId(), u -> !u.getIsDeleted()));
     dtos.forEach(
         dto -> {
           var isLiked = map.get(dto.getId());

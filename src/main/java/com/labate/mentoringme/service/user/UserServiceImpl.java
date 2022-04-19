@@ -28,6 +28,7 @@ import com.labate.mentoringme.service.gcp.GoogleCloudFileUpload;
 import com.labate.mentoringme.service.timetable.TimetableService;
 import com.labate.mentoringme.service.userprofile.UserProfileService;
 import io.getstream.chat.java.exceptions.StreamException;
+import io.getstream.chat.java.models.User.UserRequestObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +41,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import io.getstream.chat.java.models.User.UserRequestObject;
 
 import java.io.IOException;
 import java.util.*;
@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
     return user;
   }
 
-  private void syncUserToStream(User user){
+  private void syncUserToStream(User user) {
     try {
       io.getstream.chat.java.models.User.upsert()
               .user(
@@ -100,6 +100,7 @@ public class UserServiceImpl implements UserService {
       log.error(e.getMessage());
     }
   }
+
   @Override
   public boolean existsByEmail(String email) {
     return userRepository.existsByEmail(email);
@@ -132,6 +133,9 @@ public class UserServiceImpl implements UserService {
   public User findUserByEmail(final String email) {
     // Stupid way :)))
     var userId = userCache.findUserIdByEmail(email);
+    if (userId == null) {
+      return null;
+    }
     return userCache.findUserById(userId).orElse(null);
   }
 
@@ -187,11 +191,13 @@ public class UserServiceImpl implements UserService {
       // active/inactive in stream chat
       try {
         if (enable) {
-          io.getstream.chat.java.models.User.delete(userId.toString()).markMessagesDeleted(true)
-                  .request();
+          io.getstream.chat.java.models.User.delete(userId.toString())
+              .markMessagesDeleted(true)
+              .request();
         } else {
-          io.getstream.chat.java.models.User.delete(userId.toString()).markMessagesDeleted(false)
-                  .request();
+          io.getstream.chat.java.models.User.delete(userId.toString())
+              .markMessagesDeleted(false)
+              .request();
         }
       } catch (Exception ex) {
         log.error("Request stream update fail!");

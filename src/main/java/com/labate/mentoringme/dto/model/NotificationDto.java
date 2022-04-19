@@ -13,7 +13,8 @@ public class NotificationDto {
   private String title;
   private String body;
   private boolean isRead;
-  private Notification.Type type;
+  private Notification.ObjectType objectType;
+  private Long objectId;
 
   @JsonFormat(
       shape = JsonFormat.Shape.STRING,

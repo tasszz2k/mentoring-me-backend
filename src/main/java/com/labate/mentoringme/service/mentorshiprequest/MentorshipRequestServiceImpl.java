@@ -16,6 +16,7 @@ import com.labate.mentoringme.model.Mentorship;
 import com.labate.mentoringme.model.MentorshipRequest;
 import com.labate.mentoringme.repository.MentorshipRequestRepository;
 import com.labate.mentoringme.repository.RoleRepository;
+import com.labate.mentoringme.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
@@ -34,6 +35,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
   private final MentorshipRequestRepository mentorshipRequestRepository;
   private final MentorshipService mentorshipService;
   private final RoleRepository roleRepository;
+  private final NotificationService notificationService;
 
   @Override
   public void bookMentor(Long mentorshipId, Long studentId) {
@@ -106,7 +108,10 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
   public MentorshipRequest createNewMentorshipRequest(CreateMentorshipRequestRq request) {
     var entity = MentorshipRequestMapper.toEntity(request);
     entity.setId(null);
-    return save(entity);
+    var savedEntity = save(entity);
+
+    notificationService.sendMentorshipRequestNotification(savedEntity);
+    return savedEntity;
   }
 
   @Transactional
@@ -136,6 +141,8 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
       var mentorId = localUser.getUserId();
       mentorshipService.bookMentor(mentorshipRequest, mentorId);
     }
+
+    notificationService.sendMentorshipRequestNotification(mentorshipRequest);
   }
 
   private boolean canRequest(Mentorship mentorship) {

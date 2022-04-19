@@ -81,7 +81,9 @@ public class UserServiceImpl implements UserService {
     Long userId = user.getId();
     timetableService.createNewTimetable(
         userId, String.format("Thời khóa biểu của %s", user.getFullName()));
-    mentorVerificationService.registerMentor(userId, null);
+    if (UserRole.ROLE_MENTOR.equals(signUpRequest.getRole())) {
+      mentorVerificationService.registerMentor(userId, null);
+    }
     syncUserToStream(user);
     return user;
   }
@@ -89,13 +91,13 @@ public class UserServiceImpl implements UserService {
   private void syncUserToStream(User user) {
     try {
       io.getstream.chat.java.models.User.upsert()
-              .user(
-                     UserRequestObject.builder()
-                              .id("labate" + user.getId())
-                              .role("admin")
-                              .name(user.getFullName())
-                              .build())
-              .request();
+          .user(
+              UserRequestObject.builder()
+                  .id("labate" + user.getId())
+                  .role("admin")
+                  .name(user.getFullName())
+                  .build())
+          .request();
     } catch (StreamException e) {
       log.error(e.getMessage());
     }

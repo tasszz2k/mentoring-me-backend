@@ -48,6 +48,7 @@ import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfoFactory;
 import com.labate.mentoringme.service.gcp.GoogleCloudFileUpload;
 import com.labate.mentoringme.service.timetable.TimetableService;
 import com.labate.mentoringme.service.userprofile.UserProfileService;
+import com.labate.mentoringme.util.ComeTChatUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -65,6 +66,7 @@ public class UserServiceImpl implements UserService {
   private final MentorVerificationService mentorVerificationService;
   private final UserCache userCache;
   private final FavoriteMentorRepository favoriteMentorRepository;
+  private final ComeTChatUtils comeTChatUtils;
 
   @Value("${labate.security.default-password}")
   private String defaultPassword;
@@ -82,6 +84,7 @@ public class UserServiceImpl implements UserService {
     }
 
     user = save(user);
+    comeTChatUtils.addUserToDashboard(user);
     userRepository.flush();
     Long userId = user.getId();
     timetableService.createNewTimetable(userId,
@@ -171,6 +174,11 @@ public class UserServiceImpl implements UserService {
     if (user.isEnabled() != enable) {
       user.setEnabled(enable);
       save(user);
+      if (enable) {
+        comeTChatUtils.activeUser(user.getId());
+      } else {
+        comeTChatUtils.inactiveUser(user.getId());
+      }
     }
   }
 
@@ -192,6 +200,7 @@ public class UserServiceImpl implements UserService {
     String imageUrl = googleCloudFileUpload.uploadImage(image);
     user.setImageUrl(imageUrl);
     save(user);
+    comeTChatUtils.uploadAvatarUser(user.getId(), imageUrl);
     return imageUrl;
   }
 

@@ -10,6 +10,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.labate.mentoringme.model.User;
 
 @Component
@@ -24,6 +25,9 @@ public class ComeTChatUtils {
 
   private static final String INACTIVE_USER_COMETCHAT_URL =
       "https://%s.api-%s.cometchat.io/v3/users";
+
+  private static final String CREATE_USER_TOKEN_COMETCHAT_URL =
+      "https://%s.api-%s.cometchat.io/v3/users/%s/auth_tokens";
 
   private static RestTemplate restTemplate = new RestTemplate();
 
@@ -61,7 +65,7 @@ public class ComeTChatUtils {
     String[] uidsToActivate = new String[1];
     uidsToActivate[0] = userId.toString();
     Map<String, Object> map = new HashMap<>();
-    map.put("uidsToActivate", map);
+    map.put("uidsToActivate", uidsToActivate);
 
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
 
@@ -69,7 +73,7 @@ public class ComeTChatUtils {
     restTemplate.put(url, entity);
   }
 
-  public void inactiveUser(Long userId) {
+  public void inActiveUser(Long userId) {
     var headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -78,7 +82,7 @@ public class ComeTChatUtils {
     String[] uidsToDeactivate = new String[1];
     uidsToDeactivate[0] = userId.toString();
     Map<String, Object> map = new HashMap<>();
-    map.put("uidsToDeactivate", map);
+    map.put("uidsToDeactivate", uidsToDeactivate);
 
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
 
@@ -97,8 +101,21 @@ public class ComeTChatUtils {
 
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
 
-    var url = String.format(UPDATE_USER_COMETCHAT_URL, appKey, region, userId);
+    var url = String.format(UPDATE_USER_COMETCHAT_URL, appKey, region);
     restTemplate.put(url, entity, userId);
+  }
+
+  public String getToken(Long userId) {
+    var headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+    headers.add("apiKey", apiKey);
+
+    var url = String.format(CREATE_USER_TOKEN_COMETCHAT_URL, appKey, region, userId);
+    HttpEntity<Map<String, Object>> entity = new HttpEntity<>(headers);
+
+    var response = restTemplate.postForEntity(url, entity, ObjectNode.class);
+    return response.getBody().path("data").path("authToken").asText();
   }
 
 }

@@ -19,6 +19,7 @@ import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.service.address.AddressService;
 import com.labate.mentoringme.service.category.CategoryService;
 import com.labate.mentoringme.service.user.LocalUserDetailService;
+import com.labate.mentoringme.util.ComeTChatUtils;
 
 @Component
 public class UserMapper {
@@ -26,13 +27,15 @@ public class UserMapper {
   private static AddressService addressService;
   private static CategoryService categoryService;
   private static LocalUserDetailService localUserDetailService;
+  private static ComeTChatUtils comeTChatUtils;
 
   @Autowired
   public UserMapper(AddressService addressService, CategoryService categoryService,
-      LocalUserDetailService localUserDetailService) {
+      LocalUserDetailService localUserDetailService, ComeTChatUtils comeTChatUtils) {
     UserMapper.addressService = addressService;
     UserMapper.categoryService = categoryService;
     UserMapper.localUserDetailService = localUserDetailService;
+    UserMapper.comeTChatUtils = comeTChatUtils;
   }
 
   public static SocialProvider toSocialProvider(String providerId) {
@@ -71,7 +74,8 @@ public class UserMapper {
         .phoneNumber(user.getPhoneNumber()).imageUrl(user.getImageUrl()).enabled(user.isEnabled())
         .roles(roles).verifiedEmail(user.isVerifiedEmail())
         .verifiedPhoneNumber(user.isVerifiedPhoneNumber()).provider(user.getProvider())
-        .status(user.getStatus()).gender(profile.getGender()).dob(dob).build();
+        .status(user.getStatus()).gender(profile.getGender()).dob(dob)
+        .authChatToken(comeTChatUtils.getToken(user.getId())).build();
   }
 
   public static UserDetails buildUserDetails(LocalUser localUser) {

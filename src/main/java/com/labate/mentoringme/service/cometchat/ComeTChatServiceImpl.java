@@ -126,7 +126,9 @@ public class ComeTChatServiceImpl implements ComeTChatService {
   }
 
   private void addComeTChat(Long userId, String token) {
-    var comeTChat = ComeTChatToken.builder().userId(userId).token(token).build();
+    var comeTChat = new ComeTChatToken();
+    comeTChat.setUserId(userId);
+    comeTChat.setToken(token);
     comeTChatTokenRepository.save(comeTChat);
   }
 

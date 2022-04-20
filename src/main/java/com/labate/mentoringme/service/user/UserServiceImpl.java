@@ -177,7 +177,7 @@ public class UserServiceImpl implements UserService {
       if (enable) {
         comeTChatUtils.activeUser(user.getId());
       } else {
-        comeTChatUtils.inactiveUser(user.getId());
+        comeTChatUtils.inActiveUser(user.getId());
       }
     }
   }

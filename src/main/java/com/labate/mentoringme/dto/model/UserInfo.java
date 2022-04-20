@@ -8,11 +8,13 @@ import com.labate.mentoringme.constant.Gender;
 import com.labate.mentoringme.constant.MentorStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 /** Use @AllArgsConstructor and private final to mimic the behaviour of @Value */
 @SuperBuilder
 @Getter
+@Setter
 @AllArgsConstructor
 public class UserInfo {
   private final Long id;
@@ -33,6 +35,4 @@ public class UserInfo {
   private final Boolean enabled;
 
   private final List<String> roles;
-
-  private final String authChatToken;
 }

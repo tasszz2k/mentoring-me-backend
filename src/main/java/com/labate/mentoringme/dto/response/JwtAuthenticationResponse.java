@@ -6,5 +6,6 @@ import lombok.Value;
 @Value
 public class JwtAuthenticationResponse {
   String accessToken;
+  String authChatToken;
   UserInfo user;
 }

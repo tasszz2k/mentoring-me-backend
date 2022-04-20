@@ -1,5 +1,13 @@
 package com.labate.mentoringme.controller;
 
+import javax.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import com.labate.mentoringme.dto.mapper.UserMapper;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.LoginRequest;
@@ -9,18 +17,10 @@ import com.labate.mentoringme.dto.response.JwtAuthenticationResponse;
 import com.labate.mentoringme.exception.LoginFailBlockAccountException;
 import com.labate.mentoringme.security.jwt.TokenProvider;
 import com.labate.mentoringme.security.oauth2.AuthService;
+import com.labate.mentoringme.service.cometchat.ComeTChatService;
 import com.labate.mentoringme.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,6 +31,7 @@ public class AuthController {
   private final UserService userService;
   private final TokenProvider tokenProvider;
   private final AuthService authService;
+  private final ComeTChatService comeTChatService;
 
   @PostMapping("/signin")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -52,7 +53,8 @@ public class AuthController {
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String jwt = tokenProvider.createToken(authentication);
     LocalUser localUser = (LocalUser) authentication.getPrincipal();
-    return BaseResponseEntity.ok(
-        new JwtAuthenticationResponse(jwt, UserMapper.buildUserInfo(localUser)));
+    var authChatToken = comeTChatService.getToken(localUser.getUserId());
+    return BaseResponseEntity
+        .ok(new JwtAuthenticationResponse(jwt, authChatToken, UserMapper.buildUserInfo(localUser)));
   }
 }

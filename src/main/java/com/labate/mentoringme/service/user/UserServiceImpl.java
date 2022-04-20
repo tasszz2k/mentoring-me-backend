@@ -24,10 +24,10 @@ import com.labate.mentoringme.repository.RoleRepository;
 import com.labate.mentoringme.repository.UserRepository;
 import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfo;
 import com.labate.mentoringme.security.oauth2.user.OAuth2UserInfoFactory;
+import com.labate.mentoringme.service.cometchat.ComeTChatService;
 import com.labate.mentoringme.service.gcp.GoogleCloudFileUpload;
 import com.labate.mentoringme.service.timetable.TimetableService;
 import com.labate.mentoringme.service.userprofile.UserProfileService;
-import com.labate.mentoringme.util.ComeTChatUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
   private final MentorVerificationService mentorVerificationService;
   private final UserCache userCache;
   private final FavoriteMentorRepository favoriteMentorRepository;
-  private final ComeTChatUtils comeTChatUtils;
+  private final ComeTChatService comeTChatService;
 
   @Value("${labate.security.default-password}")
   private String defaultPassword;
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
     }
 
     user = save(user);
-    comeTChatUtils.addUserToDashboard(user);
+    comeTChatService.addUserToDashboard(user);
     userRepository.flush();
     Long userId = user.getId();
     timetableService.createNewTimetable(
@@ -177,9 +177,9 @@ public class UserServiceImpl implements UserService {
       user.setEnabled(enable);
       save(user);
       if (enable) {
-        comeTChatUtils.activeUser(user.getId());
+        comeTChatService.activeUser(user.getId());
       } else {
-        comeTChatUtils.inActiveUser(user.getId());
+        comeTChatService.inActiveUser(user.getId());
       }
     }
   }
@@ -202,7 +202,7 @@ public class UserServiceImpl implements UserService {
     String imageUrl = googleCloudFileUpload.uploadImage(image);
     user.setImageUrl(imageUrl);
     save(user);
-    comeTChatUtils.uploadAvatarUser(user.getId(), imageUrl);
+    comeTChatService.uploadAvatarUser(user.getId(), imageUrl);
     return imageUrl;
   }
 

@@ -1,35 +1,30 @@
-package com.labate.mentoringme.util;
+package com.labate.mentoringme.service.cometchat;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.labate.mentoringme.constant.ComeTChatConstant;
+import com.labate.mentoringme.model.ComeTChatToken;
 import com.labate.mentoringme.model.User;
+import com.labate.mentoringme.repository.ComeTChatTokenRepository;
+import lombok.RequiredArgsConstructor;
 
-@Component
-public class ComeTChatUtils {
-
-  private static final String CREATE_USER_COMETCHAT_URL = "https://%s.api-%s.cometchat.io/v3/users";
-
-  private static final String UPDATE_USER_COMETCHAT_URL =
-      "https://%s.api-%s.cometchat.io/v3/users/{uid}";
-
-  private static final String ACTIVE_USER_COMETCHAT_URL = "https://%s.api-%s.cometchat.io/v3/users";
-
-  private static final String INACTIVE_USER_COMETCHAT_URL =
-      "https://%s.api-%s.cometchat.io/v3/users";
-
-  private static final String CREATE_USER_TOKEN_COMETCHAT_URL =
-      "https://%s.api-%s.cometchat.io/v3/users/%s/auth_tokens";
+@Service
+@RequiredArgsConstructor
+public class ComeTChatServiceImpl implements ComeTChatService {
 
   private static RestTemplate restTemplate = new RestTemplate();
+
+  private final ComeTChatTokenRepository comeTChatTokenRepository;
 
   @Value("${cometchat.app-id}")
   private String appKey;
@@ -40,6 +35,7 @@ public class ComeTChatUtils {
   @Value("${cometchat.api-key}")
   private String apiKey;
 
+  @Override
   public void addUserToDashboard(User user) {
     var headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
@@ -52,10 +48,11 @@ public class ComeTChatUtils {
 
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
 
-    var url = String.format(CREATE_USER_COMETCHAT_URL, appKey, region);
+    var url = String.format(ComeTChatConstant.CREATE_USER_COMETCHAT_URL, appKey, region);
     restTemplate.postForEntity(url, entity, Object.class);
   }
 
+  @Override
   public void activeUser(Long userId) {
     var headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
@@ -69,10 +66,11 @@ public class ComeTChatUtils {
 
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
 
-    var url = String.format(ACTIVE_USER_COMETCHAT_URL, appKey, region, userId);
+    var url = String.format(ComeTChatConstant.ACTIVE_USER_COMETCHAT_URL, appKey, region, userId);
     restTemplate.put(url, entity);
   }
 
+  @Override
   public void inActiveUser(Long userId) {
     var headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
@@ -86,10 +84,11 @@ public class ComeTChatUtils {
 
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
 
-    var url = String.format(ACTIVE_USER_COMETCHAT_URL, appKey, region, userId);
+    var url = String.format(ComeTChatConstant.INACTIVE_USER_COMETCHAT_URL, appKey, region, userId);
     restTemplate.exchange(url, HttpMethod.DELETE, entity, Object.class);
   }
 
+  @Override
   public void uploadAvatarUser(Long userId, String imgUrl) {
     var headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
@@ -101,21 +100,34 @@ public class ComeTChatUtils {
 
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
 
-    var url = String.format(UPDATE_USER_COMETCHAT_URL, appKey, region);
+    var url = String.format(ComeTChatConstant.UPDATE_USER_COMETCHAT_URL, appKey, region);
     restTemplate.put(url, entity, userId);
   }
 
+  @Override
   public String getToken(Long userId) {
-    var headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-    headers.add("apiKey", apiKey);
+    var comeTChat = comeTChatTokenRepository.findByUserId(userId);
+    if (Objects.isNull(comeTChat)) {
+      var headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_JSON);
+      headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+      headers.add("apiKey", apiKey);
 
-    var url = String.format(CREATE_USER_TOKEN_COMETCHAT_URL, appKey, region, userId);
-    HttpEntity<Map<String, Object>> entity = new HttpEntity<>(headers);
+      var url =
+          String.format(ComeTChatConstant.CREATE_USER_TOKEN_COMETCHAT_URL, appKey, region, userId);
+      HttpEntity<Map<String, Object>> entity = new HttpEntity<>(headers);
 
-    var response = restTemplate.postForEntity(url, entity, ObjectNode.class);
-    return response.getBody().path("data").path("authToken").asText();
+      var response = restTemplate.postForEntity(url, entity, ObjectNode.class);
+      var token = response.getBody().path("data").path("authToken").asText();
+      addComeTChat(userId, token);
+      return token;
+    }
+    return comeTChat.getToken();
+  }
+
+  private void addComeTChat(Long userId, String token) {
+    var comeTChat = ComeTChatToken.builder().userId(userId).token(token).build();
+    comeTChatTokenRepository.save(comeTChat);
   }
 
 }

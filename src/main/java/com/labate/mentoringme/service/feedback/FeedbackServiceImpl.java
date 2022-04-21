@@ -13,9 +13,12 @@ import com.labate.mentoringme.dto.request.CreateFeedbackRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.response.FeedbackOverviewResponse;
 import com.labate.mentoringme.dto.response.FeedbackResponse;
+import com.labate.mentoringme.exception.CannotCreateFeedbackException;
 import com.labate.mentoringme.exception.UserAlreadyFeedbackMentorException;
 import com.labate.mentoringme.model.Feedback;
+import com.labate.mentoringme.model.Mentorship.Status;
 import com.labate.mentoringme.repository.FeedbackRepository;
+import com.labate.mentoringme.repository.MentorshipRepository;
 import com.labate.mentoringme.repository.ProfileRepository;
 import com.labate.mentoringme.service.notification.NotificationService;
 import com.labate.mentoringme.util.ObjectMapperUtils;
@@ -28,7 +31,10 @@ public class FeedbackServiceImpl implements FeedbackService {
   private final FeedbackRepository feedbackRepository;
 
   private final ProfileRepository profileRepository;
+
   private final NotificationService notificationService;
+
+  private final MentorshipRepository mentorshipRepository;
 
   private ModelMapper modelMapper = new ModelMapper();
 
@@ -49,11 +55,16 @@ public class FeedbackServiceImpl implements FeedbackService {
   @Transactional
   @Override
   public Feedback createFeedback(CreateFeedbackRequest createFeedbackRequest, LocalUser localUser) {
+    if (!isStudied(createFeedbackRequest.getToUserId(), localUser.getUserId())) {
+      throw new CannotCreateFeedbackException("UserId: " + localUser.getUserId());
+    }
+
     var oldFeedback = feedbackRepository
         .findByToUserIdAndFromUserId(createFeedbackRequest.getToUserId(), localUser.getUserId());
     if (oldFeedback != null) {
       throw new UserAlreadyFeedbackMentorException("UserId: " + localUser.getUserId());
     }
+
     var feedback = modelMapper.map(createFeedbackRequest, Feedback.class);
     feedback.setFromUserId(localUser.getUserId());
     var userProfileOpt = profileRepository.findById(createFeedbackRequest.getToUserId());
@@ -75,6 +86,14 @@ public class FeedbackServiceImpl implements FeedbackService {
     notificationService.sendFeedbackNotification(savedFeedback);
 
     return savedFeedback;
+  }
+
+  private boolean isStudied(Long mentorId, Long studentId) {
+    var mentorship = mentorshipRepository.findByMentorIdAndCreatedBy(mentorId, studentId);
+    if (!Objects.isNull(mentorship) && mentorship.getStatus() == Status.COMPLETED) {
+      return true;
+    }
+    return false;
   }
 
   @Override

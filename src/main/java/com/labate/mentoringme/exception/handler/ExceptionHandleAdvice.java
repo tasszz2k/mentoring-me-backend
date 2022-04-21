@@ -687,4 +687,19 @@ public class ExceptionHandleAdvice {
                 Collections.singleton(
                     FieldErrorResponse.builder().message(e.getMessage()).build())));
   }
+  
+  @ExceptionHandler(CannotCreateFeedbackException.class)
+  public ResponseEntity<ErrorResponse<Void>> handleCannotCreateFeedbackException(
+      CannotCreateFeedbackException e, HttpServletRequest request) {
+    ResponseError error = BusinessError.USER_CAN_NOT_CREATE_FEEDBACK;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            new InvalidInputResponse(
+                error.getCode(),
+                error.getMessage(),
+                error.getName(),
+                Collections.singleton(
+                    FieldErrorResponse.builder().message(e.getMessage()).build())));
+  }
 }

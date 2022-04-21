@@ -1,6 +1,5 @@
 package com.labate.mentoringme.service.feedback;
 
-import com.labate.mentoringme.config.CurrentUser;
 import org.springframework.data.domain.Page;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreateFeedbackRequest;

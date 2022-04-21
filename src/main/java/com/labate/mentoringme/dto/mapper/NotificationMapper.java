@@ -7,6 +7,7 @@ import com.labate.mentoringme.model.UserNotification;
 import com.labate.mentoringme.util.ObjectMapperUtils;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class NotificationMapper {
@@ -25,10 +26,14 @@ public class NotificationMapper {
             .map(
                 n -> {
                   var notification = notificationMap.get(n.getNotificationId());
+                  if (notification == null) {
+                    return null;
+                  }
                   var dto = ObjectMapperUtils.map(notification, NotificationDto.class);
                   dto.setRead(n.getIsRead());
                   return dto;
                 })
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
     return new GetNotificationsResponse(notificationDtos, unreadNotificationCounter);
   }

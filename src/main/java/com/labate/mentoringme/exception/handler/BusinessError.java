@@ -5,10 +5,10 @@ import lombok.Getter;
 
 @Getter
 public enum BusinessError implements ResponseError {
-  USER_ALREADY_FEEDBACK_MENTOR(500001, "User already feedback mentor"), USER_ALREADY_LIKE_MENTOR(
-      500002, "User already like mentor"), USER_ALREADY_LIKE_QUIZ(500003,
-          "User already like quiz"), USER_CAN_NOT_CREATE_FEEDBACK(500004,
-              "Only students who have studied can give feedback");
+  USER_ALREADY_FEEDBACK_MENTOR(500001, "User already feedback mentor"),
+  USER_ALREADY_LIKE_MENTOR(500002, "User already like mentor"),
+  USER_ALREADY_LIKE_QUIZ(500003, "User already like quiz"),
+  USER_CAN_NOT_CREATE_FEEDBACK(500004, "Only students who have studied can give feedback");
 
   private final Integer code;
   private final String message;
@@ -36,5 +36,4 @@ public enum BusinessError implements ResponseError {
   public Integer getCode() {
     return code;
   }
-
 }

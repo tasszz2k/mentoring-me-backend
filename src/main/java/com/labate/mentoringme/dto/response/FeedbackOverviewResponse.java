@@ -1,5 +1,6 @@
 package com.labate.mentoringme.dto.response;
 
+import com.labate.mentoringme.dto.model.FeedbackDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import lombok.Setter;
 @Builder
 public class FeedbackOverviewResponse {
 
-  private FeedbackResponse myFeedback;
+  private FeedbackDto myFeedback;
   private Double overallRating;
   private Integer numberOfFeedback;
   private Double proportionOfOneRating;

@@ -16,8 +16,6 @@ import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreateFeedbackRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.response.BaseResponseEntity;
-import com.labate.mentoringme.dto.response.PageResponse;
-import com.labate.mentoringme.dto.response.Paging;
 import com.labate.mentoringme.service.feedback.FeedbackService;
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +33,7 @@ public class FeedbackController {
   public ResponseEntity<?> getListFeedback(@Valid PageCriteria pageCriteria, Long toUserId,
       @CurrentUser LocalUser localUser) {
     pageCriteria.setSort(List.of("-created"));
-    var pageData = feedbackService.getByUserId(toUserId, pageCriteria, localUser);
-    var paging = Paging.builder().limit(pageCriteria.getLimit()).page(pageCriteria.getPage())
-        .total(pageData.getTotalElements()).build();
-    var pageResponse = new PageResponse(pageData.getContent(), paging);
+    var pageResponse = feedbackService.getByUserId(toUserId, pageCriteria, localUser);
     return BaseResponseEntity.ok(pageResponse);
   }
 

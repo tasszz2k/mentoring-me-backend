@@ -4,15 +4,17 @@ import java.text.DecimalFormat;
 import java.util.Objects;
 import javax.transaction.Transactional;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import com.labate.mentoringme.constant.UserRole;
 import com.labate.mentoringme.dto.mapper.PageCriteriaPageableMapper;
+import com.labate.mentoringme.dto.model.FeedbackDto;
 import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.CreateFeedbackRequest;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.response.FeedbackOverviewResponse;
 import com.labate.mentoringme.dto.response.FeedbackResponse;
+import com.labate.mentoringme.dto.response.PageResponse;
+import com.labate.mentoringme.dto.response.Paging;
 import com.labate.mentoringme.exception.CannotCreateFeedbackException;
 import com.labate.mentoringme.exception.UserAlreadyFeedbackMentorException;
 import com.labate.mentoringme.model.Feedback;
@@ -39,17 +41,24 @@ public class FeedbackServiceImpl implements FeedbackService {
   private ModelMapper modelMapper = new ModelMapper();
 
   @Override
-  public Page<FeedbackResponse> getByUserId(Long toUserId, PageCriteria pageCriteria,
-      LocalUser localUser) {
+  public PageResponse getByUserId(Long toUserId, PageCriteria pageCriteria, LocalUser localUser) {
     var pageable = PageCriteriaPageableMapper.toPageable(pageCriteria);
     Long fromUserId = null;
+    Boolean isStudied = false;
     if (!Objects.isNull(localUser)) {
       fromUserId = localUser.getUserId();
+      isStudied = isStudied(toUserId, fromUserId);
     }
-    return feedbackRepository.findByToUserId(toUserId, fromUserId, pageable).map(ele -> {
-      var feedbackResponse = ObjectMapperUtils.map(ele, FeedbackResponse.class);
+    var feedbacks = feedbackRepository.findByToUserId(toUserId, fromUserId, pageable).map(ele -> {
+      var feedbackResponse = ObjectMapperUtils.map(ele, FeedbackDto.class);
       return feedbackResponse;
     });
+
+    var paging = Paging.builder().limit(pageCriteria.getLimit()).page(pageCriteria.getPage())
+        .total(feedbacks.getTotalElements()).build();
+    var feedbackResponse = new FeedbackResponse(feedbacks.getContent(), isStudied);
+    var pageResponse = new PageResponse(feedbackResponse, paging);
+    return pageResponse;
   }
 
   @Transactional
@@ -148,7 +157,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         var user = localUser.getUser();
         var feedback = feedbackRepository.findByToUserIdAndFromUserId(toUserId, user.getId());
         if (feedback != null) {
-          var feedbackResponse = modelMapper.map(feedback, FeedbackResponse.class);
+          var feedbackResponse = modelMapper.map(feedback, FeedbackDto.class);
           feedbackResponse.setFullName(user.getFullName());
           feedbackResponse.setImageUrl(user.getImageUrl());
           feedbackOverviewResponse.setMyFeedback(feedbackResponse);

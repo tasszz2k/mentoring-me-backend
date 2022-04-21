@@ -1,21 +1,15 @@
 package com.labate.mentoringme.dto.response;
 
-import java.util.Date;
-import org.springframework.format.annotation.DateTimeFormat;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.List;
+import com.labate.mentoringme.dto.model.FeedbackDto;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class FeedbackResponse {
-  private String toUserId;
-  private String fullName;
-  private String imageUrl;
-  private Integer rating;
-  private String comment;
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss",
-      timezone = "Asia/Bangkok")
-  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-  private Date created;
+  private List<FeedbackDto> feedbacks;
+  private Boolean isStudied;
 }

@@ -7,6 +7,7 @@ import com.labate.mentoringme.dto.model.QuizDetailDto;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.CreateQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.FindQuizRequest;
+import com.labate.mentoringme.dto.request.quiz.ImportQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.ResultQuizCheckingRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizDetailRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizOverviewRequest;
@@ -44,4 +45,7 @@ public interface QuizService {
   void publishQuiz(Long quizId);
 
   Optional<Quiz> findById(Long id);
+
+  QuizResponse importQuiz(ImportQuizRequest importQuizRequest, LocalUser localUser)
+      throws Exception;
 }

@@ -18,6 +18,7 @@ import com.labate.mentoringme.dto.model.LocalUser;
 import com.labate.mentoringme.dto.request.PageCriteria;
 import com.labate.mentoringme.dto.request.quiz.CreateQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.FindQuizRequest;
+import com.labate.mentoringme.dto.request.quiz.ImportQuizRequest;
 import com.labate.mentoringme.dto.request.quiz.ResultQuizCheckingRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizDetailRequest;
 import com.labate.mentoringme.dto.request.quiz.UpdateQuizOverviewRequest;
@@ -150,5 +151,12 @@ public class QuizController {
   public ResponseEntity<?> publishQuiz(@PathVariable Long quizId) {
     quizService.publishQuiz(quizId);
     return BaseResponseEntity.ok("Publish quiz successfully");
+  }
+
+  @PostMapping("/imports")
+  public ResponseEntity<?> importQuiz(ImportQuizRequest importQuizRequest,
+      @CurrentUser LocalUser localUser) throws Exception {
+    var quiz = quizService.importQuiz(importQuizRequest, localUser);
+    return BaseResponseEntity.ok(quiz);
   }
 }

@@ -19,6 +19,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,6 +33,7 @@ import lombok.Setter;
 @Table(name = "answers")
 @SQLDelete(sql = "update answers set is_deleted = true where id=?")
 @Where(clause = "is_deleted = false")
+@Builder
 public class Answer {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

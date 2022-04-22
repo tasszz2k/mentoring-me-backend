@@ -702,4 +702,34 @@ public class ExceptionHandleAdvice {
                 Collections.singleton(
                     FieldErrorResponse.builder().message(e.getMessage()).build())));
   }
+  
+  @ExceptionHandler(InvalidCategoryException.class)
+  public ResponseEntity<ErrorResponse<Void>> handleInvalidCategoryException(
+      InvalidCategoryException e, HttpServletRequest request) {
+    ResponseError error = InvalidInputError.INVALID_CATEGORY_FORMAT;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            new InvalidInputResponse(
+                error.getCode(),
+                error.getMessage(),
+                error.getName(),
+                Collections.singleton(
+                    FieldErrorResponse.builder().message(e.getMessage()).build())));
+  }
+  
+  @ExceptionHandler(InvalidExcelTemplateException.class)
+  public ResponseEntity<ErrorResponse<Void>> handlenvalidExcelTemplateException(
+      InvalidExcelTemplateException e, HttpServletRequest request) {
+    ResponseError error = InvalidInputError.INVALID_EXCEL_TEMPLATE_FORMAT;
+    log.error("Failed to handle request " + request.getRequestURI() + ": " + error.getMessage(), e);
+    return ResponseEntity.status(error.getStatus())
+        .body(
+            new InvalidInputResponse(
+                error.getCode(),
+                error.getMessage(),
+                error.getName(),
+                Collections.singleton(
+                    FieldErrorResponse.builder().message(e.getMessage()).build())));
+  }
 }

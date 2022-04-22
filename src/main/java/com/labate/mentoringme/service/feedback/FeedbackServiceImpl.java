@@ -18,6 +18,7 @@ import com.labate.mentoringme.dto.response.Paging;
 import com.labate.mentoringme.exception.CannotCreateFeedbackException;
 import com.labate.mentoringme.exception.UserAlreadyFeedbackMentorException;
 import com.labate.mentoringme.model.Feedback;
+import com.labate.mentoringme.model.Mentorship;
 import com.labate.mentoringme.model.Mentorship.Status;
 import com.labate.mentoringme.repository.FeedbackRepository;
 import com.labate.mentoringme.repository.MentorshipRepository;
@@ -98,9 +99,13 @@ public class FeedbackServiceImpl implements FeedbackService {
   }
 
   private boolean isStudied(Long mentorId, Long studentId) {
-    var mentorship = mentorshipRepository.findByMentorIdAndCreatedBy(mentorId, studentId);
-    if (!Objects.isNull(mentorship) && mentorship.getStatus() == Status.COMPLETED) {
-      return true;
+    var mentorships = mentorshipRepository.findByMentorIdAndCreatedBy(mentorId, studentId);
+    if (!Objects.isNull(mentorships)) {
+      for (Mentorship mentorship : mentorships) {
+        if (mentorship.getStatus() == Status.COMPLETED) {
+          return true;
+        }
+      }
     }
     return false;
   }

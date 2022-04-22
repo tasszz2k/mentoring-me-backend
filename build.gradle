@@ -67,6 +67,10 @@ dependencies {
     //POI
     implementation group: 'io.github.millij', name: 'poi-object-mapper', version: '1.0.0'
 
+    // UT
+    testImplementation 'org.mockito:mockito-junit-jupiter:4.5.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+
 }
 
 dependencyManagement {

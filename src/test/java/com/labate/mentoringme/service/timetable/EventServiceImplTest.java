@@ -77,4 +77,40 @@ class EventServiceImplTest {
 
   @Test
   void createEvent() {}
+
+  @Test
+  void createBasicEvents() {}
+
+  @Test
+  void createEvents() {}
+
+  @Test
+  void testCreateEvents() {}
+
+  @Test
+  void save() {}
+
+  @Test
+  void saveAll() {}
+
+  @Test
+  void findById() {}
+
+  @Test
+  void deleteById() {}
+
+  @Test
+  void findByShiftId() {}
+
+  @Test
+  void deleteByShiftId() {}
+
+  @Test
+  void getAllActiveEventsFrom() {}
+
+  @Test
+  void testCreateBasicEvents() {}
+
+  @Test
+  void testCreateEvent() {}
 }

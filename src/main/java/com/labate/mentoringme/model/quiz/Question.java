@@ -1,7 +1,7 @@
 package com.labate.mentoringme.model.quiz;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,6 +20,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,6 +34,7 @@ import lombok.Setter;
 @Table(name = "questions")
 @SQLDelete(sql = "update questions set is_deleted = true where id=?")
 @Where(clause = "is_deleted = false")
+@Builder
 public class Question {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,5 +68,5 @@ public class Question {
 
   @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true,
       fetch = FetchType.EAGER)
-  private Set<Answer> answers;
+  private List<Answer> answers;
 }

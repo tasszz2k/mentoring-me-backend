@@ -84,12 +84,12 @@ public class UserServiceImpl implements UserService {
     }
 
     user = save(user);
-    comeTChatService.addUserToDashboard(user);
     userRepository.flush();
     Long userId = user.getId();
     timetableService.createNewTimetable(userId,
         String.format("Thời khóa biểu của %s", user.getFullName()));
     mentorVerificationService.registerMentor(userId, null);
+    comeTChatService.addUserToDashboard(user);
     return user;
   }
 

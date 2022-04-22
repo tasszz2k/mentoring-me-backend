@@ -79,9 +79,12 @@ public class UserServiceImpl implements UserService {
     user = save(user);
     userRepository.flush();
     Long userId = user.getId();
-    timetableService.createNewTimetable(userId,
-        String.format("Thời khóa biểu của %s", user.getFullName()));
-    mentorVerificationService.registerMentor(userId, null);
+    timetableService.createNewTimetable(
+        userId, String.format("Thời khóa biểu của %s", user.getFullName()));
+
+    if (UserRole.ROLE_MENTOR.equals(signUpRequest.getRole())) {
+      mentorVerificationService.registerMentor(userId, null);
+    }
     comeTChatService.addUserToDashboard(user);
     return user;
   }

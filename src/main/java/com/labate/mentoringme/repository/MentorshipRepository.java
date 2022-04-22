@@ -1,5 +1,6 @@
 package com.labate.mentoringme.repository;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,6 +21,6 @@ public interface MentorshipRepository extends JpaRepository<Mentorship, Long> {
       + "and (:#{#request.createdBy} is null or c.createdBy = :#{#request.createdBy})")
   Page<Mentorship> findAllByConditions(GetMentorshipRequest request, Pageable pageable);
 
-  Mentorship findByMentorIdAndCreatedBy(@Param("MentodId") Long mentorId,
+  List<Mentorship> findByMentorIdAndCreatedBy(@Param("MentodId") Long mentorId,
       @Param("CreatedBy") Long createdBy);
 }

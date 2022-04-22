@@ -1,8 +1,8 @@
 package com.labate.mentoringme.exception.handler;
 
+import org.springframework.http.HttpStatus;
 import com.labate.mentoringme.exception.http.ResponseError;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 
 @Getter
 public enum InvalidInputError implements ResponseError {
@@ -14,10 +14,10 @@ public enum InvalidInputError implements ResponseError {
   // TENANT_NOT_EXISTED(4000006, "Tenant not existed: {0}"),
   // RESOURCE_SCOPE_NOT_FOUND(4000007, "Resource scopes not existed: {0}"),
   // NOT_SUPPORTED_PASSWORD_CHANGE(
-  //     4000008, "Only user authentication is allowed to change password: {0}"),
+  // 4000008, "Only user authentication is allowed to change password: {0}"),
   // EMAIL_NOT_EXISTED(4000009, "Email not existed: {0}"),
   // NOT_SUPPORTED_PROFILE_CHANGE(
-  //     4000010, "Only user authentication is allowed to change profile: {0}"),
+  // 4000010, "Only user authentication is allowed to change profile: {0}"),
   // NOT_SUPPORTED_LOGOUT(4000011, "Only user authentication is allowed to logout: {0}"),
   // ORG_UNIT_NOT_FOUND(4000012, "Organization unit not existed: {0}"),
   // RESOURCE_NOT_FOUND(4000013, "Resource not found: {0}"),
@@ -27,10 +27,11 @@ public enum InvalidInputError implements ResponseError {
   // LOGIN_STATUS_NOT_VALID(4000017, "login status not valid: {0}"),
   // USER_STATUS_NOT_VALID(4000018, "User status not valid: {0}"),
   // FILE_NOT_EXISTED(4000019, "File not existed: {0}"),
-  USER_AVATAR_IMAGE_UUID_FORMAT(400020, "User avatar image uuid not format"),
-  USER_ALREADY_EXISTED(400021, "User already existed: {0}"),
-  INVALID_IMAGE_FORMAT(400023, "Invalid image format: {0}"),
-  ;
+  USER_AVATAR_IMAGE_UUID_FORMAT(400020, "User avatar image uuid not format"), USER_ALREADY_EXISTED(
+      400021, "User already existed: {0}"), INVALID_IMAGE_FORMAT(400023,
+          "Invalid image format: {0}"), INVALID_CATEGORY_FORMAT(400024,
+              "Invalid category format: {0}"), INVALID_EXCEL_TEMPLATE_FORMAT(400025,
+                  "Invalid excel template format!"),;
 
   private final Integer code;
   private final String message;

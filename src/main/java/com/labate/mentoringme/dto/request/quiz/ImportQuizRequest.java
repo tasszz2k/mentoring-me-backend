@@ -1,14 +1,14 @@
 package com.labate.mentoringme.dto.request.quiz;
 
-import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import com.labate.mentoringme.dto.model.CategoryDto;
-import com.labate.mentoringme.dto.model.QuestionDto;
-import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-public class CreateQuizRequest {
+@Getter
+@Setter
+public class ImportQuizRequest {
   @NotBlank
   private String title;
   @NotNull
@@ -18,6 +18,7 @@ public class CreateQuizRequest {
   @NotNull
   private Boolean isDraft;
   @NotNull
-  private List<CategoryDto> categories;
-  private List<QuestionDto> questions;
+  private String categories;
+
+  private MultipartFile file;
 }

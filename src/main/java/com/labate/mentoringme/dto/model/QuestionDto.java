@@ -1,6 +1,6 @@
 package com.labate.mentoringme.dto.model;
 
-import java.util.List;
+import java.util.Set;
 import lombok.Data;
 
 @Data
@@ -9,5 +9,5 @@ public class QuestionDto {
   private Long quizId;
   private String question;
   private Boolean isMultipleChoice;
-  private List<AnswerDto> answers;
+  private Set<AnswerDto> answers;
 }

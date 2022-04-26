@@ -153,6 +153,9 @@ public class QuizController {
     return BaseResponseEntity.ok("Publish quiz successfully");
   }
 
+  @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true,
+      paramType = "header", dataTypeClass = String.class, example = "Bearer access_token")
+  @PreAuthorize("hasAnyRole('ADMIN', 'MODERATOR', 'MENTOR')")
   @PostMapping("/imports")
   public ResponseEntity<?> importQuiz(ImportQuizRequest importQuizRequest,
       @CurrentUser LocalUser localUser) throws Exception {

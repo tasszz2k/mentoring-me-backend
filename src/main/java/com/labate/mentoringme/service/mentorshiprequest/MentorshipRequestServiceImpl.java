@@ -19,7 +19,7 @@ import com.labate.mentoringme.repository.RoleRepository;
 import com.labate.mentoringme.service.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
@@ -37,6 +37,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
   private final RoleRepository roleRepository;
   private final NotificationService notificationService;
 
+  @CacheEvict(value = "mentorshipRequest", key = "#mentorshipId")
   @Override
   public void bookMentor(Long mentorshipId, Long studentId) {
     var mentorship = mentorshipService.findById(mentorshipId);
@@ -64,7 +65,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     }
   }
 
-  // @Cacheable("mentorshipRequest")
+  @Cacheable(value = "mentorshipRequest", key = "#id")
   @Override
   public MentorshipRequest findById(Long id) {
     return mentorshipRequestRepository.findById(id).orElse(null);
@@ -114,6 +115,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     return savedEntity;
   }
 
+  @CacheEvict(value = "mentorshipRequest", key = "#id")
   @Transactional
   @Override
   public void updateStatus(

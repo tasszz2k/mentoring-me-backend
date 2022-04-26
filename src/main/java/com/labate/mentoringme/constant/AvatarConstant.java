@@ -20,4 +20,38 @@ public enum AvatarConstant {
   public String getUrl() {
     return url;
   }
+
+  public static String getUrl(UserRole userRole, Gender gender) {
+    if (userRole == null) {
+      return null;
+    }
+    switch (userRole) {
+      case ROLE_ADMIN:
+        return ADMIN.getUrl();
+      case ROLE_MODERATOR:
+        return MODERATOR.getUrl();
+      case ROLE_MENTOR:
+        if (gender == null) {
+          return MENTOR_OTHER.getUrl();
+        }
+        switch (gender) {
+          case MALE:
+            return MENTOR_MALE.getUrl();
+          case FEMALE:
+            return MENTOR_FEMALE.getUrl();
+        }
+      case ROLE_USER:
+        if (gender == null) {
+          return USER_OTHER.getUrl();
+        }
+        switch (gender) {
+          case MALE:
+            return USER_MALE.getUrl();
+          case FEMALE:
+            return USER_FEMALE.getUrl();
+        }
+      default:
+        return null;
+    }
+  }
 }

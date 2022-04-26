@@ -166,7 +166,8 @@ public class UserServiceImpl implements UserService {
   @Transactional
   @Override
   public User save(User user) {
-    if (user.getImageUrl() == null) {
+    var imageUrl1 = user.getImageUrl();
+    if (imageUrl1 == null || AvatarConstant.DEFAULT_AVATARS.contains(imageUrl1)) {
       var imageUrl = AvatarConstant.getUrl(user.getRole(), user.getUserProfile().getGender());
       user.setImageUrl(imageUrl);
     }

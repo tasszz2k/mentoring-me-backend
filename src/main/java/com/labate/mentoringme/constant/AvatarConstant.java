@@ -3,9 +3,9 @@ package com.labate.mentoringme.constant;
 public enum AvatarConstant {
   ADMIN("https://storage.googleapis.com/labate-image/images/admin.jpg"),
   MODERATOR("https://storage.googleapis.com/labate-image/images/moderator.jpg"),
-  MENTOR_MALE("https://storage.googleapis.com/labate-image/images/mentor-male.jpg"),
-  MENTOR_FEMALE("https://storage.googleapis.com/labate-image/images/mentor-female.jpg"),
-  MENTOR_OTHER("https://storage.googleapis.com/labate-image/images/mentor-other.jpg"),
+  MENTOR_MALE("https://storage.googleapis.com/labate-image/images/mentore.jpg"),
+  MENTOR_FEMALE("https://storage.googleapis.com/labate-image/images/mentor.jpg"),
+  MENTOR_OTHER("https://storage.googleapis.com/labate-image/images/mentor.jpg"),
   USER_MALE("https://storage.googleapis.com/labate-image/images/user-male.jpg"),
   USER_FEMALE("https://storage.googleapis.com/labate-image/images/user-female.jpg"),
   USER_OTHER("https://storage.googleapis.com/labate-image/images/user-other.jpg"),

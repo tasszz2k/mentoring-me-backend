@@ -1,5 +1,6 @@
 package com.labate.mentoringme.service.user;
 
+import com.labate.mentoringme.constant.AvatarConstant;
 import com.labate.mentoringme.constant.MentorStatus;
 import com.labate.mentoringme.constant.SocialProvider;
 import com.labate.mentoringme.constant.UserRole;
@@ -165,6 +166,10 @@ public class UserServiceImpl implements UserService {
   @Transactional
   @Override
   public User save(User user) {
+    if (user.getImageUrl() == null) {
+      var imageUrl = AvatarConstant.getUrl(user.getRole(), user.getUserProfile().getGender());
+      user.setImageUrl(imageUrl);
+    }
     var updatedUser = userRepository.save(user);
     userProfileService.save(user.getUserProfile());
     return updatedUser;

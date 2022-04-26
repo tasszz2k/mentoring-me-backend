@@ -1,5 +1,7 @@
 package com.labate.mentoringme.constant;
 
+import java.util.Set;
+
 public enum AvatarConstant {
   ADMIN("https://storage.googleapis.com/labate-image/images/default-avatar/admin.jpg"),
   MODERATOR("https://storage.googleapis.com/labate-image/images/default-avatar/admin.jpg"),
@@ -12,6 +14,8 @@ public enum AvatarConstant {
   ;
 
   private final String url;
+  public static final Set<String> DEFAULT_AVATARS =
+      Set.of(ADMIN.url, MENTOR_OTHER.url, USER_OTHER.url, USER_MALE.url, USER_FEMALE.url);
 
   AvatarConstant(String url) {
     this.url = url;

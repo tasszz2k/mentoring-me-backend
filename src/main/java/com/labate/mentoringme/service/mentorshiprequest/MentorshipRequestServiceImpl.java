@@ -64,7 +64,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     }
   }
 
-  @Cacheable("mentorshipRequest")
+  // @Cacheable("mentorshipRequest")
   @Override
   public MentorshipRequest findById(Long id) {
     return mentorshipRequestRepository.findById(id).orElse(null);
@@ -77,7 +77,7 @@ public class MentorshipRequestServiceImpl implements MentorshipRequestService {
     return mentorshipRequestRepository.findAllByConditions(request, pageable);
   }
 
-  @CachePut(value = "mentorshipRequest", key = "#entity.id")
+  // @CachePut(value = "mentorshipRequest", key = "#entity.id")
   @Transactional
   @Override
   public MentorshipRequest save(MentorshipRequest entity) {

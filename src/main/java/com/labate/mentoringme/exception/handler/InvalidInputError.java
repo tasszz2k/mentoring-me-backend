@@ -1,8 +1,8 @@
 package com.labate.mentoringme.exception.handler;
 
-import org.springframework.http.HttpStatus;
 import com.labate.mentoringme.exception.http.ResponseError;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 public enum InvalidInputError implements ResponseError {
@@ -27,11 +27,12 @@ public enum InvalidInputError implements ResponseError {
   // LOGIN_STATUS_NOT_VALID(4000017, "login status not valid: {0}"),
   // USER_STATUS_NOT_VALID(4000018, "User status not valid: {0}"),
   // FILE_NOT_EXISTED(4000019, "File not existed: {0}"),
-  USER_AVATAR_IMAGE_UUID_FORMAT(400020, "User avatar image uuid not format"), USER_ALREADY_EXISTED(
-      400021, "User already existed: {0}"), INVALID_IMAGE_FORMAT(400023,
-          "Invalid image format: {0}"), INVALID_CATEGORY_FORMAT(400024,
-              "Invalid category format: {0}"), INVALID_EXCEL_TEMPLATE_FORMAT(400025,
-                  "Invalid excel template format!"),;
+  USER_AVATAR_IMAGE_UUID_FORMAT(400020, "User avatar image uuid not format"),
+  USER_ALREADY_EXISTED(400021, "User already existed: {0}"),
+  INVALID_IMAGE_FORMAT(400023, "Invalid image format: {0}"),
+  INVALID_CATEGORY_FORMAT(400024, "Invalid category format: {0}"),
+  INVALID_EXCEL_TEMPLATE_FORMAT(400025, "Invalid excel template format!"),
+  ;
 
   private final Integer code;
   private final String message;

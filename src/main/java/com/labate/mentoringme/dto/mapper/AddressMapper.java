@@ -5,6 +5,7 @@ import com.labate.mentoringme.model.Address;
 import com.labate.mentoringme.util.ObjectMapperUtils;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +40,9 @@ public class AddressMapper {
   public static List<AddressDto> toDtos(Collection<Address> entities) {
     return entities == null
         ? null
-        : entities.stream().map(AddressMapper::toDto).collect(Collectors.toList());
+        : entities.stream().map(AddressMapper::toDto)
+            .sorted(Comparator.comparing(AddressDto::getName))
+            .collect(Collectors.toList());
   }
 
   public static List<Address> toEntities(Collection<AddressDto> dtos) {

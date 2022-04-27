@@ -1,5 +1,6 @@
 package com.labate.mentoringme.service.cometchat;
 
+import com.labate.mentoringme.dto.request.UpdateCometChatRequest;
 import com.labate.mentoringme.model.User;
 
 public interface ComeTChatService {
@@ -9,7 +10,7 @@ public interface ComeTChatService {
 
   void inActiveUser(Long userId);
 
-  void uploadAvatarUser(Long userId, String imgUrl);
+  void updateUser(UpdateCometChatRequest updateRequest);
 
   String getToken(Long userId);
 }

@@ -45,6 +45,7 @@ public class ComeTChatServiceImpl implements ComeTChatService {
     Map<String, Object> map = new HashMap<>();
     map.put("uid", user.getId().toString());
     map.put("name", user.getFullName());
+    map.put("avatar", user.getImageUrl());
 
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
 

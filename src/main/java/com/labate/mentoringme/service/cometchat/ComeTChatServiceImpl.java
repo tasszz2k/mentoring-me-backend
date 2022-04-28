@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.labate.mentoringme.constant.ComeTChatConstant;
+import com.labate.mentoringme.dto.request.UpdateCometChatRequest;
 import com.labate.mentoringme.model.ComeTChatToken;
 import com.labate.mentoringme.model.User;
 import com.labate.mentoringme.repository.ComeTChatTokenRepository;
@@ -90,19 +92,25 @@ public class ComeTChatServiceImpl implements ComeTChatService {
   }
 
   @Override
-  public void uploadAvatarUser(Long userId, String imgUrl) {
+  public void updateUser(UpdateCometChatRequest updateRequest) {
     var headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
     headers.add("apiKey", apiKey);
 
     Map<String, Object> map = new HashMap<>();
-    map.put("avatar", imgUrl);
+    if (StringUtils.isNotEmpty(updateRequest.getImgUrl())) {
+      map.put("image", updateRequest.getImgUrl());
+    }
+
+    if (StringUtils.isNotEmpty(updateRequest.getName())) {
+      map.put("name", updateRequest.getName());
+    }
 
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
 
     var url = String.format(ComeTChatConstant.UPDATE_USER_COMETCHAT_URL, appKey, region);
-    restTemplate.put(url, entity, userId);
+    restTemplate.put(url, entity, updateRequest.getUserId());
   }
 
   @Override
@@ -132,5 +140,6 @@ public class ComeTChatServiceImpl implements ComeTChatService {
     comeTChat.setToken(token);
     comeTChatTokenRepository.save(comeTChat);
   }
+
 
 }

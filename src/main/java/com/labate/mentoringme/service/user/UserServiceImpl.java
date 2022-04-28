@@ -176,7 +176,7 @@ public class UserServiceImpl implements UserService {
     var updatedUser = userRepository.save(user);
     userProfileService.save(user.getUserProfile());
     var updateCometChatRequest = UpdateCometChatRequest.builder()
-        .userId(String.valueOf(user.getId())).name(user.getFullName()).build();
+        .userId(String.valueOf(user.getId())).name(updatedUser.getFullName()).build();
     comeTChatService.updateUser(updateCometChatRequest);
     return updatedUser;
   }

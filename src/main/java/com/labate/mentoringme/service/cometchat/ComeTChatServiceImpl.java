@@ -103,7 +103,7 @@ public class ComeTChatServiceImpl implements ComeTChatService {
       map.put("image", updateRequest.getImgUrl());
     }
 
-    if (StringUtils.isNotEmpty(updateRequest.getImgUrl())) {
+    if (StringUtils.isNotEmpty(updateRequest.getName())) {
       map.put("name", updateRequest.getName());
     }
 

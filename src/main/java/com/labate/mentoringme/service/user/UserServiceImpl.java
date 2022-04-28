@@ -175,8 +175,9 @@ public class UserServiceImpl implements UserService {
     }
     var updatedUser = userRepository.save(user);
     userProfileService.save(user.getUserProfile());
-    var updateCometChatRequest = UpdateCometChatRequest.builder()
-        .userId(String.valueOf(user.getId())).name(updatedUser.getFullName()).build();
+    var updateCometChatRequest =
+        UpdateCometChatRequest.builder().userId(String.valueOf(user.getId()))
+            .name(updatedUser.getFullName()).imgUrl(updatedUser.getImageUrl()).build();
     comeTChatService.updateUser(updateCometChatRequest);
     return updatedUser;
   }
@@ -213,9 +214,6 @@ public class UserServiceImpl implements UserService {
     String imageUrl = googleCloudFileUpload.uploadImage(image);
     user.setImageUrl(imageUrl);
     save(user);
-    var updateCometChatRequest = UpdateCometChatRequest.builder()
-        .userId(String.valueOf(user.getId())).imgUrl(imageUrl).build();
-    comeTChatService.updateUser(updateCometChatRequest);
     return imageUrl;
   }
 

@@ -342,9 +342,10 @@ public class QuizServiceImpl implements QuizService {
     quiz.setAuthor(localUser.getUser().getFullName());
     var categories = convertCategory(importQuizRequest.getCategories());
     quiz.setCategories(categories);
+    var questions = extractQuestionData(importQuizRequest.getFile());
+    quiz.setNumberOfQuestion(questions.size());;
     var insertedQuiz = quizRepository.save(quiz);
 
-    var questions = extractQuestionData(importQuizRequest.getFile());
     for (Question question : questions) {
       question.setQuizId(insertedQuiz.getId());
       for (Answer answer : question.getAnswers()) {

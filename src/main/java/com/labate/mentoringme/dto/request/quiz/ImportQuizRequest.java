@@ -12,8 +12,6 @@ public class ImportQuizRequest {
   @NotBlank
   private String title;
   @NotNull
-  private Integer numberOfQuestion;
-  @NotNull
   private Integer time;
   @NotNull
   private Boolean isDraft;

@@ -1,26 +1,5 @@
 package com.labate.mentoringme.service.user;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.data.domain.Page;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.oidc.OidcIdToken;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 import com.labate.mentoringme.constant.AvatarConstant;
 import com.labate.mentoringme.constant.MentorStatus;
 import com.labate.mentoringme.constant.SocialProvider;
@@ -53,6 +32,20 @@ import com.labate.mentoringme.service.timetable.TimetableService;
 import com.labate.mentoringme.service.userprofile.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -86,14 +79,14 @@ public class UserServiceImpl implements UserService {
     }
 
     user = save(user);
-    userRepository.flush();
     Long userId = user.getId();
-    timetableService.createNewTimetable(userId,
-        String.format("Thời khóa biểu của %s", user.getFullName()));
+    timetableService.createNewTimetable(
+        userId, String.format("Thời khóa biểu của %s", user.getFullName()));
 
     if (UserRole.ROLE_MENTOR.equals(signUpRequest.getRole())) {
       mentorVerificationService.registerMentor(userId, null);
     }
+    userRepository.flush();
     return user;
   }
 
@@ -137,8 +130,11 @@ public class UserServiceImpl implements UserService {
 
   @Override
   @Transactional
-  public LocalUser processUserRegistration(String registrationId, Map<String, Object> attributes,
-      OidcIdToken idToken, OidcUserInfo userInfo) {
+  public LocalUser processUserRegistration(
+      String registrationId,
+      Map<String, Object> attributes,
+      OidcIdToken idToken,
+      OidcUserInfo userInfo) {
     OAuth2UserInfo oAuth2UserInfo =
         OAuth2UserInfoFactory.getOAuth2UserInfo(registrationId, attributes);
     if (!StringUtils.hasText(oAuth2UserInfo.getName())) {
@@ -152,8 +148,11 @@ public class UserServiceImpl implements UserService {
       if (!user.getProvider().equals(registrationId)
           && !user.getProvider().equals(SocialProvider.LOCAL.getProviderType())) {
         throw new OAuth2AuthenticationProcessingException(
-            "Looks like you're signed up with " + user.getProvider() + " account. Please use your "
-                + user.getProvider() + " account to login.");
+            "Looks like you're signed up with "
+                + user.getProvider()
+                + " account. Please use your "
+                + user.getProvider()
+                + " account to login.");
       }
       user = updateExistingUser(user, oAuth2UserInfo);
     } else {
@@ -175,13 +174,16 @@ public class UserServiceImpl implements UserService {
     }
     var updatedUser = userRepository.save(user);
     userProfileService.save(user.getUserProfile());
-    if (!isSyncNewChatUser) {
-      var updateCometChatRequest =
-          UpdateCometChatRequest.builder().userId(String.valueOf(user.getId()))
-              .name(updatedUser.getFullName()).imgUrl(updatedUser.getImageUrl()).build();
-      comeTChatService.updateUser(updateCometChatRequest);
-    } else {
+    if (isSyncNewChatUser) {
       comeTChatService.addUserToDashboard(user);
+    } else {
+      var updateCometChatRequest =
+          UpdateCometChatRequest.builder()
+              .userId(String.valueOf(user.getId()))
+              .name(updatedUser.getFullName())
+              .imgUrl(updatedUser.getImageUrl())
+              .build();
+      comeTChatService.updateUser(updateCometChatRequest);
     }
     return updatedUser;
   }
@@ -257,11 +259,14 @@ public class UserServiceImpl implements UserService {
     return save(existingUser);
   }
 
-  private SignUpRequest toUserRegistrationObject(String registrationId,
-      OAuth2UserInfo oAuth2UserInfo) {
-    return SignUpRequest.getBuilder().addProviderUserID(oAuth2UserInfo.getId())
-        .addFullName(oAuth2UserInfo.getName()).addEmail(oAuth2UserInfo.getEmail())
-        .addSocialProvider(UserMapper.toSocialProvider(registrationId)).addPassword(defaultPassword) // FIXME:
+  private SignUpRequest toUserRegistrationObject(
+      String registrationId, OAuth2UserInfo oAuth2UserInfo) {
+    return SignUpRequest.getBuilder()
+        .addProviderUserID(oAuth2UserInfo.getId())
+        .addFullName(oAuth2UserInfo.getName())
+        .addEmail(oAuth2UserInfo.getEmail())
+        .addSocialProvider(UserMapper.toSocialProvider(registrationId))
+        .addPassword(defaultPassword) // FIXME:
         // change
         // it
         // to
@@ -286,8 +291,8 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Page<UserDetails> findAllUserProfile(PageCriteria pageCriteria, FindUsersRequest request,
-      LocalUser localUser) {
+  public Page<UserDetails> findAllUserProfile(
+      PageCriteria pageCriteria, FindUsersRequest request, LocalUser localUser) {
     if (localUser == null || !UserRole.MANAGER_ROLES.contains(localUser.getUser().getRole())) {
       request.setEnabled(true);
     }
@@ -320,8 +325,7 @@ public class UserServiceImpl implements UserService {
     while (right >= left) {
       int mid = left + (right - left) / 2;
       var id = favoriteMentors.get(mid).getMentorId();
-      if (id == mentorId)
-        return true;
+      if (id == mentorId) return true;
       if (id > mentorId) {
         right = mid - 1;
       } else {

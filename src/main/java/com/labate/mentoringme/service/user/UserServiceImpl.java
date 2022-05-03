@@ -94,7 +94,6 @@ public class UserServiceImpl implements UserService {
     if (UserRole.ROLE_MENTOR.equals(signUpRequest.getRole())) {
       mentorVerificationService.registerMentor(userId, null);
     }
-    comeTChatService.addUserToDashboard(user);
     return user;
   }
 
@@ -168,6 +167,7 @@ public class UserServiceImpl implements UserService {
   @Transactional
   @Override
   public User save(User user) {
+    var isSyncNewChatUser = user.getId() == null;
     var imageUrl1 = user.getImageUrl();
     if (imageUrl1 == null || AvatarConstant.DEFAULT_AVATARS.contains(imageUrl1)) {
       var imageUrl = AvatarConstant.getUrl(user.getRole(), user.getUserProfile().getGender());
@@ -175,10 +175,14 @@ public class UserServiceImpl implements UserService {
     }
     var updatedUser = userRepository.save(user);
     userProfileService.save(user.getUserProfile());
-    var updateCometChatRequest =
-        UpdateCometChatRequest.builder().userId(String.valueOf(user.getId()))
-            .name(updatedUser.getFullName()).imgUrl(updatedUser.getImageUrl()).build();
-    comeTChatService.updateUser(updateCometChatRequest);
+    if (!isSyncNewChatUser) {
+      var updateCometChatRequest =
+          UpdateCometChatRequest.builder().userId(String.valueOf(user.getId()))
+              .name(updatedUser.getFullName()).imgUrl(updatedUser.getImageUrl()).build();
+      comeTChatService.updateUser(updateCometChatRequest);
+    } else {
+      comeTChatService.addUserToDashboard(user);
+    }
     return updatedUser;
   }
 

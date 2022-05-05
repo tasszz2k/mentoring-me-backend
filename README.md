@@ -2,7 +2,7 @@
   <br>
   <a>[FPTU] LABATE</a>
   <br>
-  MENTORING ME [BACKEND]
+  MentoringME [BACKEND]
   <br>
 </h1>
 
@@ -28,6 +28,9 @@
 <hr>
 
 #### 1. Document
+- [Document](docs)
+- Reference: 
+  - Mobile: [mentoring-me-ios](https://github.com/bigdreamer1610/mentoring-me-ios)
 
 #### 2. API Document
 
@@ -37,11 +40,11 @@
 
 ---
 
-# Workforce Mentoring Me Backend documents
+# Workforce MentoringME Backend documents
 
 ## Overview
 
-The Mentoring Me Backend is a web application that is used to:
+The MentoringME Backend is a web application that is used to:
 
 + Connect with the students and mentors without third-party services
 + Provide a platform for students to find mentors
